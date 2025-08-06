@@ -5666,21 +5666,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.5277713,
-          25.0249226
-        ]
-      },
-      "properties": {
-        "名稱": "後山以後 再沒有故鄉",
-        "說明": "謝謝大家的指教和肯定，本地圖於2022年7月2日晚間11:00達到100萬瀏覽、於2023年6月16日建立滿兩週年、於2024年1月15日下午04:33達到200萬瀏覽、座標數量於2024年8月28日達到6000個。身為作者，我願所有地圖讀者都因著此份地圖而對公開來源情報（OSINT）、解放軍研究和中共研究更有興趣，了解我國當前處境和周邊地緣環境變化，進而更知如何自處。 中共當局及其解放軍的威脅一直存在，75年來從沒有放棄武力犯臺，窮兵黷武的本質也始終未改；和平不能屈膝寄望中共有善意，安全還須建立在國家有實力，自由從不屬於低頭的人。這份地圖會無限期更新下去，讓我們共同守護民主堅韌之島，感謝大家。              作者 Joseph Wen                          https://x.com/JosephWen___/status/1949149942192418883    https://x.com/JosephWen___/status/1846207071299293569   https://x.com/JosephWen___/status/1794615411209904578    https://www.youtube.com/watch?v=9rlPfYuRK4I&t=6s https://www.youtube.com/watch?v=zVtRM5bvRRU https://twitter.com/CFR_org/status/1671836152884543489?s=20   https://chinapower.csis.org/tracking-the-fourth-taiwan-strait-crisis/    https://www.reuters.com/investigates/special-report/taiwan-china-wargames/ https://x.com/JosephWen___/status/1740960906794938423?s=20  https://x.com/JosephWen___/status/1615547146513833984?s=20   https://x.com/JosephWen___/status/1543572047028453376?s=20",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           119.4567958,
           25.726606
         ]
