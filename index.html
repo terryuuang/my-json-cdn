@@ -2,31 +2,248 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>解放軍基地地圖</title>
+  <title>溫約瑟地圖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body, #map { height: 100%; margin: 0; }
+    html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
     .link-btn {
       display: inline-block;
       margin-bottom: 4px;
       padding: 4px 8px;
-      border-radius: 4px;
-      background: #005aee;
+      border-radius: 6px;
+      background: #2563eb;
       color: #fff;
       text-decoration: none;
+      font-size: 12px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .link-btn:hover { opacity: 0.85; }
+    .link-btn:hover { 
+      background: #1d4ed8; 
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    
+    /* 控制面板樣式 */
+    .control-panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      z-index: 1000;
+      min-width: 280px;
+      max-width: 320px;
+    }
+    
+    .control-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #1f2937;
+      font-size: 16px;
+    }
+    
+    .input-group {
+      margin-bottom: 12px;
+    }
+    
+    .input-label {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+      box-sizing: border-box;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    
+    .info-panel {
+      background: #f3f4f6;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #4b5563;
+      margin-top: 10px;
+    }
+    
+    /* 載入指示器 */
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      z-index: 2000;
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #2563eb;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* 隱藏控制面板的按鈕 */
+    .toggle-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1001;
+      font-size: 18px;
+    }
+    
+    .control-panel.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    @media (max-width: 768px) {
+      .control-panel {
+        position: fixed;
+        top: 60px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+        min-width: auto;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
+  
+  <!-- 載入指示器 -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>載入地圖資料中...</div>
+  </div>
+  
+  <!-- 控制面板 -->
+  <div id="controlPanel" class="control-panel">
+    <div class="control-title">🗺️ 地圖控制</div>
+    
+    <div class="input-group">
+      <label class="input-label">緯度 (Latitude)</label>
+      <input type="number" id="latInput" class="input-field" step="any" placeholder="例如: 31.9424765">
+    </div>
+    
+    <div class="input-group">
+      <label class="input-label">經度 (Longitude)</label>
+      <input type="number" id="lngInput" class="input-field" step="any" placeholder="例如: 120.2903877">
+    </div>
+    
+    <div class="input-group">
+      <label class="input-label">搜尋半徑 (公里)</label>
+      <input type="number" id="radiusInput" class="input-field" value="50" min="1" max="500" step="5">
+    </div>
+    
+    <button class="btn btn-primary" onclick="searchLocation()">🔍 搜尋位置</button>
+    <button class="btn btn-secondary" onclick="showAllLocations()">🌍 顯示全部</button>
+    <button class="btn btn-secondary" onclick="copyUrl()">📋 複製連結</button>
+    
+    <div id="infoPanel" class="info-panel" style="display: none;">
+      <div id="infoText"></div>
+    </div>
+  </div>
+  
+  <!-- 隱藏面板按鈕 -->
+  <button class="toggle-panel" onclick="togglePanel()">⚙️</button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // 解析URL參數 - 獲取經緯度
     function parseUrlCoordinates() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // 支援多種參數格式
+      // 格式1: ?lat=31.9424765&lng=120.2903877
+      if (urlParams.has('lat') && urlParams.has('lng')) {
+        return {
+          lat: parseFloat(urlParams.get('lat')),
+          lng: parseFloat(urlParams.get('lng'))
+        };
+      }
+      
+      // 格式2: ?coords=31.9424765,120.2903877
+      if (urlParams.has('coords')) {
+        const coords = urlParams.get('coords').split(',');
+        if (coords.length === 2) {
+          return {
+            lat: parseFloat(coords[0]),
+            lng: parseFloat(coords[1])
+          };
+        }
+      }
+      
+      // 格式3: 路徑格式 /31.9424765,120.2903877 (向後相容)
       const path = window.location.pathname;
       const coordinatePattern = /\/(-?\d+\.?\d*),(-?\d+\.?\d*)$/;
       const match = path.match(coordinatePattern);
@@ -37,6 +254,7 @@
           lng: parseFloat(match[2])
         };
       }
+      
       return null;
     }
 
@@ -52,20 +270,15 @@
       return R * c;
     }
 
-    // 設定地圖中心和縮放級別
-    const urlCoords = parseUrlCoordinates();
-    const defaultCenter = [31.9424765, 120.2903877];
-    const mapCenter = urlCoords ? [urlCoords.lat, urlCoords.lng] : defaultCenter;
-    const mapZoom = urlCoords ? 12 : 7; // 有指定座標時放大顯示
+    // 初始化地圖
+    function initializeMap() {
+      map = L.map('map', { zoomControl: false }).setView([31.9424765, 120.2903877], 7);
+      L.control.zoom({ position: 'topright' }).addTo(map);
 
-    const map = L.map('map', { zoomControl: false }).setView(mapCenter, mapZoom);
-    L.control.zoom({ position: 'topright' }).addTo(map);
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+    }
 
     // 取得標籤名稱
     function getLabel(url) {
@@ -79,7 +292,61 @@
              url.includes('bilibili.com') ? 'Bilibili' :
              '相關連結';
     }
+    
+    // 主要初始化函數
+    async function init() {
+      showLoading();
+      
+      try {
+        // 初始化地圖
+        initializeMap();
+        
+        // 解析URL參數
+        const urlCoords = parseUrlCoordinates();
+        const urlParams = new URLSearchParams(window.location.search);
+        const radius = parseFloat(urlParams.get('radius')) || 50;
+        
+        // 如果有URL參數，填入控制面板
+        if (urlCoords) {
+          document.getElementById('latInput').value = urlCoords.lat;
+          document.getElementById('lngInput').value = urlCoords.lng;
+          document.getElementById('radiusInput').value = radius;
+        }
+        
+        // 載入地圖資料
+        const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
+        const response = await fetch(geojsonURL);
+        
+        if (!response.ok) {
+          throw new Error(`載入資料失敗: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        allFeatures = data.features;
+        
+        // 根據URL參數渲染地圖
+        renderMap(urlCoords, radius);
+        
+        hideLoading();
+        
+      } catch (error) {
+        hideLoading();
+        console.error('載入地圖資料時發生錯誤:', error);
+        updateInfoPanel(`錯誤：${error.message}`);
+        
+        // 即使載入失敗也要初始化基本地圖
+        if (!map) {
+          initializeMap();
+        }
+      }
+    }
 
+    // 全域變數
+    let map;
+    let allFeatures = [];
+    let currentMarkers = L.layerGroup();
+    let centerMarker = null;
+    
     // 篩選功能 - 根據距離篩選點位
     function filterFeaturesByDistance(features, centerLat, centerLng, radiusKm = 50) {
       return features.filter(feature => {
@@ -88,78 +355,183 @@
         return distance <= radiusKm;
       });
     }
-
-    fetch(geojsonURL)
-      .then(res => res.json())
-      .then(data => {
-        let featuresToShow = data.features;
-        
-        // 如果URL有指定座標，只顯示附近50公里內的點位
-        if (urlCoords) {
-          featuresToShow = filterFeaturesByDistance(
-            data.features, 
-            urlCoords.lat, 
-            urlCoords.lng, 
-            50 // 50公里半徑
-          );
-          
-          // 在指定位置添加一個紅色標記
-          const redIcon = L.divIcon({
-            className: 'custom-red-marker',
-            html: '<div style="background-color: red; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
-            iconSize: [16, 16],
-            iconAnchor: [8, 8]
-          });
-          
-          L.marker([urlCoords.lat, urlCoords.lng], { icon: redIcon })
-           .addTo(map)
-           .bindPopup(`<strong>指定位置</strong><br/>緯度: ${urlCoords.lat}<br/>經度: ${urlCoords.lng}`);
-        }
-
-        // 顯示篩選後的點位
-        L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
-          pointToLayer: (feature, latlng) => L.marker(latlng),
-          onEachFeature: (feature, layer) => {
-            const props = feature.properties || {};
-            let popupContent = '';
-            let referenceLinks = [];
-
-            Object.entries(props).forEach(([key, value]) => {
-              if (key === '說明') {
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const matchedURLs = value.match(urlRegex);
-                if (matchedURLs) {
-                  referenceLinks.push(...matchedURLs);
-                  value = value.replace(urlRegex, '').trim();
-                }
-              }
-              popupContent += `<div><strong>${key}</strong>: ${value}</div>`;
-            });
-
-            // 如果有URL座標，顯示距離資訊
-            if (urlCoords) {
-              const coords = feature.geometry.coordinates;
-              const distance = calculateDistance(urlCoords.lat, urlCoords.lng, coords[1], coords[0]);
-              popupContent += `<div><strong>距離指定位置</strong>: ${distance.toFixed(2)} 公里</div>`;
-            }
-
-            if (referenceLinks.length) {
-              popupContent += '<hr/>';
-              referenceLinks.forEach(url => {
-                popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
-              });
-            }
-
-            layer.bindPopup(popupContent);
-          }
-        }).addTo(map);
-
-        // 在控制台顯示載入的點位數量
-        console.log(`載入了 ${featuresToShow.length} 個點位${urlCoords ? ` (距離 ${urlCoords.lat}, ${urlCoords.lng} 50公里內)` : ''}`);
-      })
-      .catch(error => {
-        console.error('載入地圖資料時發生錯誤:', error);
+    
+    // 顯示載入指示器
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+    
+    // 隱藏載入指示器
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+    
+    // 更新資訊面板
+    function updateInfoPanel(message) {
+      const infoPanel = document.getElementById('infoPanel');
+      const infoText = document.getElementById('infoText');
+      infoText.textContent = message;
+      infoPanel.style.display = 'block';
+    }
+    
+    // 隱藏/顯示控制面板
+    function togglePanel() {
+      const panel = document.getElementById('controlPanel');
+      panel.classList.toggle('hidden');
+    }
+    
+    // 搜尋位置功能
+    function searchLocation() {
+      const lat = parseFloat(document.getElementById('latInput').value);
+      const lng = parseFloat(document.getElementById('lngInput').value);
+      const radius = parseFloat(document.getElementById('radiusInput').value) || 50;
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        alert('請輸入有效的經緯度數值！');
+        return;
+      }
+      
+      // 更新URL
+      const newUrl = `${window.location.origin}${window.location.pathname}?lat=${lat}&lng=${lng}&radius=${radius}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // 重新渲染地圖
+      renderMap({ lat, lng }, radius);
+    }
+    
+    // 顯示全部位置
+    function showAllLocations() {
+      // 清除URL參數
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // 清空輸入欄
+      document.getElementById('latInput').value = '';
+      document.getElementById('lngInput').value = '';
+      document.getElementById('radiusInput').value = '50';
+      
+      // 重新渲染地圖
+      renderMap(null);
+    }
+    
+    // 複製URL功能
+    function copyUrl() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        updateInfoPanel('連結已複製到剪貼簿！');
+        setTimeout(() => {
+          document.getElementById('infoPanel').style.display = 'none';
+        }, 3000);
+      }).catch(() => {
+        // 備用方案
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        updateInfoPanel('連結已複製！');
+        setTimeout(() => {
+          document.getElementById('infoPanel').style.display = 'none';
+        }, 3000);
       });
+    }
+    
+    // 渲染地圖功能
+    function renderMap(targetCoords, radiusKm = 50) {
+      // 清除現有標記
+      currentMarkers.clearLayers();
+      if (centerMarker) {
+        map.removeLayer(centerMarker);
+        centerMarker = null;
+      }
+      
+      let featuresToShow = allFeatures;
+      let mapCenter = [31.9424765, 120.2903877]; // 預設中心
+      let mapZoom = 7;
+      
+      if (targetCoords) {
+        mapCenter = [targetCoords.lat, targetCoords.lng];
+        mapZoom = 12;
+        
+        // 篩選附近的點位
+        featuresToShow = filterFeaturesByDistance(
+          allFeatures, 
+          targetCoords.lat, 
+          targetCoords.lng, 
+          radiusKm
+        );
+        
+        // 添加中心標記
+        const redIcon = L.divIcon({
+          className: 'custom-red-marker',
+          html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        });
+        
+        centerMarker = L.marker([targetCoords.lat, targetCoords.lng], { icon: redIcon })
+          .addTo(map)
+          .bindPopup(`<strong>🎯 搜尋中心</strong><br/>緯度: ${targetCoords.lat}<br/>經度: ${targetCoords.lng}<br/>搜尋半徑: ${radiusKm} 公里`);
+      }
+      
+      // 設定地圖視野
+      map.setView(mapCenter, mapZoom);
+      
+      // 顯示篩選後的點位
+      L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
+        pointToLayer: (feature, latlng) => {
+          const marker = L.marker(latlng);
+          currentMarkers.addLayer(marker);
+          return marker;
+        },
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties || {};
+          let popupContent = '';
+          let referenceLinks = [];
+
+          Object.entries(props).forEach(([key, value]) => {
+            if (key === '說明') {
+              const urlRegex = /(https?:\/\/[^\s]+)/g;
+              const matchedURLs = value.match(urlRegex);
+              if (matchedURLs) {
+                referenceLinks.push(...matchedURLs);
+                value = value.replace(urlRegex, '').trim();
+              }
+            }
+            popupContent += `<div><strong>${key}</strong>: ${value}</div>`;
+          });
+
+          // 如果有目標座標，顯示距離資訊
+          if (targetCoords) {
+            const coords = feature.geometry.coordinates;
+            const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
+            popupContent += `<div><strong>📍 距離搜尋中心</strong>: ${distance.toFixed(2)} 公里</div>`;
+          }
+
+          if (referenceLinks.length) {
+            popupContent += '<hr/>';
+            referenceLinks.forEach(url => {
+              popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
+            });
+          }
+
+          layer.bindPopup(popupContent);
+        }
+      }).addTo(map);
+      
+      // 將標記群組添加到地圖
+      currentMarkers.addTo(map);
+      
+      // 更新資訊面板
+      const message = targetCoords 
+        ? `找到 ${featuresToShow.length} 個點位 (${radiusKm}公里內)`
+        : `顯示全部 ${featuresToShow.length} 個點位`;
+      updateInfoPanel(message);
+    }
+
+    // 當頁面載入完成時啟動應用程式
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
