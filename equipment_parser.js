@@ -17,6 +17,20 @@ class EquipmentParser {
     // 效能限制
     this.maxEquipmentItems = 5; // 最多處理5個裝備項目
     this.requestTimeout = this.isMobileDevice() ? 15000 : 8000; // 手機版15秒，桌面版8秒請求超時
+    
+    // 基本設備資料庫（作為fallback）
+    this.basicEquipmentDB = {
+      'J-16': { type: '多用途戰鬥機', country: '中國' },
+      'Su-35S': { type: '多用途戰鬥機', country: '俄羅斯' },
+      'J-20': { type: '第五代隱身戰鬥機', country: '中國' },
+      'F-16': { type: '多用途戰鬥機', country: '美國' },
+      'F-35': { type: '第五代多用途戰鬥機', country: '美國' },
+      'J-10': { type: '輕型多用途戰鬥機', country: '中國' },
+      'Su-30': { type: '雙座多用途戰鬥機', country: '俄羅斯' },
+      'H-6': { type: '戰略轟炸機', country: '中國' },
+      'Y-20': { type: '大型運輸機', country: '中國' },
+      'KJ-500': { type: '預警機', country: '中國' }
+    };
   }
 
   // 檢測是否為手機設備
@@ -82,14 +96,17 @@ class EquipmentParser {
     }
 
     try {
-      // 使用CORS代理服務來避免跨域問題，手機版優先使用更可靠的代理
+      // 使用多個CORS代理服務，手機版優先使用更穩定的代理
       const proxyUrls = this.isMobileDevice() ? [
         `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
+        `https://corsproxy.io/?${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
+        `https://proxy.cors.sh/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
         `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
         `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
       ] : [
         `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
         `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
+        `https://corsproxy.io/?${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
         `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
       ];
       
@@ -125,15 +142,30 @@ class EquipmentParser {
         } catch (error) {
           console.log(`嘗試API端點失敗: ${url}`, error.message);
           
+          // 詳細的錯誤診斷信息
+          const errorDetails = {
+            weaponName,
+            url,
+            error: error.name,
+            message: error.message,
+            stack: error.stack,
+            isMobile: this.isMobileDevice(),
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            isTimeout: error.name === 'AbortError',
+            isCORS: error.message.includes('CORS') || error.message.includes('Network'),
+            responseStatus: response ? response.status : 'No response'
+          };
+          
+          // 儲存錯誤信息供調試使用
+          if (!window.equipmentParserErrors) {
+            window.equipmentParserErrors = [];
+          }
+          window.equipmentParserErrors.push(errorDetails);
+          
           // 手機版提供更詳細的錯誤信息
           if (this.isMobileDevice()) {
-            console.log(`手機版API請求詳情:`, {
-              weaponName,
-              url,
-              error: error.name,
-              message: error.message,
-              userAgent: navigator.userAgent
-            });
+            console.log(`手機版API請求詳情:`, errorDetails);
           }
           
           continue;
@@ -143,15 +175,37 @@ class EquipmentParser {
       if (!data) {
         console.log(`所有API端點都失敗: ${weaponName}`);
         
-        // 提供fallback資訊，至少顯示裝備名稱
-        return {
-          name: weaponName,
-          title: weaponName,
-          description: '網路連線問題，無法載入詳細資訊',
-          thumbnail: null,
-          wikipediaUrl: null,
-          fallback: true
-        };
+        // 檢查本地資料庫是否有這個裝備
+        const localData = this.basicEquipmentDB[weaponName];
+        const isMobile = this.isMobileDevice();
+        
+        if (localData) {
+          // 使用本地資料庫資訊
+          return {
+            name: weaponName,
+            title: weaponName,
+            description: `${localData.type} (${localData.country})${isMobile ? ' - 離線資料' : ' - 基本資訊'}`,
+            thumbnail: null,
+            wikipediaUrl: null,
+            fallback: true,
+            localData: true
+          };
+        } else {
+          // 沒有本地資料，顯示錯誤說明
+          const errorDescription = isMobile 
+            ? '網路連線問題 (可能是CORS或IPv6相容性)，建議使用電腦瀏覽器'
+            : '網路連線問題，無法載入詳細資訊';
+          
+          return {
+            name: weaponName,
+            title: weaponName,
+            description: errorDescription,
+            thumbnail: null,
+            wikipediaUrl: null,
+            fallback: true,
+            localData: false
+          };
+        }
       }
       
       // 檢查是否有錯誤狀態
@@ -237,7 +291,9 @@ class EquipmentParser {
   generateEquipmentHTML(equipmentData, isLoading = false) {
     if (isLoading) {
       const isMobile = this.isMobileDevice();
-      const loadingText = isMobile ? '正在查詢資料...<br><small>手機版可能需要較長時間</small>' : '正在查詢維基百科資料...';
+      const loadingText = isMobile 
+        ? '正在查詢資料...<br><small>若持續載入失敗，可能是IPv6網路問題<br>建議使用電腦瀏覽器訪問</small>' 
+        : '正在查詢維基百科資料...';
       
       return `
         <div class="equipment-info">
@@ -246,7 +302,8 @@ class EquipmentParser {
             text-align: center; 
             padding: 20px; 
             color: #666;
-            font-size: ${isMobile ? '12px' : '13px'};
+            font-size: ${isMobile ? '11px' : '13px'};
+            line-height: 1.4;
           ">
             <div style="margin-bottom: 8px;">🔍</div>
             ${loadingText}
@@ -263,6 +320,20 @@ class EquipmentParser {
     
     equipmentData.forEach(equipment => {
       const itemClass = equipment.fallback ? 'equipment-item equipment-fallback' : 'equipment-item';
+      
+      let fallbackLabel = '';
+      if (equipment.fallback) {
+        if (equipment.localData) {
+          fallbackLabel = this.isMobileDevice() ? 
+            ' <small style="color: #4ade80;">✓ 離線資料</small>' : 
+            ' <small style="color: #4ade80;">✓ 基本資訊</small>';
+        } else {
+          fallbackLabel = this.isMobileDevice() ? 
+            ' <small style="color: #f87171;">⚠ 網路問題</small>' : 
+            ' <small style="color: #888;">(離線模式)</small>';
+        }
+      }
+      
       html += `
         <div class="${itemClass}">
           <h5>
@@ -270,9 +341,9 @@ class EquipmentParser {
               `<a href="${equipment.wikipediaUrl}" target="_blank" rel="noopener noreferrer">${equipment.title}</a>` : 
               equipment.title
             }
-            ${equipment.fallback ? ' <small style="color: #888;">(離線模式)</small>' : ''}
+            ${fallbackLabel}
           </h5>
-          ${equipment.description ? `<p style="${equipment.fallback ? 'color: #888; font-style: italic;' : ''}">${equipment.description}</p>` : ''}
+          ${equipment.description ? `<p style="${equipment.fallback ? 'color: #666; font-size: 12px;' : ''}">${equipment.description}</p>` : ''}
           ${equipment.thumbnail ? this.generateImageHTML(equipment) : ''}
         </div>
       `;
