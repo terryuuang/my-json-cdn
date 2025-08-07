@@ -15,7 +15,7 @@ class EquipmentParser {
     this.cacheExpiry = 30 * 60 * 1000; // 30分鐘快取
     
     // 效能限制
-    this.maxEquipmentItems = 5; // 最多處理5個裝備項目
+    this.maxEquipmentItems = this.isMobileDevice() ? 3 : 5; // 手機版最多3個，桌面版5個裝備項目
     this.requestTimeout = this.isMobileDevice() ? 15000 : 8000; // 手機版15秒，桌面版8秒請求超時
     
     // 基本設備資料庫（作為fallback）
@@ -318,6 +318,11 @@ class EquipmentParser {
 
     let html = '<div class="equipment-info"><h4>裝備資訊</h4>';
     
+    // 手機版添加滾動提示
+    if (this.isMobileDevice() && equipmentData.length > 1) {
+      html += '<small style="color: #888; font-size: 10px; display: block; margin-bottom: 8px;">可上下滾動查看更多內容</small>';
+    }
+    
     equipmentData.forEach(equipment => {
       const itemClass = equipment.fallback ? 'equipment-item equipment-fallback' : 'equipment-item';
       
@@ -356,6 +361,8 @@ class EquipmentParser {
   // 生成圖片HTML，處理多圖排版
   generateImageHTML(equipment) {
     const imageUrl = equipment.originalImage || equipment.thumbnail;
+    const isMobile = this.isMobileDevice();
+    
     return `
       <div class="equipment-images">
         <img src="${equipment.thumbnail}" 
@@ -363,6 +370,7 @@ class EquipmentParser {
              onclick="window.equipmentParser.openFullImage('${imageUrl}', '${equipment.title}')"
              title="點擊查看原圖"
              loading="lazy"
+             style="max-width: ${isMobile ? '100px' : '160px'}; height: auto;"
              onerror="this.style.display='none'">
       </div>
     `;
