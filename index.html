@@ -174,7 +174,7 @@
     }
     .link-btn {
       display: inline-block;
-      margin-bottom: 4px;
+      margin: 4px 6px 4px 0;
       padding: 4px 8px;
       border-radius: 6px;
       background: #f3f4f6;
@@ -184,6 +184,7 @@
       transition: all 0.2s ease;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       border: 1px solid #d1d5db;
+      white-space: nowrap;
     }
     .link-btn:hover { 
       background: #e5e7eb; 
@@ -539,7 +540,7 @@
       .link-btn {
         padding: 3px 6px;
         font-size: 11px;
-        margin-bottom: 3px;
+        margin: 3px 4px 3px 0;
       }
       
       .popup-links-title {
@@ -1433,7 +1434,7 @@
                 <div class="popup-links-title">相關連結</div>
             `;
               referenceLinks.forEach(url => {
-                popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
+                popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a>`;
               });
             popupContent += '</div>';
           }
