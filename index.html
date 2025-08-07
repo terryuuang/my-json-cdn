@@ -337,6 +337,7 @@
       pointer-events: none;
     }
     
+    /* 手機版響應式設計 */
     @media (max-width: 768px) {
       .control-panel {
         position: fixed;
@@ -345,6 +346,149 @@
         right: 10px;
         max-width: none;
         min-width: auto;
+        transform: translateX(-100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+      
+      .control-panel.show-mobile {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      
+      .toggle-panel {
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.1);
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .toggle-panel:active {
+        transform: scale(0.95);
+      }
+      
+      /* 手機版popup優化 */
+      .leaflet-popup-content-wrapper {
+        max-width: calc(100vw - 40px) !important;
+        min-width: 280px;
+      }
+      
+      .leaflet-popup-content {
+        margin: 12px 16px !important;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      
+      .popup-title {
+        font-size: 14px;
+      }
+      
+      .popup-icon {
+        width: 20px;
+        height: 20px;
+      }
+      
+      .popup-field {
+        margin-bottom: 6px;
+        padding: 4px 0;
+      }
+      
+      .popup-field strong {
+        min-width: 70px;
+        font-size: 12px;
+      }
+      
+      .popup-field-value {
+        font-size: 12px;
+      }
+      
+      .popup-distance {
+        padding: 6px 10px;
+        margin: 6px 0;
+        font-size: 12px;
+      }
+      
+      .link-btn {
+        padding: 3px 6px;
+        font-size: 11px;
+        margin-bottom: 3px;
+      }
+      
+      .popup-links-title {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      
+      /* 手機版控制面板內容優化 */
+      .control-title {
+        font-size: 15px;
+        margin-bottom: 8px;
+        position: relative;
+      }
+      
+      .mobile-hint {
+        font-size: 10px;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+      }
+      
+      .input-label {
+        font-size: 11px;
+        margin-bottom: 3px;
+      }
+      
+      .input-field {
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+      
+      .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+      
+      .info-panel {
+        padding: 6px 10px;
+        font-size: 11px;
+        margin-top: 8px;
+      }
+    }
+    
+    /* 極小螢幕優化 */
+    @media (max-width: 480px) {
+      .leaflet-popup-content-wrapper {
+        max-width: calc(100vw - 20px) !important;
+        min-width: 260px;
+      }
+      
+      .control-panel {
+        left: 5px;
+        right: 5px;
+        top: 55px;
+      }
+      
+      .toggle-panel {
+        right: 5px;
+        padding: 10px;
+        font-size: 18px;
       }
     }
   </style>
@@ -359,8 +503,11 @@
   </div>
   
   <!-- 控制面板 -->
-  <div id="controlPanel" class="control-panel">
+  <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
     <div class="control-title">🗺️ 地圖控制</div>
+    <div id="mobileHint" class="mobile-hint" style="display: none;">
+      📱 點擊地圖任意處關閉此面板
+    </div>
     
     <div class="input-group">
       <label class="input-label">緯度 (Latitude)</label>
@@ -464,15 +611,33 @@
       map = L.map('map', { 
         zoomControl: false,
         maxZoom: 22, // 增加最大縮放級別，讓使用者可以看得更清楚
-        minZoom: 2
+        minZoom: 2,
+        tap: true, // 手機版點擊支援
+        tapTolerance: 15 // 增加點擊容差
       }).setView([31.9424765, 120.2903877], 7);
-      L.control.zoom({ position: 'topright' }).addTo(map);
+      
+      // 根據設備類型調整縮放控制器位置
+      if (isMobileDevice()) {
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+      } else {
+    L.control.zoom({ position: 'topright' }).addTo(map);
+      }
 
       // 使用高解析度衛星圖層
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 22 // 支援高縮放級別
-      }).addTo(map);
+    }).addTo(map);
+
+      // 手機版：點擊地圖關閉控制面板
+      if (isMobileDevice()) {
+        map.on('click', function() {
+          const panel = document.getElementById('controlPanel');
+          if (panel.classList.contains('show-mobile')) {
+            panel.classList.remove('show-mobile');
+          }
+        });
+      }
     }
 
     // SVG圖標系統
@@ -638,6 +803,12 @@
         // 初始化地圖
         initializeMap();
         
+        // 初始化面板狀態（手機版預設隱藏）
+        initializePanelState();
+        
+        // 監聽視窗大小變化
+        window.addEventListener('resize', handleResize);
+        
         // 解析URL參數
         const urlCoords = parseUrlCoordinates();
         const urlParams = new URLSearchParams(window.location.search);
@@ -685,7 +856,7 @@
     let allFeatures = [];
     let currentMarkers = L.layerGroup();
     let centerMarker = null;
-    
+
     // 篩選功能 - 根據距離篩選點位
     function filterFeaturesByDistance(features, centerLat, centerLng, radiusKm = 50) {
       return features.filter(feature => {
@@ -694,7 +865,7 @@
         return distance <= radiusKm;
       });
     }
-    
+
     // 顯示載入指示器
     function showLoading() {
       document.getElementById('loading').style.display = 'block';
@@ -713,10 +884,68 @@
       infoPanel.style.display = 'block';
     }
     
+    // 檢測是否為手機設備
+    function isMobileDevice() {
+      return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
     // 隱藏/顯示控制面板
     function togglePanel() {
       const panel = document.getElementById('controlPanel');
-      panel.classList.toggle('hidden');
+      
+      if (isMobileDevice()) {
+        // 手機版使用不同的class
+        panel.classList.toggle('show-mobile');
+      } else {
+        // 桌面版使用原有的hidden class
+        panel.classList.toggle('hidden');
+      }
+    }
+    
+    // 初始化面板顯示狀態
+    function initializePanelState() {
+      const panel = document.getElementById('controlPanel');
+      const mobileHint = document.getElementById('mobileHint');
+      
+      if (isMobileDevice()) {
+        // 手機版預設隱藏
+        panel.classList.remove('show-mobile');
+        // 確保不使用桌面版的hidden class
+        panel.classList.remove('hidden');
+        // 顯示手機版提示
+        mobileHint.style.display = 'block';
+      } else {
+        // 桌面版預設顯示
+        panel.classList.remove('hidden');
+        panel.classList.remove('show-mobile');
+        // 隱藏手機版提示
+        mobileHint.style.display = 'none';
+      }
+    }
+    
+    // 監聽視窗大小變化
+    function handleResize() {
+      const panel = document.getElementById('controlPanel');
+      const mobileHint = document.getElementById('mobileHint');
+      
+      if (isMobileDevice()) {
+        // 切換到手機版
+        panel.classList.remove('hidden');
+        mobileHint.style.display = 'block';
+        if (!panel.classList.contains('show-mobile')) {
+          // 如果面板是開啟狀態，保持開啟
+          const wasVisible = !panel.classList.contains('hidden');
+          if (wasVisible) {
+            panel.classList.add('show-mobile');
+          }
+        }
+      } else {
+        // 切換到桌面版
+        panel.classList.remove('show-mobile');
+        mobileHint.style.display = 'none';
+        // 桌面版預設顯示
+        panel.classList.remove('hidden');
+      }
     }
     
     // 根據分層篩選特徵
@@ -842,7 +1071,7 @@
         mapZoom = 15; // 增加預設縮放級別，讓用戶能看得更清楚
         
         // 篩選附近的點位
-        featuresToShow = filterFeaturesByDistance(
+          featuresToShow = filterFeaturesByDistance(
           featuresToShow, 
           targetCoords.lat, 
           targetCoords.lng, 
@@ -850,23 +1079,23 @@
         );
         
         // 添加中心標記
-        const redIcon = L.divIcon({
-          className: 'custom-red-marker',
+          const redIcon = L.divIcon({
+            className: 'custom-red-marker',
           html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
-          iconSize: [16, 16],
-          iconAnchor: [8, 8]
-        });
-        
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+          });
+          
         centerMarker = L.marker([targetCoords.lat, targetCoords.lng], { icon: redIcon })
-          .addTo(map)
+           .addTo(map)
           .bindPopup(`<strong>🎯 搜尋中心</strong><br/>緯度: ${targetCoords.lat}<br/>經度: ${targetCoords.lng}<br/>搜尋半徑: ${radiusKm} 公里`);
-      }
+        }
       
       // 設定地圖視野
       map.setView(mapCenter, mapZoom);
-      
-      // 顯示篩選後的點位
-      L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
+
+        // 顯示篩選後的點位
+        L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
         pointToLayer: (feature, latlng) => {
           const props = feature.properties || {};
           const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
@@ -884,13 +1113,13 @@
           currentMarkers.addLayer(marker);
           return marker;
         },
-        onEachFeature: (feature, layer) => {
-          const props = feature.properties || {};
+          onEachFeature: (feature, layer) => {
+            const props = feature.properties || {};
           const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
           const iconData = getLayerIcon(layerName);
           
-          let popupContent = '';
-          let referenceLinks = [];
+            let popupContent = '';
+            let referenceLinks = [];
           let mainTitle = props['名稱'] || props['name'] || '軍事設施';
 
           // 構建popup標題
@@ -910,15 +1139,15 @@
           `;
 
           // 處理其他屬性
-          Object.entries(props).forEach(([key, value]) => {
-            if (key === '說明') {
-              const urlRegex = /(https?:\/\/[^\s]+)/g;
-              const matchedURLs = value.match(urlRegex);
-              if (matchedURLs) {
-                referenceLinks.push(...matchedURLs);
-                value = value.replace(urlRegex, '').trim();
+            Object.entries(props).forEach(([key, value]) => {
+              if (key === '說明') {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const matchedURLs = value.match(urlRegex);
+                if (matchedURLs) {
+                  referenceLinks.push(...matchedURLs);
+                  value = value.replace(urlRegex, '').trim();
+                }
               }
-            }
             
             // 跳過已處理的欄位
             if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
@@ -935,7 +1164,7 @@
 
           // 如果有目標座標，顯示距離資訊
           if (targetCoords) {
-            const coords = feature.geometry.coordinates;
+              const coords = feature.geometry.coordinates;
             const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
             const isZeroDistance = distance < 0.1;
             
@@ -965,25 +1194,37 @@
           }
 
           // 添加參考連結
-          if (referenceLinks.length) {
+            if (referenceLinks.length) {
             popupContent += `
               <div class="popup-links">
                 <div class="popup-links-title">相關連結</div>
             `;
-            referenceLinks.forEach(url => {
-              popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
-            });
+              referenceLinks.forEach(url => {
+                popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
+              });
             popupContent += '</div>';
           }
 
-          layer.bindPopup(popupContent, {
-            maxWidth: 350,
-            minWidth: 280,
+          // 根據設備類型調整popup設定
+          const popupOptions = {
             className: 'custom-popup'
-          });
-        }
-      }).addTo(map);
-      
+          };
+          
+          if (isMobileDevice()) {
+            popupOptions.maxWidth = Math.min(350, window.innerWidth - 40);
+            popupOptions.minWidth = Math.min(260, window.innerWidth - 60);
+            popupOptions.autoPan = true;
+            popupOptions.autoPanPadding = [10, 10];
+            popupOptions.closeButton = true;
+          } else {
+            popupOptions.maxWidth = 350;
+            popupOptions.minWidth = 280;
+          }
+          
+          layer.bindPopup(popupContent, popupOptions);
+          }
+        }).addTo(map);
+
       // 將標記群組添加到地圖
       currentMarkers.addTo(map);
       
