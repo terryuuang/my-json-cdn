@@ -1167,6 +1167,21 @@
       return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
     
+    // 清理文字中的HTML實體字符和多餘空格
+    function cleanText(text) {
+      if (!text) return '';
+      
+      return text.toString()
+        .replace(/&nbsp;/g, ' ')           // 替換 &nbsp; 為普通空格
+        .replace(/&amp;/g, '&')           // 替換 &amp; 為 &
+        .replace(/&lt;/g, '<')            // 替換 &lt; 為 <
+        .replace(/&gt;/g, '>')            // 替換 &gt; 為 >
+        .replace(/&quot;/g, '"')          // 替換 &quot; 為 "
+        .replace(/&#39;/g, "'")           // 替換 &#39; 為 '
+        .replace(/\s+/g, ' ')             // 多個空格替換為單個空格
+        .trim();                          // 移除首尾空格
+    }
+    
     // 隱藏/顯示控制面板
     function togglePanel() {
       const panel = document.getElementById('controlPanel');
@@ -1398,13 +1413,14 @@
           
             let popupContent = '';
             let referenceLinks = [];
-          let mainTitle = props['名稱'] || props['name'] || '軍事設施';
+          let mainTitle = cleanText(props['名稱'] || props['name'] || '軍事設施');
 
           // 構建popup標題
           popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${mainTitle}</h3></div>`;
 
           // 顯示分層資訊
-          popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${layerName}</span></div>`;
+          const cleanLayerName = cleanText(layerName);
+          popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${cleanLayerName}</span></div>`;
 
           // 儲存裝備文本供後續處理
           let equipmentText = '';
@@ -1419,6 +1435,9 @@
                   value = value.replace(urlRegex, '').trim();
                 }
                 
+                // 清理說明文字
+                value = cleanText(value);
+                
                 // 儲存包含裝備資訊的文本
                 if (value.includes('裝備')) {
                   equipmentText = value;
@@ -1429,7 +1448,10 @@
             if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
             
             if (value && value.toString().trim()) {
-              popupContent += `<div class="popup-field"><strong>${key}:</strong><span class="popup-field-value">${value}</span></div>`;
+              const cleanValue = cleanText(value);
+              if (cleanValue) {
+                popupContent += `<div class="popup-field"><strong>${key}:</strong><span class="popup-field-value">${cleanValue}</span></div>`;
+              }
             }
           });
 
