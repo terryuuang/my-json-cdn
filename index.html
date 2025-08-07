@@ -7,7 +7,90 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
+    
+    /* 優化 Popup 樣式 */
+    .leaflet-popup-content-wrapper {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      backdrop-filter: blur(10px);
+    }
+    
+    .leaflet-popup-content {
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 16px 20px;
+      color: #1e293b;
+    }
+    
+    .leaflet-popup-tip {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .popup-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .popup-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    
+    .popup-title {
+      font-weight: 600;
+      font-size: 16px;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    .popup-field {
+      margin-bottom: 8px;
+      padding: 6px 0;
+    }
+    
+    .popup-field strong {
+      color: #475569;
+      font-weight: 600;
+      display: inline-block;
+      min-width: 80px;
+    }
+    
+    .popup-field-value {
+      color: #1e293b;
+      margin-left: 8px;
+    }
+    
+    .popup-distance {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .popup-links {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .popup-links-title {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     .link-btn {
       display: inline-block;
       margin-bottom: 4px;
@@ -76,6 +159,28 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
     
+    /* 優化下拉選單樣式 */
+    select.input-field {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    
+    select.input-field:hover {
+      border-color: #3b82f6;
+    }
+    
+    /* 自定義軍事標記樣式 */
+    .custom-military-marker {
+      background: none !important;
+      border: none !important;
+    }
+    
     .btn {
       padding: 8px 16px;
       border: none;
@@ -89,22 +194,42 @@
     }
     
     .btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
     }
     
     .btn-primary:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
     
     .btn-secondary {
-      background: #e5e7eb;
-      color: #374151;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .btn-secondary:hover {
-      background: #d1d5db;
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
     }
     
     .info-panel {
@@ -205,6 +330,23 @@
       <input type="number" id="radiusInput" class="input-field" value="50" min="1" max="500" step="5">
     </div>
     
+    <div class="input-group">
+      <label class="input-label">分層篩選</label>
+      <select id="layerFilter" class="input-field" onchange="filterByLayer()">
+        <option value="">顯示全部分層</option>
+        <option value="中國軍工及航天產業">🔧 中國軍工及航天產業</option>
+        <option value="武裝警察、海外軍事設施及其他分類">🛡️ 武裝警察、海外軍事設施</option>
+        <option value="解放軍海軍、海軍陸戰隊基地及設施">⚓ 解放軍海軍、海軍陸戰隊</option>
+        <option value="解放軍火箭軍">🚀 解放軍火箭軍</option>
+        <option value="解放軍空軍、海軍航空兵基地及設施">✈️ 解放軍空軍、海軍航空兵</option>
+        <option value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊">🛰️ 軍事航天、網路空間部隊</option>
+        <option value="解放軍軍事院校、教育單位">🎓 解放軍軍事院校、教育</option>
+        <option value="解放軍重要訓場/特殊設施">🎯 解放軍重要訓場/特殊設施</option>
+        <option value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)">🪖 解放軍陸軍、聯勤保障</option>
+        <option value="黨和國家重要政經軍事機關">🏛️ 黨和國家重要政經軍事機關</option>
+      </select>
+    </div>
+    
     <button class="btn btn-primary" onclick="searchLocation()">🔍 搜尋位置</button>
     <button class="btn btn-secondary" onclick="showAllLocations()">🌍 顯示全部</button>
     <button class="btn btn-secondary" onclick="copyUrl()">📋 複製連結</button>
@@ -280,6 +422,125 @@
       }).addTo(map);
     }
 
+    // SVG圖標系統
+    const layerIcons = {
+      '中國軍工及航天產業': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#4338ca" stroke="#312e81" stroke-width="2"/>
+          <path d="M12 6v12M8 8l8 8M8 16l8-8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="2" fill="white"/>
+        </svg>`,
+        color: '#4338ca'
+      },
+      '武裝警察、海外軍事設施及其他分類': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="6" width="18" height="12" rx="2" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+          <path d="M9 10h6M9 14h6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="7" cy="12" r="1" fill="white"/>
+          <circle cx="17" cy="12" r="1" fill="white"/>
+        </svg>`,
+        color: '#dc2626'
+      },
+      '解放軍海軍、海軍陸戰隊基地及設施': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#0369a1" stroke="#075985" stroke-width="2"/>
+          <path d="M6 12h12M12 6v12" stroke="white" stroke-width="2"/>
+          <path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="1" opacity="0.7"/>
+          <circle cx="12" cy="12" r="3" fill="none" stroke="white" stroke-width="1"/>
+        </svg>`,
+        color: '#0369a1'
+      },
+      '解放軍火箭軍': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#b91c1c" stroke="#7f1d1d" stroke-width="2"/>
+          <path d="M12 4l2 4h-4l2-4zM12 4v16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 10l8 0M8 14l8 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M10 18l4 0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        color: '#b91c1c'
+      },
+      '解放軍空軍、海軍航空兵基地及設施': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#059669" stroke="#047857" stroke-width="2"/>
+          <path d="M12 6l4 8h-8l4-8z" fill="white"/>
+          <path d="M6 12h4M14 12h4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="16" r="1" fill="white"/>
+        </svg>`,
+        color: '#059669'
+      },
+      '解放軍軍事航天部隊、網路空間部隊、信息支援部隊': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
+          <circle cx="12" cy="8" r="2" fill="white"/>
+          <path d="M12 10v4M10 14h4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 16l8-8M16 16l-8-8" stroke="white" stroke-width="1" opacity="0.7"/>
+        </svg>`,
+        color: '#7c3aed'
+      },
+      '解放軍軍事院校、教育單位': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#ea580c" stroke="#c2410c" stroke-width="2"/>
+          <rect x="8" y="8" width="8" height="6" rx="1" fill="white"/>
+          <path d="M10 11h4M10 13h4" stroke="#ea580c" stroke-width="1" stroke-linecap="round"/>
+          <path d="M12 8V6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        color: '#ea580c'
+      },
+      '解放軍重要訓場/特殊設施': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#0d9488" stroke="#0f766e" stroke-width="2"/>
+          <path d="M8 8h8l-2 2H10l-2-2zM8 16h8l-2-2H10l-2 2z" fill="white"/>
+          <path d="M12 6v12" stroke="white" stroke-width="2"/>
+          <circle cx="12" cy="12" r="1.5" fill="white"/>
+        </svg>`,
+        color: '#0d9488'
+      },
+      '解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#16a34a" stroke="#15803d" stroke-width="2"/>
+          <rect x="9" y="9" width="6" height="6" rx="1" fill="white"/>
+          <path d="M11 11h2M11 13h2" stroke="#16a34a" stroke-width="1"/>
+          <path d="M6 12h3M15 12h3M12 6v3M12 15v3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>`,
+        color: '#16a34a'
+      },
+      '黨和國家重要政經軍事機關': {
+        svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#be123c" stroke="#9f1239" stroke-width="2"/>
+          <path d="M8 10l4-2 4 2v6l-4 2-4-2v-6z" fill="white"/>
+          <path d="M12 8v8M8 10l4 4 4-4" stroke="#be123c" stroke-width="1"/>
+          <circle cx="12" cy="6" r="1" fill="white"/>
+        </svg>`,
+        color: '#be123c'
+      }
+    };
+
+    // 根據layer獲取圖標
+    function getLayerIcon(layerName) {
+      return layerIcons[layerName] || layerIcons['武裝警察、海外軍事設施及其他分類'];
+    }
+
+    // 創建自定義標記圖標
+    function createCustomIcon(layerName) {
+      const iconData = getLayerIcon(layerName);
+      return L.divIcon({
+        className: 'custom-military-marker',
+        html: `
+          <div style="
+            width: 32px; 
+            height: 32px; 
+            position: relative;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+          ">
+            ${iconData.svg}
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+    }
+
     // 取得標籤名稱
     function getLabel(url) {
       url = url.toLowerCase();
@@ -305,13 +566,15 @@
         const urlCoords = parseUrlCoordinates();
         const urlParams = new URLSearchParams(window.location.search);
         const radius = parseFloat(urlParams.get('radius')) || 50;
+        const selectedLayer = urlParams.get('layer') || '';
         
         // 如果有URL參數，填入控制面板
         if (urlCoords) {
           document.getElementById('latInput').value = urlCoords.lat;
           document.getElementById('lngInput').value = urlCoords.lng;
-          document.getElementById('radiusInput').value = radius;
         }
+        document.getElementById('radiusInput').value = radius;
+        document.getElementById('layerFilter').value = selectedLayer;
         
         // 載入地圖資料
         const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
@@ -325,7 +588,7 @@
         allFeatures = data.features;
         
         // 根據URL參數渲染地圖
-        renderMap(urlCoords, radius);
+        renderMap(urlCoords, radius, selectedLayer);
         
         hideLoading();
         
@@ -380,11 +643,44 @@
       panel.classList.toggle('hidden');
     }
     
+    // 根據分層篩選特徵
+    function filterFeaturesByLayer(features, selectedLayer) {
+      if (!selectedLayer) return features;
+      
+      return features.filter(feature => {
+        const props = feature.properties || {};
+        const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+        return layerName === selectedLayer;
+      });
+    }
+    
+    // 分層篩選功能
+    function filterByLayer() {
+      const selectedLayer = document.getElementById('layerFilter').value;
+      const urlCoords = parseUrlCoordinates();
+      const urlParams = new URLSearchParams(window.location.search);
+      const radius = parseFloat(urlParams.get('radius')) || 50;
+      
+      // 更新URL參數
+      if (selectedLayer) {
+        urlParams.set('layer', selectedLayer);
+      } else {
+        urlParams.delete('layer');
+      }
+      
+      const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // 重新渲染地圖
+      renderMap(urlCoords, radius, selectedLayer);
+    }
+    
     // 搜尋位置功能
     function searchLocation() {
       const lat = parseFloat(document.getElementById('latInput').value);
       const lng = parseFloat(document.getElementById('lngInput').value);
       const radius = parseFloat(document.getElementById('radiusInput').value) || 50;
+      const selectedLayer = document.getElementById('layerFilter').value;
       
       if (isNaN(lat) || isNaN(lng)) {
         alert('請輸入有效的經緯度數值！');
@@ -392,11 +688,19 @@
       }
       
       // 更新URL
-      const newUrl = `${window.location.origin}${window.location.pathname}?lat=${lat}&lng=${lng}&radius=${radius}`;
+      const urlParams = new URLSearchParams();
+      urlParams.set('lat', lat);
+      urlParams.set('lng', lng);
+      urlParams.set('radius', radius);
+      if (selectedLayer) {
+        urlParams.set('layer', selectedLayer);
+      }
+      
+      const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
       window.history.pushState({}, '', newUrl);
       
       // 重新渲染地圖
-      renderMap({ lat, lng }, radius);
+      renderMap({ lat, lng }, radius, selectedLayer);
     }
     
     // 顯示全部位置
@@ -409,6 +713,7 @@
       document.getElementById('latInput').value = '';
       document.getElementById('lngInput').value = '';
       document.getElementById('radiusInput').value = '50';
+      document.getElementById('layerFilter').value = '';
       
       // 重新渲染地圖
       renderMap(null);
@@ -438,7 +743,7 @@
     }
     
     // 渲染地圖功能
-    function renderMap(targetCoords, radiusKm = 50) {
+    function renderMap(targetCoords, radiusKm = 50, selectedLayer = null) {
       // 清除現有標記
       currentMarkers.clearLayers();
       if (centerMarker) {
@@ -450,13 +755,19 @@
       let mapCenter = [31.9424765, 120.2903877]; // 預設中心
       let mapZoom = 7;
       
+      // 先進行分層篩選
+      if (selectedLayer) {
+        featuresToShow = filterFeaturesByLayer(featuresToShow, selectedLayer);
+      }
+      
+      // 然後進行地理位置篩選
       if (targetCoords) {
         mapCenter = [targetCoords.lat, targetCoords.lng];
         mapZoom = 12;
         
         // 篩選附近的點位
         featuresToShow = filterFeaturesByDistance(
-          allFeatures, 
+          featuresToShow, 
           targetCoords.lat, 
           targetCoords.lng, 
           radiusKm
@@ -481,15 +792,39 @@
       // 顯示篩選後的點位
       L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
         pointToLayer: (feature, latlng) => {
-          const marker = L.marker(latlng);
+          const props = feature.properties || {};
+          const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+          const customIcon = createCustomIcon(layerName);
+          const marker = L.marker(latlng, { icon: customIcon });
           currentMarkers.addLayer(marker);
           return marker;
         },
         onEachFeature: (feature, layer) => {
           const props = feature.properties || {};
+          const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+          const iconData = getLayerIcon(layerName);
+          
           let popupContent = '';
           let referenceLinks = [];
+          let mainTitle = props['名稱'] || props['name'] || '軍事設施';
 
+          // 構建popup標題
+          popupContent += `
+            <div class="popup-header">
+              <div class="popup-icon">${iconData.svg}</div>
+              <h3 class="popup-title">${mainTitle}</h3>
+            </div>
+          `;
+
+          // 顯示分層資訊
+          popupContent += `
+            <div class="popup-field">
+              <strong>分層類別:</strong>
+              <span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${layerName}</span>
+            </div>
+          `;
+
+          // 處理其他屬性
           Object.entries(props).forEach(([key, value]) => {
             if (key === '說明') {
               const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -499,24 +834,48 @@
                 value = value.replace(urlRegex, '').trim();
               }
             }
-            popupContent += `<div><strong>${key}</strong>: ${value}</div>`;
+            
+            // 跳過已處理的欄位
+            if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
+            
+            if (value && value.toString().trim()) {
+              popupContent += `
+                <div class="popup-field">
+                  <strong>${key}:</strong>
+                  <span class="popup-field-value">${value}</span>
+                </div>
+              `;
+            }
           });
 
           // 如果有目標座標，顯示距離資訊
           if (targetCoords) {
             const coords = feature.geometry.coordinates;
             const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
-            popupContent += `<div><strong>📍 距離搜尋中心</strong>: ${distance.toFixed(2)} 公里</div>`;
+            popupContent += `
+              <div class="popup-distance">
+                <strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里
+              </div>
+            `;
           }
 
+          // 添加參考連結
           if (referenceLinks.length) {
-            popupContent += '<hr/>';
+            popupContent += `
+              <div class="popup-links">
+                <div class="popup-links-title">相關連結</div>
+            `;
             referenceLinks.forEach(url => {
               popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
             });
+            popupContent += '</div>';
           }
 
-          layer.bindPopup(popupContent);
+          layer.bindPopup(popupContent, {
+            maxWidth: 350,
+            minWidth: 280,
+            className: 'custom-popup'
+          });
         }
       }).addTo(map);
       
@@ -524,9 +883,16 @@
       currentMarkers.addTo(map);
       
       // 更新資訊面板
-      const message = targetCoords 
-        ? `找到 ${featuresToShow.length} 個點位 (${radiusKm}公里內)`
-        : `顯示全部 ${featuresToShow.length} 個點位`;
+      let message = `顯示 ${featuresToShow.length} 個點位`;
+      
+      if (selectedLayer) {
+        message += ` (${selectedLayer})`;
+      }
+      
+      if (targetCoords) {
+        message += ` (${radiusKm}公里內)`;
+      }
+      
       updateInfoPanel(message);
     }
 
