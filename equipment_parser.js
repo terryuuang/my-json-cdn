@@ -318,9 +318,15 @@ class EquipmentParser {
 
     let html = '<div class="equipment-info"><h4>裝備資訊</h4>';
     
-    // 手機版添加滾動提示
-    if (this.isMobileDevice() && equipmentData.length > 1) {
-      html += '<small style="color: #888; font-size: 10px; display: block; margin-bottom: 8px;">可上下滾動查看更多內容</small>';
+    // 添加滾動提示
+    if (equipmentData.length > 1) {
+      const isMobile = this.isMobileDevice();
+      const scrollHint = isMobile ? 
+        '可上下滾動查看更多內容' : 
+        '可使用滾輪或拖曳滾動條查看更多內容';
+      const fontSize = isMobile ? '10px' : '11px';
+      
+      html += `<small style="color: #888; font-size: ${fontSize}; display: block; margin-bottom: 8px;">${scrollHint}</small>`;
     }
     
     equipmentData.forEach(equipment => {

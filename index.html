@@ -23,6 +23,43 @@
       line-height: 1.5;
       margin: 16px 20px;
       color: #1e293b;
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    /* 桌面版滾動條樣式 */
+    .leaflet-popup-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .leaflet-popup-content::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 3px;
+    }
+    
+    .leaflet-popup-content::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+      transition: background 0.2s ease;
+    }
+    
+    .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* 桌面版滾動提示 */
+    .popup-scroll-hint {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      color: #64748b;
+      font-size: 10px;
+      text-align: center;
+      padding: 4px 8px;
+      margin: -16px -20px 8px -20px;
+      border-bottom: 1px solid #e2e8f0;
+      z-index: 10;
     }
     
     .leaflet-popup-tip {
@@ -476,7 +513,7 @@
         overflow-x: hidden !important;
       }
       
-      /* 手機版滾動條樣式 */
+      /* 手機版覆蓋桌面版滾動條樣式 */
       .leaflet-popup-content::-webkit-scrollbar {
         width: 4px;
       }
@@ -493,6 +530,13 @@
       
       .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
         background: #555;
+      }
+      
+      /* 手機版滾動提示樣式 */
+      .popup-scroll-hint {
+        margin: -12px -16px 8px -16px !important;
+        font-size: 9px !important;
+        padding: 3px 6px !important;
       }
       
       /* 確保手機版關閉按鈕可見且可點擊 */
@@ -1499,6 +1543,28 @@
           
           // 綁定popup
           const popup = layer.bindPopup(popupContent, popupOptions);
+          
+          // 添加popup打開後的滾動提示檢查
+          layer.on('popupopen', function(e) {
+            setTimeout(() => {
+              const popupContentElement = e.popup.getElement().querySelector('.leaflet-popup-content');
+              if (popupContentElement) {
+                const contentHeight = popupContentElement.scrollHeight;
+                const visibleHeight = popupContentElement.clientHeight;
+                
+                // 如果內容超過可見區域，且沒有滾動提示，則添加
+                if (contentHeight > visibleHeight && !popupContentElement.querySelector('.popup-scroll-hint')) {
+                  const scrollHint = document.createElement('div');
+                  scrollHint.className = 'popup-scroll-hint';
+                  scrollHint.innerHTML = isMobileDevice() ? 
+                    '📱 向上滑動查看更多內容' : 
+                    '🖱️ 使用滾輪或拖曳滾動條查看更多內容';
+                  
+                  popupContentElement.insertBefore(scrollHint, popupContentElement.firstChild);
+                }
+              }
+            }, 100);
+          });
           
           // 異步處理裝備資訊
           if (equipmentText && window.equipmentParser) {
