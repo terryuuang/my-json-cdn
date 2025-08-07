@@ -92,6 +92,86 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+    
+    /* 裝備資訊樣式 */
+    .equipment-info {
+      margin: 15px 0;
+      padding: 12px;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .equipment-info h4 {
+      margin: 0 0 12px 0;
+      color: #1e293b;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .equipment-info h4:before {
+      content: "🛡️";
+      margin-right: 6px;
+    }
+
+    .equipment-item {
+      margin-bottom: 12px;
+      padding: 10px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .equipment-item:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .equipment-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .equipment-item h5 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .equipment-item h5 a {
+      color: #3b82f6;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .equipment-item h5 a:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+
+    .equipment-item p {
+      margin: 6px 0;
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .equipment-images img {
+      max-width: 180px;
+      height: auto;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    .equipment-images img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
     .link-btn {
       display: inline-block;
       margin-bottom: 4px;
@@ -420,6 +500,42 @@
         font-size: 12px;
       }
       
+      /* 手機版裝備資訊優化 */
+      .equipment-info {
+        margin: 10px 0 !important;
+        padding: 8px !important;
+      }
+      
+      .equipment-info h4 {
+        font-size: 14px !important;
+        margin: 0 0 8px 0 !important;
+      }
+      
+      .equipment-item {
+        margin-bottom: 8px !important;
+        padding: 8px !important;
+      }
+      
+      .equipment-item h5 {
+        font-size: 13px !important;
+        margin: 0 0 4px 0 !important;
+      }
+      
+      .equipment-item p {
+        font-size: 11px !important;
+        margin: 4px 0 !important;
+      }
+      
+      .equipment-images {
+        text-align: center;
+      }
+      
+      .equipment-images img {
+        max-width: 150px !important;
+        margin: 2px;
+      }
+      }
+      
       .link-btn {
         padding: 3px 6px;
         font-size: 11px;
@@ -471,11 +587,10 @@
         font-size: 11px;
         margin-top: 8px;
       }
-    }
-    
-    /* 極小螢幕優化 */
-    @media (max-width: 480px) {
-      .leaflet-popup-content-wrapper {
+      
+      /* 極小螢幕優化 */
+      @media (max-width: 480px) {
+        .leaflet-popup-content-wrapper {
         max-width: calc(100vw - 20px) !important;
         min-width: 260px;
       }
@@ -555,6 +670,115 @@
   <button class="toggle-panel" onclick="togglePanel()">⚙️</button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="equipment_parser.js"></script>
+  <script>
+    // 異步處理裝備資訊的函數
+    async function processEquipmentAsync(layer, equipmentText) {
+      let loadingShown = false;
+      
+      // 設置載入狀態顯示的定時器
+      const loadingTimer = setTimeout(() => {
+        layer.on('popupopen', function(e) {
+          const popup = e.popup;
+          const popupContent = popup.getContent();
+          
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = popupContent;
+          
+          if (!tempDiv.querySelector('.equipment-info')) {
+            const loadingHTML = window.equipmentParser.generateEquipmentHTML([], true);
+            const linksDiv = tempDiv.querySelector('.popup-links');
+            
+            if (linksDiv) {
+              linksDiv.insertAdjacentHTML('beforebegin', loadingHTML);
+            } else {
+              tempDiv.insertAdjacentHTML('beforeend', loadingHTML);
+            }
+            
+            popup.setContent(tempDiv.innerHTML);
+            loadingShown = true;
+          }
+        });
+      }, 1000); // 1秒後顯示載入狀態
+      
+      try {
+        const equipmentData = await window.equipmentParser.processEquipmentText(equipmentText);
+        clearTimeout(loadingTimer);
+        
+        if (equipmentData.length > 0) {
+          const equipmentHTML = window.equipmentParser.generateEquipmentHTML(equipmentData);
+          
+          // 更新popup內容
+          layer.on('popupopen', function(e) {
+            const popup = e.popup;
+            const popupContent = popup.getContent();
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = popupContent;
+            
+            // 移除載入狀態或檢查是否已經添加過裝備資訊
+            const existingEquipment = tempDiv.querySelector('.equipment-info');
+            if (existingEquipment) {
+              existingEquipment.remove();
+            }
+            
+            const linksDiv = tempDiv.querySelector('.popup-links');
+            
+            if (linksDiv) {
+              linksDiv.insertAdjacentHTML('beforebegin', equipmentHTML);
+            } else {
+              tempDiv.insertAdjacentHTML('beforeend', equipmentHTML);
+            }
+            
+            popup.setContent(tempDiv.innerHTML);
+          });
+          
+          // 如果popup已經開啟，立即更新
+          if (layer.getPopup() && layer.getPopup().isOpen()) {
+            const popup = layer.getPopup();
+            const popupContent = popup.getContent();
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = popupContent;
+            
+            const existingEquipment = tempDiv.querySelector('.equipment-info');
+            if (existingEquipment) {
+              existingEquipment.remove();
+            }
+            
+            const linksDiv = tempDiv.querySelector('.popup-links');
+            
+            if (linksDiv) {
+              linksDiv.insertAdjacentHTML('beforebegin', equipmentHTML);
+            } else {
+              tempDiv.insertAdjacentHTML('beforeend', equipmentHTML);
+            }
+            
+            popup.setContent(tempDiv.innerHTML);
+          }
+        } else if (loadingShown) {
+          // 如果沒有找到裝備資訊且顯示了載入狀態，則移除載入狀態
+          layer.on('popupopen', function(e) {
+            const popup = e.popup;
+            const popupContent = popup.getContent();
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = popupContent;
+            
+            const existingEquipment = tempDiv.querySelector('.equipment-info');
+            if (existingEquipment) {
+              existingEquipment.remove();
+              popup.setContent(tempDiv.innerHTML);
+            }
+          });
+        }
+      } catch (error) {
+        clearTimeout(loadingTimer);
+        console.error('處理裝備資訊時發生錯誤:', error);
+      }
+    }
+    
+  </script>
   <script>
     // 解析URL參數 - 獲取經緯度
     function parseUrlCoordinates() {
@@ -1139,6 +1363,9 @@
             </div>
           `;
 
+          // 儲存裝備文本供後續處理
+          let equipmentText = '';
+          
           // 處理其他屬性
             Object.entries(props).forEach(([key, value]) => {
               if (key === '說明') {
@@ -1147,6 +1374,11 @@
                 if (matchedURLs) {
                   referenceLinks.push(...matchedURLs);
                   value = value.replace(urlRegex, '').trim();
+                }
+                
+                // 儲存包含裝備資訊的文本
+                if (value.includes('裝備')) {
+                  equipmentText = value;
                 }
               }
             
@@ -1222,7 +1454,13 @@
             popupOptions.minWidth = 280;
           }
           
-          layer.bindPopup(popupContent, popupOptions);
+          // 綁定popup
+          const popup = layer.bindPopup(popupContent, popupOptions);
+          
+          // 異步處理裝備資訊
+          if (equipmentText && window.equipmentParser) {
+            processEquipmentAsync(layer, equipmentText);
+          }
           }
         }).addTo(map);
 
