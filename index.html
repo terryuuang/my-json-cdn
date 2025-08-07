@@ -403,7 +403,7 @@
     .toggle-panel {
       position: absolute;
       top: 10px;
-      right: 10px;
+      left: 10px;
       background: rgba(255, 255, 255, 0.95);
       border: none;
       padding: 10px;
@@ -441,7 +441,7 @@
       
       .toggle-panel {
         top: 10px;
-        right: 10px;
+        left: 10px;
         font-size: 20px;
         padding: 12px;
         background: rgba(255, 255, 255, 0.95);
@@ -647,7 +647,7 @@
       }
       
       .toggle-panel {
-        right: 5px;
+        left: 5px;
         padding: 10px;
         font-size: 18px;
       }
@@ -1401,20 +1401,10 @@
           let mainTitle = props['名稱'] || props['name'] || '軍事設施';
 
           // 構建popup標題
-          popupContent += `
-            <div class="popup-header">
-              <div class="popup-icon">${iconData.svg}</div>
-              <h3 class="popup-title">${mainTitle}</h3>
-            </div>
-          `;
+          popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${mainTitle}</h3></div>`;
 
           // 顯示分層資訊
-          popupContent += `
-            <div class="popup-field">
-              <strong>分層類別:</strong>
-              <span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${layerName}</span>
-            </div>
-          `;
+          popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${layerName}</span></div>`;
 
           // 儲存裝備文本供後續處理
           let equipmentText = '';
@@ -1439,12 +1429,7 @@
             if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
             
             if (value && value.toString().trim()) {
-              popupContent += `
-                <div class="popup-field">
-                  <strong>${key}:</strong>
-                  <span class="popup-field-value">${value}</span>
-                </div>
-              `;
+              popupContent += `<div class="popup-field"><strong>${key}:</strong><span class="popup-field-value">${value}</span></div>`;
             }
           });
 
@@ -1455,36 +1440,15 @@
             const isZeroDistance = distance < 0.1;
             
             if (isZeroDistance) {
-              popupContent += `
-                <div class="popup-distance" style="
-                  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-                  border-left: 4px solid #ef4444;
-                  border: 2px solid #ef4444;
-                  animation: subtle-pulse 2s infinite;
-                ">
-                  <strong>🎯 就在搜尋中心!</strong> 
-                  <span style="color: #ef4444; font-weight: 700;">
-                    ${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}
-                  </span>
-                  <br/>
-                  <small style="color: #dc2626;">這個設施就在您指定的位置附近</small>
-                </div>
-              `;
+              popupContent += `<div class="popup-distance" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #ef4444; border: 2px solid #ef4444; animation: subtle-pulse 2s infinite;"><strong>🎯 就在搜尋中心!</strong> <span style="color: #ef4444; font-weight: 700;">${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}</span><br/><small style="color: #dc2626;">這個設施就在您指定的位置附近</small></div>`;
             } else {
-              popupContent += `
-                <div class="popup-distance">
-                  <strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里
-                </div>
-              `;
+              popupContent += `<div class="popup-distance"><strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里</div>`;
             }
           }
 
           // 添加參考連結
             if (referenceLinks.length) {
-            popupContent += `
-              <div class="popup-links">
-                <div class="popup-links-title">相關連結</div>
-            `;
+            popupContent += `<div class="popup-links"><div class="popup-links-title">相關連結</div>`;
               referenceLinks.forEach(url => {
                 popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a>`;
               });
