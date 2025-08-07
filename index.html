@@ -840,7 +840,7 @@
         minZoom: 2,
         tap: true, // 手機版點擊支援
         tapTolerance: 15 // 增加點擊容差
-      }).setView([31.9424765, 120.2903877], 7);
+      }).setView([25.5100, 119.7910], 7);
       
       // 根據設備類型調整縮放控制器位置
       if (isMobileDevice()) {
@@ -1038,13 +1038,19 @@
         // 解析URL參數
         const urlCoords = parseUrlCoordinates();
         const urlParams = new URLSearchParams(window.location.search);
-        const radius = parseFloat(urlParams.get('radius')) || 50;
+        
+        // 如果有URL座標參數，使用50KM，否則使用100KM
+        const radius = parseFloat(urlParams.get('radius')) || (urlCoords ? 50 : 100);
         const selectedLayer = urlParams.get('layer') || '';
         
-        // 如果有URL參數，填入控制面板
+        // 如果有URL參數，填入控制面板，否則使用預設位置
         if (urlCoords) {
           document.getElementById('latInput').value = urlCoords.lat;
           document.getElementById('lngInput').value = urlCoords.lng;
+        } else {
+          // 沒有URL參數時，使用預設位置並顯示100KM範圍
+          document.getElementById('latInput').value = 25.5100;
+          document.getElementById('lngInput').value = 119.7910;
         }
         document.getElementById('radiusInput').value = radius;
         document.getElementById('layerFilter').value = selectedLayer;
@@ -1060,8 +1066,9 @@
         const data = await response.json();
         allFeatures = data.features;
         
-        // 根據URL參數渲染地圖
-        renderMap(urlCoords, radius, selectedLayer);
+        // 根據URL參數渲染地圖，如果沒有URL座標，使用預設位置
+        const targetCoords = urlCoords || { lat: 25.5100, lng: 119.7910 };
+        renderMap(targetCoords, radius, selectedLayer);
         
         hideLoading();
         
@@ -1283,7 +1290,7 @@
       }
       
       let featuresToShow = allFeatures;
-      let mapCenter = [31.9424765, 120.2903877]; // 預設中心
+      let mapCenter = [25.5100, 119.7910]; // 預設中心
       let mapZoom = 7;
       
       // 先進行分層篩選

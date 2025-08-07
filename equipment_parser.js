@@ -2,7 +2,7 @@
 class EquipmentParser {
   constructor() {
     // 設計魯棒的正則表達式來匹配不同格式的裝備描述
-    this.equipmentRegex = /裝備[：:]\s*([^。\n]+)/g;
+    this.equipmentRegex = /裝備[：:]\s*([^。\n]*?)(?:\s+戰術編號|\s+https?:\/\/|\n|$)/g;
     
     // 用來分割多個裝備的正則表達式
     this.equipmentSeparatorRegex = /[、，,\/]/g;
@@ -32,8 +32,10 @@ class EquipmentParser {
       const names = equipmentText.split(this.equipmentSeparatorRegex);
       
       names.forEach(name => {
-        const cleanName = name.trim().replace(this.cleanupRegex, ' ').trim();
-        if (cleanName && cleanName.length > 0) {
+        let cleanName = name.trim().replace(this.cleanupRegex, ' ').trim();
+        // 移除尾隨的非字母數字字符（如空格、符號等）
+        cleanName = cleanName.replace(/[^\w\-\u4e00-\u9fff]+$/, '');
+        if (cleanName && cleanName.length > 1) {
           equipmentNames.add(cleanName);
         }
       });
