@@ -318,17 +318,6 @@ class EquipmentParser {
 
     let html = '<div class="equipment-info"><h4>裝備資訊</h4>';
     
-    // 添加滾動提示
-    if (equipmentData.length > 1) {
-      const isMobile = this.isMobileDevice();
-      const scrollHint = isMobile ? 
-        '可上下滾動查看更多內容' : 
-        '可使用滾輪或拖曳滾動條查看更多內容';
-      const fontSize = isMobile ? '10px' : '11px';
-      
-      html += `<small style="color: #888; font-size: ${fontSize}; display: block; margin-bottom: 8px;">${scrollHint}</small>`;
-    }
-    
     equipmentData.forEach(equipment => {
       const itemClass = equipment.fallback ? 'equipment-item equipment-fallback' : 'equipment-item';
       
