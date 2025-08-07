@@ -16,7 +16,12 @@ class EquipmentParser {
     
     // 效能限制
     this.maxEquipmentItems = 5; // 最多處理5個裝備項目
-    this.requestTimeout = 8000; // 8秒請求超時
+    this.requestTimeout = this.isMobileDevice() ? 15000 : 8000; // 手機版15秒，桌面版8秒請求超時
+  }
+
+  // 檢測是否為手機設備
+  isMobileDevice() {
+    return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
   // 從文本中抓取裝備名稱
@@ -77,8 +82,12 @@ class EquipmentParser {
     }
 
     try {
-      // 使用CORS代理服務來避免跨域問題
-      const proxyUrls = [
+      // 使用CORS代理服務來避免跨域問題，手機版優先使用更可靠的代理
+      const proxyUrls = this.isMobileDevice() ? [
+        `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
+        `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
+      ] : [
         `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
         `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
         `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
@@ -115,13 +124,34 @@ class EquipmentParser {
           }
         } catch (error) {
           console.log(`嘗試API端點失敗: ${url}`, error.message);
+          
+          // 手機版提供更詳細的錯誤信息
+          if (this.isMobileDevice()) {
+            console.log(`手機版API請求詳情:`, {
+              weaponName,
+              url,
+              error: error.name,
+              message: error.message,
+              userAgent: navigator.userAgent
+            });
+          }
+          
           continue;
         }
       }
       
       if (!data) {
         console.log(`所有API端點都失敗: ${weaponName}`);
-        return null;
+        
+        // 提供fallback資訊，至少顯示裝備名稱
+        return {
+          name: weaponName,
+          title: weaponName,
+          description: '網路連線問題，無法載入詳細資訊',
+          thumbnail: null,
+          wikipediaUrl: null,
+          fallback: true
+        };
       }
       
       // 檢查是否有錯誤狀態
@@ -206,6 +236,9 @@ class EquipmentParser {
   // 生成裝備資訊的HTML內容
   generateEquipmentHTML(equipmentData, isLoading = false) {
     if (isLoading) {
+      const isMobile = this.isMobileDevice();
+      const loadingText = isMobile ? '正在查詢資料...<br><small>手機版可能需要較長時間</small>' : '正在查詢維基百科資料...';
+      
       return `
         <div class="equipment-info">
           <h4>裝備資訊</h4>
@@ -213,10 +246,10 @@ class EquipmentParser {
             text-align: center; 
             padding: 20px; 
             color: #666;
-            font-size: 13px;
+            font-size: ${isMobile ? '12px' : '13px'};
           ">
             <div style="margin-bottom: 8px;">🔍</div>
-            正在查詢維基百科資料...
+            ${loadingText}
           </div>
         </div>
       `;
@@ -229,15 +262,17 @@ class EquipmentParser {
     let html = '<div class="equipment-info"><h4>裝備資訊</h4>';
     
     equipmentData.forEach(equipment => {
+      const itemClass = equipment.fallback ? 'equipment-item equipment-fallback' : 'equipment-item';
       html += `
-        <div class="equipment-item">
+        <div class="${itemClass}">
           <h5>
             ${equipment.wikipediaUrl ? 
               `<a href="${equipment.wikipediaUrl}" target="_blank" rel="noopener noreferrer">${equipment.title}</a>` : 
               equipment.title
             }
+            ${equipment.fallback ? ' <small style="color: #888;">(離線模式)</small>' : ''}
           </h5>
-          ${equipment.description ? `<p>${equipment.description}</p>` : ''}
+          ${equipment.description ? `<p style="${equipment.fallback ? 'color: #888; font-style: italic;' : ''}">${equipment.description}</p>` : ''}
           ${equipment.thumbnail ? this.generateImageHTML(equipment) : ''}
         </div>
       `;

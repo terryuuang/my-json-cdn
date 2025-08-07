@@ -677,7 +677,8 @@
     async function processEquipmentAsync(layer, equipmentText) {
       let loadingShown = false;
       
-      // 設置載入狀態顯示的定時器
+      // 設置載入狀態顯示的定時器（手機版延遲更短）
+      const loadingDelay = isMobileDevice() ? 500 : 1000;
       const loadingTimer = setTimeout(() => {
         layer.on('popupopen', function(e) {
           const popup = e.popup;
@@ -700,7 +701,7 @@
             loadingShown = true;
           }
         });
-      }, 1000); // 1秒後顯示載入狀態
+      }, loadingDelay); // 手機版0.5秒，桌面版1秒後顯示載入狀態
       
       try {
         const equipmentData = await window.equipmentParser.processEquipmentText(equipmentText);
