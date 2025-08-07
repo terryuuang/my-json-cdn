@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>解放軍基地地圖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+    .leaflet-popup-content { font-size: 14px; line-height: 1.4; }
+    .link-btn {
+      display: inline-block;
+      margin-bottom: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #005aee;
+      color: #fff;
+      text-decoration: none;
+    }
+    .link-btn:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map', { zoomControl: false }).setView([31.9424765, 120.2903877], 7);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
+
+    function getLabel(url) {
+      url = url.toLowerCase();
+      return url.includes('twitter.com') || url.includes('x.com') ? 'Twitter/X' :
+             url.includes('wikipedia.org') ? 'Wikipedia' :
+             url.includes('weixin.qq.com') ? '微信公眾號' :
+             url.includes('youtube.com') ? 'YouTube' :
+             url.includes('thepaper.cn') ? '澎湃新聞' :
+             url.includes('cctv.com') ? 'CCTV' :
+             url.includes('bilibili.com') ? 'Bilibili' :
+             '相關連結';
+    }
+
+    fetch(geojsonURL)
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => L.marker(latlng),
+          onEachFeature: (feature, layer) => {
+            const props = feature.properties || {};
+            let popupContent = '';
+            let referenceLinks = [];
+
+            Object.entries(props).forEach(([key, value]) => {
+              if (key === '說明') {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const matchedURLs = value.match(urlRegex);
+                if (matchedURLs) {
+                  referenceLinks.push(...matchedURLs);
+                  value = value.replace(urlRegex, '').trim();
+                }
+              }
+              popupContent += `<div><strong>${key}</strong>: ${value}</div>`;
+            });
+
+            if (referenceLinks.length) {
+              popupContent += '<hr/>';
+              referenceLinks.forEach(url => {
+                popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a><br/>`;
+              });
+            }
+
+            layer.bindPopup(popupContent);
+          }
+        }).addTo(map);
+      });
+  </script>
+</body>
+</html>
