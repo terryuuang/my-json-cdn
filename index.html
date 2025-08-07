@@ -25,7 +25,40 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const map = L.map('map', { zoomControl: false }).setView([31.9424765, 120.2903877], 7);
+    // 解析URL參數 - 獲取經緯度
+    function parseUrlCoordinates() {
+      const path = window.location.pathname;
+      const coordinatePattern = /\/(-?\d+\.?\d*),(-?\d+\.?\d*)$/;
+      const match = path.match(coordinatePattern);
+      
+      if (match) {
+        return {
+          lat: parseFloat(match[1]),
+          lng: parseFloat(match[2])
+        };
+      }
+      return null;
+    }
+
+    // 計算兩點間距離(公里) - 使用Haversine公式
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // 地球半徑(公里)
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // 設定地圖中心和縮放級別
+    const urlCoords = parseUrlCoordinates();
+    const defaultCenter = [31.9424765, 120.2903877];
+    const mapCenter = urlCoords ? [urlCoords.lat, urlCoords.lng] : defaultCenter;
+    const mapZoom = urlCoords ? 12 : 7; // 有指定座標時放大顯示
+
+    const map = L.map('map', { zoomControl: false }).setView(mapCenter, mapZoom);
     L.control.zoom({ position: 'topright' }).addTo(map);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -34,6 +67,7 @@
 
     const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
 
+    // 取得標籤名稱
     function getLabel(url) {
       url = url.toLowerCase();
       return url.includes('twitter.com') || url.includes('x.com') ? 'Twitter/X' :
@@ -46,10 +80,44 @@
              '相關連結';
     }
 
+    // 篩選功能 - 根據距離篩選點位
+    function filterFeaturesByDistance(features, centerLat, centerLng, radiusKm = 50) {
+      return features.filter(feature => {
+        const coords = feature.geometry.coordinates;
+        const distance = calculateDistance(centerLat, centerLng, coords[1], coords[0]);
+        return distance <= radiusKm;
+      });
+    }
+
     fetch(geojsonURL)
       .then(res => res.json())
       .then(data => {
-        L.geoJSON(data, {
+        let featuresToShow = data.features;
+        
+        // 如果URL有指定座標，只顯示附近50公里內的點位
+        if (urlCoords) {
+          featuresToShow = filterFeaturesByDistance(
+            data.features, 
+            urlCoords.lat, 
+            urlCoords.lng, 
+            50 // 50公里半徑
+          );
+          
+          // 在指定位置添加一個紅色標記
+          const redIcon = L.divIcon({
+            className: 'custom-red-marker',
+            html: '<div style="background-color: red; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>',
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+          });
+          
+          L.marker([urlCoords.lat, urlCoords.lng], { icon: redIcon })
+           .addTo(map)
+           .bindPopup(`<strong>指定位置</strong><br/>緯度: ${urlCoords.lat}<br/>經度: ${urlCoords.lng}`);
+        }
+
+        // 顯示篩選後的點位
+        L.geoJSON({ type: 'FeatureCollection', features: featuresToShow }, {
           pointToLayer: (feature, latlng) => L.marker(latlng),
           onEachFeature: (feature, layer) => {
             const props = feature.properties || {};
@@ -68,6 +136,13 @@
               popupContent += `<div><strong>${key}</strong>: ${value}</div>`;
             });
 
+            // 如果有URL座標，顯示距離資訊
+            if (urlCoords) {
+              const coords = feature.geometry.coordinates;
+              const distance = calculateDistance(urlCoords.lat, urlCoords.lng, coords[1], coords[0]);
+              popupContent += `<div><strong>距離指定位置</strong>: ${distance.toFixed(2)} 公里</div>`;
+            }
+
             if (referenceLinks.length) {
               popupContent += '<hr/>';
               referenceLinks.forEach(url => {
@@ -78,6 +153,12 @@
             layer.bindPopup(popupContent);
           }
         }).addTo(map);
+
+        // 在控制台顯示載入的點位數量
+        console.log(`載入了 ${featuresToShow.length} 個點位${urlCoords ? ` (距離 ${urlCoords.lat}, ${urlCoords.lng} 50公里內)` : ''}`);
+      })
+      .catch(error => {
+        console.error('載入地圖資料時發生錯誤:', error);
       });
   </script>
 </body>
