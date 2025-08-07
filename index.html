@@ -184,6 +184,50 @@
       border: none !important;
     }
     
+    /* 零距離標記動畫效果 */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes pulseRing {
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+    
+    .zero-distance-marker {
+      z-index: 1000 !important;
+    }
+    
+    /* popup中零距離標記的微妙動畫 */
+    @keyframes subtle-pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.02);
+        opacity: 0.95;
+      }
+    }
+    
     .btn {
       padding: 8px 16px;
       border: none;
@@ -417,11 +461,17 @@
 
     // 初始化地圖
     function initializeMap() {
-      map = L.map('map', { zoomControl: false }).setView([31.9424765, 120.2903877], 7);
+      map = L.map('map', { 
+        zoomControl: false,
+        maxZoom: 22, // 增加最大縮放級別，讓使用者可以看得更清楚
+        minZoom: 2
+      }).setView([31.9424765, 120.2903877], 7);
       L.control.zoom({ position: 'topright' }).addTo(map);
 
+      // 使用高解析度衛星圖層
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 22 // 支援高縮放級別
       }).addTo(map);
     }
 
@@ -524,23 +574,46 @@
     }
 
     // 創建自定義標記圖標
-    function createCustomIcon(layerName) {
+    function createCustomIcon(layerName, isZeroDistance = false) {
       const iconData = getLayerIcon(layerName);
+      const size = isZeroDistance ? 40 : 32; // 零距離標記稍大一點
+      
       return L.divIcon({
-        className: 'custom-military-marker',
+        className: `custom-military-marker ${isZeroDistance ? 'zero-distance-marker' : ''}`,
         html: `
           <div style="
-            width: 32px; 
-            height: 32px; 
+            width: ${size}px; 
+            height: ${size}px; 
             position: relative;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            ${isZeroDistance ? `
+              animation: pulseRing 2s infinite;
+              border: 3px solid #ef4444;
+              border-radius: 50%;
+              background: rgba(239, 68, 68, 0.1);
+              backdrop-filter: blur(4px);
+            ` : ''}
           ">
             ${iconData.svg}
+            ${isZeroDistance ? `
+              <div style="
+                position: absolute;
+                top: -3px;
+                right: -3px;
+                width: 12px;
+                height: 12px;
+                background: #ef4444;
+                border: 2px solid white;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+                box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+              "></div>
+            ` : ''}
           </div>
         `,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16]
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2],
+        popupAnchor: [0, -size/2]
       });
     }
 
@@ -766,7 +839,7 @@
       // 然後進行地理位置篩選
       if (targetCoords) {
         mapCenter = [targetCoords.lat, targetCoords.lng];
-        mapZoom = 12;
+        mapZoom = 15; // 增加預設縮放級別，讓用戶能看得更清楚
         
         // 篩選附近的點位
         featuresToShow = filterFeaturesByDistance(
@@ -797,7 +870,16 @@
         pointToLayer: (feature, latlng) => {
           const props = feature.properties || {};
           const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
-          const customIcon = createCustomIcon(layerName);
+          
+          // 檢查是否為零距離點位（距離搜尋中心很近）
+          let isZeroDistance = false;
+          if (targetCoords) {
+            const coords = feature.geometry.coordinates;
+            const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
+            isZeroDistance = distance < 0.1; // 小於100公尺視為零距離
+          }
+          
+          const customIcon = createCustomIcon(layerName, isZeroDistance);
           const marker = L.marker(latlng, { icon: customIcon });
           currentMarkers.addLayer(marker);
           return marker;
@@ -855,11 +937,31 @@
           if (targetCoords) {
             const coords = feature.geometry.coordinates;
             const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
-            popupContent += `
-              <div class="popup-distance">
-                <strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里
-              </div>
-            `;
+            const isZeroDistance = distance < 0.1;
+            
+            if (isZeroDistance) {
+              popupContent += `
+                <div class="popup-distance" style="
+                  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+                  border-left: 4px solid #ef4444;
+                  border: 2px solid #ef4444;
+                  animation: subtle-pulse 2s infinite;
+                ">
+                  <strong>🎯 就在搜尋中心!</strong> 
+                  <span style="color: #ef4444; font-weight: 700;">
+                    ${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}
+                  </span>
+                  <br/>
+                  <small style="color: #dc2626;">這個設施就在您指定的位置附近</small>
+                </div>
+              `;
+            } else {
+              popupContent += `
+                <div class="popup-distance">
+                  <strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里
+                </div>
+              `;
+            }
           }
 
           // 添加參考連結
