@@ -16,7 +16,7 @@ class EquipmentParser {
     
     // 效能限制
     this.maxEquipmentItems = this.isMobileDevice() ? 3 : 5; // 手機版最多3個，桌面版5個裝備項目
-    this.requestTimeout = this.isMobileDevice() ? 15000 : 8000; // 手機版15秒，桌面版8秒請求超時
+    this.requestTimeout = this.isMobileDevice() ? 8000 : 5000; // 優化：手機版8秒，桌面版5秒請求超時
     
     // 基本設備資料庫（作為fallback）
     this.basicEquipmentDB = {
@@ -253,8 +253,8 @@ class EquipmentParser {
     
     console.log('找到的裝備:', equipmentNames);
     
-    // 限制並行請求數量以避免過載
-    const batchSize = 3;
+    // 優化：限制並行請求數量，手機版更保守
+    const batchSize = this.isMobileDevice() ? 2 : 3;
     const results = [];
     
     for (let i = 0; i < equipmentNames.length; i += batchSize) {
@@ -262,16 +262,21 @@ class EquipmentParser {
       const promises = batch.map(name => this.fetchWeaponInfo(name));
       
       try {
-        const batchResults = await Promise.all(promises);
-        results.push(...batchResults);
+        const batchResults = await Promise.allSettled(promises);
+        // 只推入成功的結果
+        batchResults.forEach(result => {
+          if (result.status === 'fulfilled' && result.value) {
+            results.push(result.value);
+          }
+        });
       } catch (error) {
         console.error('批次處理裝備資訊時發生錯誤:', error);
         // 繼續處理下一批次
       }
       
-      // 在批次之間添加短暫延遲以避免API限制
+      // 優化：減少延遲時間
       if (i + batchSize < equipmentNames.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
     }
     
