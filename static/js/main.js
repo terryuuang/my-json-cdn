@@ -390,7 +390,7 @@ try {
     document.getElementById('layerFilter').value = selectedLayer;
     
     // 載入地圖資料 - 優化版本，支援進度顯示
-    const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w-20250806.geojson';
+    const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w.geojson';
     
     // 更新載入狀態顯示進度
     document.querySelector('#loading div:last-child').textContent = '載入地圖資料中...';
