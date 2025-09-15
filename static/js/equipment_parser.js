@@ -52,8 +52,25 @@ class EquipmentParser {
       
       names.forEach(name => {
         let cleanName = name.trim().replace(this.cleanupRegex, ' ').trim();
-        // 移除尾隨的非字母數字字符（如空格、符號等）
+        // 進一步清理：去除括號註解與後綴描述（避免帶入地名或補充說明）
+        // 1) 去除中文/西文括號之註記
+        cleanName = cleanName.replace(/[（(].*$/, '');
+        // 2) 若包含空白，且第一段為裝備型號（英數/連字號），只取第一段
+        if (cleanName.includes(' ')) {
+          const firstToken = cleanName.split(' ')[0];
+          if (/^[A-Za-z0-9\-]+$/.test(firstToken)) {
+            cleanName = firstToken;
+          }
+        }
+        // 3) 只保留前綴之主要型號（中文型號或英數連字號），移除尾隨文字
+        const mainMatch = cleanName.match(/^([A-Za-z][\w\-]*|[\u4e00-\u9fff]+-?[\w]*)/);
+        if (mainMatch) cleanName = mainMatch[1];
+        // 4) 最終修剪尾端非字元
         cleanName = cleanName.replace(/[^\w\-\u4e00-\u9fff]+$/, '');
+
+        // 特例修正：YJ-12B → YJ-12（Wikipedia 無子型條目）
+        cleanName = cleanName.replace(/\bYJ-12B\b/gi, 'YJ-12');
+
         if (cleanName && cleanName.length > 1) {
           equipmentNames.add(cleanName);
         }
@@ -63,7 +80,7 @@ class EquipmentParser {
     // 限制處理的裝備數量以優化效能
     const result = Array.from(equipmentNames);
     if (result.length > this.maxEquipmentItems) {
-      console.log(`裝備數量超過限制，僅處理前${this.maxEquipmentItems}個項目`);
+      // 限制處理項目數量以兼顧效能
       return result.slice(0, this.maxEquipmentItems);
     }
     
@@ -89,25 +106,35 @@ class EquipmentParser {
 
   // 查詢維基百科API獲取武器資訊
   async fetchWeaponInfo(weaponName) {
-    // 檢查快取
-    const cached = this.getCachedResult(weaponName);
+    // 名稱正規化（用於 API 查詢）：
+    // - YJ-12B → YJ-12
+    // - 紅旗-12/紅旗12 → HQ-12；紅旗-6D → HQ-6D
+    // - 鷹擊-12/鷹擊12 → YJ-12
+    const normalizeForApi = (name) => {
+      let s = name.trim();
+      s = s.replace(/\bYJ-12B\b/gi, 'YJ-12');
+      s = s.replace(/^(紅旗|红旗)[-\s]?(\d+[A-Za-z]?)/i, (_, __, code) => `HQ-${code.toUpperCase()}`);
+      s = s.replace(/^(鷹擊|鹰击)[-\s]?(\d+[A-Za-z]?)/i, (_, __, code) => `YJ-${code.toUpperCase()}`);
+      // 東風/东风 → DF-<code>
+      s = s.replace(/^(東風|东风)[-\s]?(\d+[A-Za-z]?)/i, (_, __, code) => `DF-${code.toUpperCase()}`);
+      // 長劍/长剑 → CJ-<code>
+      s = s.replace(/^(長劍|长剑)[-\s]?(\d+[A-Za-z]?)/i, (_, __, code) => `CJ-${code.toUpperCase()}`);
+      return s;
+    };
+
+    const nameForApi = normalizeForApi(weaponName);
+
+    // 檢查快取（以正規化後名稱作為 key）
+    const cached = this.getCachedResult(nameForApi);
     if (cached) {
       return cached;
     }
 
     try {
-      // 使用多個CORS代理服務，手機版優先使用更穩定的代理
-      const proxyUrls = this.isMobileDevice() ? [
-        `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
-        `https://corsproxy.io/?${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
-        `https://proxy.cors.sh/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
-        `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
-      ] : [
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`,
-        `https://api.allorigins.win/get?url=${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
-        `https://corsproxy.io/?${encodeURIComponent(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`)}`,
-        `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(weaponName)}`
+      // 僅使用可跨域的維基百科 REST API，移除不穩定/403/404 的代理服務
+      // 注意：若請求 404，視為「可訪問但無結果」，不視為端點無效
+      const proxyUrls = [
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(nameForApi)}`
       ];
       
       let response = null;
@@ -131,16 +158,14 @@ class EquipmentParser {
           
           if (response.ok) {
             data = await response.json();
-            
-            // 如果使用了代理服務，需要解析包裝的數據
-            if (url.includes('allorigins.win')) {
-              data = JSON.parse(data.contents);
-            }
-            
             break;
           }
+          // 若為 404，代表可訪問但無該條目 → 回傳 null（不作為端點失效）
+          if (response.status === 404) {
+            return null;
+          }
         } catch (error) {
-          console.log(`嘗試API端點失敗: ${url}`, error.message);
+          // 網路波動或暫時性失敗，改由後續端點或離線資料處理
           
           // 詳細的錯誤診斷信息
           const errorDetails = {
@@ -158,25 +183,17 @@ class EquipmentParser {
           };
           
           // 儲存錯誤信息供調試使用
-          if (!window.equipmentParserErrors) {
-            window.equipmentParserErrors = [];
-          }
+          if (!window.equipmentParserErrors) window.equipmentParserErrors = [];
           window.equipmentParserErrors.push(errorDetails);
-          
-          // 手機版提供更詳細的錯誤信息
-          if (this.isMobileDevice()) {
-            console.log(`手機版API請求詳情:`, errorDetails);
-          }
           
           continue;
         }
       }
       
       if (!data) {
-        console.log(`所有API端點都失敗: ${weaponName}`);
         
         // 檢查本地資料庫是否有這個裝備
-        const localData = this.basicEquipmentDB[weaponName];
+        const localData = this.basicEquipmentDB[nameForApi] || this.basicEquipmentDB[weaponName];
         const isMobile = this.isMobileDevice();
         
         if (localData) {
@@ -209,8 +226,7 @@ class EquipmentParser {
       }
       
       // 檢查是否有錯誤狀態
-      if (data.status === 404 || data.type === 'Internal error') {
-        console.log(`維基百科無此條目: ${weaponName}`);
+      if (data && (data.status === 404 || data.type === 'Internal error')) {
         return null;
       }
       
@@ -225,12 +241,12 @@ class EquipmentParser {
       };
       
       // 快取結果
-      this.setCachedResult(weaponName, result);
+      this.setCachedResult(nameForApi, result);
       
       return result;
       
     } catch (error) {
-      console.error(`查詢維基百科時發生錯誤: ${weaponName}`, error);
+      console.error(`查詢維基百科時發生錯誤: ${nameForApi}`, error);
       return null;
     }
   }
@@ -251,7 +267,7 @@ class EquipmentParser {
       return [];
     }
     
-    console.log('找到的裝備:', equipmentNames);
+    // 除錯訊息省略，保持 console 乾淨
     
     // 優化：限制並行請求數量，手機版更保守
     const batchSize = this.isMobileDevice() ? 2 : 3;
@@ -283,11 +299,7 @@ class EquipmentParser {
     // 過濾掉無效的結果
     const validResults = results.filter(result => result !== null);
     
-    if (validResults.length === 0) {
-      console.log('未找到任何有效的裝備資訊');
-    } else {
-      console.log(`成功處理 ${validResults.length}/${equipmentNames.length} 個裝備項目`);
-    }
+    // 統計訊息省略，避免干擾
     
     return validResults;
   }
@@ -310,7 +322,6 @@ class EquipmentParser {
             font-size: ${isMobile ? '11px' : '13px'};
             line-height: 1.4;
           ">
-            <div style="margin-bottom: 8px;">🔍</div>
             ${loadingText}
           </div>
         </div>
@@ -445,15 +456,15 @@ async function testEquipmentParser() {
     "裝備: M1A2 Abrams、Apache AH-64、Patriot missile system"
   ];
   
-  console.log('=== 裝備解析器測試 ===');
+  // 測試輸出省略
   
   for (const text of testTexts) {
-    console.log(`\n測試文本: "${text}"`);
+    // console.log 測試輸出已移除
     const equipmentData = await parser.processEquipmentText(text);
-    console.log('結果:', equipmentData);
+    // console.log 測試輸出已移除
     
     if (equipmentData.length > 0) {
-      console.log('生成的HTML:', parser.generateEquipmentHTML(equipmentData));
+      // console.log 測試輸出已移除
     }
   }
 }

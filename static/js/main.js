@@ -1,11 +1,17 @@
 // 異步處理裝備資訊的函數
+// 非同步處理裝備資訊（加上防重與效能優化）
 async function processEquipmentAsync(layer, equipmentText) {
+// 防止重複綁定與重複處理（提升效能，避免重複事件造成多次渲染）
+if (layer._equipmentParsingStarted) return;
+layer._equipmentParsingStarted = true;
+
 let loadingShown = false;
 
 // 設置載入狀態顯示的定時器（手機版延遲更短）
 const loadingDelay = isMobileDevice() ? 500 : 1000;
 const loadingTimer = setTimeout(() => {
-    layer.on('popupopen', function(e) {
+    // 僅在首次打開時注入載入狀態（避免重複綁定）
+    layer.once('popupopen', function(e) {
     const popup = e.popup;
     const popupContent = popup.getContent();
     
@@ -35,8 +41,8 @@ try {
     if (equipmentData.length > 0) {
     const equipmentHTML = window.equipmentParser.generateEquipmentHTML(equipmentData);
     
-    // 更新popup內容
-    layer.on('popupopen', function(e) {
+    // 更新popup內容（只於首次開啟綁定，避免重複）
+    layer.once('popupopen', function(e) {
         const popup = e.popup;
         const popupContent = popup.getContent();
         
@@ -85,7 +91,7 @@ try {
     }
     } else if (loadingShown) {
     // 如果沒有找到裝備資訊且顯示了載入狀態，則移除載入狀態
-    layer.on('popupopen', function(e) {
+    layer.once('popupopen', function(e) {
         const popup = e.popup;
         const popupContent = popup.getContent();
         
@@ -188,15 +194,16 @@ const labelLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_lab
     pane: 'overlayPane'
 }).addTo(map);
 
-// 手機版：點擊地圖關閉控制面板
-if (isMobileDevice()) {
-    map.on('click', function() {
-    const panel = document.getElementById('controlPanel');
-    if (panel.classList.contains('show-mobile')) {
-        panel.classList.remove('show-mobile');
-    }
-    });
-}
+// 點擊地圖關閉控制面板（手機與桌面通用）
+map.on('click', function() {
+  const panel = document.getElementById('controlPanel');
+  const toggleBtn = document.querySelector('.toggle-panel');
+  if (panel.classList.contains('show-mobile') || !panel.classList.contains('hidden')) {
+    panel.classList.remove('show-mobile');
+    panel.classList.add('hidden');
+    if (toggleBtn) toggleBtn.style.zIndex = '1001';
+  }
+});
 }
 
 // SVG圖標系統
@@ -204,89 +211,100 @@ const layerIcons = {
 '中國軍工及航天產業': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#4338ca" stroke="#312e81" stroke-width="2"/>
-    <path d="M12 6v12M8 8l8 8M8 16l8-8" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="12" cy="12" r="2" fill="white"/>
+    <!-- 工業齒輪簡化版 -->
+    <circle cx="12" cy="12" r="3.5" stroke="white" stroke-width="2"/>
+    <path d="M12 7.5v-2M12 18.5v-2M7.5 12h-2M18.5 12h-2M9 9l-1.2-1.2M16.2 16.2L15 15M15 9l1.2-1.2M8.8 16.2L10 15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- 航太火箭 -->
+    <path d="M16.5 7.5l-2.2 1.1-2.9 2.9 1.1 1.1 2.9-2.9 1.1-2.2Z" fill="white"/>
     </svg>`,
     color: '#4338ca'
 },
 '武裝警察、海外軍事設施及其他分類': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="6" width="18" height="12" rx="2" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
-    <path d="M9 10h6M9 14h6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="7" cy="12" r="1" fill="white"/>
-    <circle cx="17" cy="12" r="1" fill="white"/>
+    <circle cx="12" cy="12" r="10" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+    <!-- 盾牌 -->
+    <path d="M12 6l5 2v4c0 3.5-3 5.8-5 6.5-2-0.7-5-3-5-6.5V8l5-2Z" fill="white"/>
+    <path d="M12 10l1 2h2l-1.6 1.2.6 2-2-1.2-2 1.2.6-2L9 12h2l1-2Z" fill="#dc2626"/>
     </svg>`,
     color: '#dc2626'
 },
 '解放軍海軍、海軍陸戰隊基地及設施': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#8B4513" stroke="#654321" stroke-width="2"/>
-    <path d="M6 12h12M12 6v12" stroke="white" stroke-width="2"/>
-    <path d="M8 8l8 8M16 8l-8 8" stroke="white" stroke-width="1" opacity="0.7"/>
-    <circle cx="12" cy="12" r="3" fill="none" stroke="white" stroke-width="1"/>
+    <!-- 錨與海浪 -->
+    <circle cx="12" cy="8" r="2" fill="white"/>
+    <path d="M12 10v6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <path d="M8 16c1.2 1 2.8 1 4 0 1.2 1 2.8 1 4 0" stroke="white" stroke-width="1.6" fill="none"/>
+    <path d="M9 13h2M13 13h2" stroke="white" stroke-width="1.6"/>
     </svg>`,
     color: '#8B4513'
 },
 '解放軍火箭軍': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#b91c1c" stroke="#7f1d1d" stroke-width="2"/>
-    <path d="M12 4l2 4h-4l2-4zM12 4v16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <path d="M8 10l8 0M8 14l8 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M10 18l4 0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <!-- 火箭垂直 -->
+    <path d="M12 6l2 3v6l-2 2-2-2V9l2-3Z" fill="white"/>
+    <path d="M10 15h4" stroke="#b91c1c" stroke-width="1.6"/>
+    <path d="M12 17v2" stroke="white" stroke-width="2" stroke-linecap="round"/>
     </svg>`,
     color: '#b91c1c'
 },
 '解放軍空軍、海軍航空兵基地及設施': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#1E3A8A" stroke="#1E40AF" stroke-width="2"/>
-    <path d="M12 6l4 8h-8l4-8z" fill="white"/>
-    <path d="M6 12h4M14 12h4" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="12" cy="16" r="1" fill="white"/>
+    <!-- 戰機俯視 -->
+    <path d="M12 6l3 4-3 1-3-1 3-4Z" fill="white"/>
+    <path d="M9 12l3 2 3-2M12 14v3" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
     </svg>`,
     color: '#1E3A8A'
 },
 '解放軍軍事航天部隊、網路空間部隊、信息支援部隊': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
-    <circle cx="12" cy="8" r="2" fill="white"/>
-    <path d="M12 10v4M10 14h4" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <path d="M8 16l8-8M16 16l-8-8" stroke="white" stroke-width="1" opacity="0.7"/>
+    <!-- 衛星與軌道 -->
+    <circle cx="12" cy="12" r="3.2" stroke="white" stroke-width="1.6"/>
+    <path d="M7 9c2-2 8-2 10 0" stroke="white" stroke-width="1.4"/>
+    <rect x="11" y="7" width="2" height="3" fill="white"/>
+    <rect x="9" y="6" width="2" height="2" fill="white"/>
+    <rect x="13" y="6" width="2" height="2" fill="white"/>
     </svg>`,
     color: '#7c3aed'
 },
 '解放軍軍事院校、教育單位': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#ea580c" stroke="#c2410c" stroke-width="2"/>
-    <rect x="8" y="8" width="8" height="6" rx="1" fill="white"/>
-    <path d="M10 11h4M10 13h4" stroke="#ea580c" stroke-width="1" stroke-linecap="round"/>
-    <path d="M12 8V6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <!-- 學位帽 -->
+    <path d="M12 8l6 3-6 3-6-3 6-3Z" fill="white"/>
+    <path d="M12 14c3 0 5-1 6-2v2c-1 1-3 2-6 2s-5-1-6-2v-2c1 1 3 2 6 2Z" fill="white"/>
     </svg>`,
     color: '#ea580c'
 },
 '解放軍重要訓場/特殊設施': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#0d9488" stroke="#0f766e" stroke-width="2"/>
-    <path d="M8 8h8l-2 2H10l-2-2zM8 16h8l-2-2H10l-2 2z" fill="white"/>
-    <path d="M12 6v12" stroke="white" stroke-width="2"/>
-    <circle cx="12" cy="12" r="1.5" fill="white"/>
+    <!-- 靶心/靶場 -->
+    <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.6"/>
+    <circle cx="12" cy="12" r="2" fill="white"/>
+    <path d="M12 6v3M12 18v-3M6 12h3M18 12h-3" stroke="white" stroke-width="1.6"/>
     </svg>`,
     color: '#0d9488'
 },
 '解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#16a34a" stroke="#15803d" stroke-width="2"/>
-    <rect x="9" y="9" width="6" height="6" rx="1" fill="white"/>
-    <path d="M11 11h2M11 13h2" stroke="#16a34a" stroke-width="1"/>
-    <path d="M6 12h3M15 12h3M12 6v3M12 15v3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- 盾牌+V形臂章 -->
+    <path d="M12 7l4 1.5v3.5c0 2.8-2.4 4.6-4 5.2-1.6-0.6-4-2.4-4-5.2V8.5L12 7Z" fill="white"/>
+    <path d="M9.5 12l2.5 2 2.5-2" stroke="#16a34a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
     </svg>`,
     color: '#16a34a'
 },
 '黨和國家重要政經軍事機關': {
     svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" fill="#be123c" stroke="#9f1239" stroke-width="2"/>
-    <path d="M8 10l4-2 4 2v6l-4 2-4-2v-6z" fill="white"/>
-    <path d="M12 8v8M8 10l4 4 4-4" stroke="#be123c" stroke-width="1"/>
-    <circle cx="12" cy="6" r="1" fill="white"/>
+    <!-- 政府建築 -->
+    <path d="M6 11h12v6H6v-6Z" fill="white"/>
+    <path d="M6 11l6-3 6 3H6Z" fill="white"/>
+    <path d="M8 12v4M10 12v4M12 12v4M14 12v4M16 12v4" stroke="#be123c" stroke-width="1.6"/>
     </svg>`,
     color: '#be123c'
 }
@@ -403,8 +421,9 @@ try {
     
     // 檢查資料大小並顯示進度
     const contentLength = response.headers.get('content-length');
-    if (contentLength) {
-    const total = parseInt(contentLength, 10);
+    // 若可取得 content-length 且支援串流，顯示進度條（避免超過 100%）
+    if (contentLength && response.body) {
+    const total = Math.max(parseInt(contentLength, 10) || 0, 0);
     let loaded = 0;
     
     const reader = response.body.getReader();
@@ -417,8 +436,9 @@ try {
         chunks.push(value);
         loaded += value.length;
         
-        // 更新進度
-        const progress = Math.round((loaded / total) * 100);
+        // 一律限制為 0–99%，完成後再顯示 100%
+        const ratio = total > 0 ? loaded / total : 0;
+        const progress = Math.max(0, Math.min(99, Math.floor(ratio * 100)));
         document.querySelector('#loading div:last-child').textContent = `載入地圖資料中... ${progress}%`;
     }
     
@@ -433,10 +453,14 @@ try {
     const text = new TextDecoder().decode(allChunks);
     const data = JSON.parse(text);
     allFeatures = data.features;
+    layerIndex = buildLayerIndex(allFeatures);
+    // 完成後明確設為 100%
+    document.querySelector('#loading div:last-child').textContent = '載入地圖資料中... 100%';
     } else {
     // 如果沒有 content-length，使用原來的方式
     const data = await response.json();
     allFeatures = data.features;
+    layerIndex = buildLayerIndex(allFeatures);
     }
     
     // 根據URL參數渲染地圖，如果沒有URL座標，使用預設位置
@@ -446,7 +470,8 @@ try {
     // 效能統計
     const endTime = performance.now();
     const loadTime = ((endTime - startTime) / 1000).toFixed(2);
-    console.log(`🚀 地圖載入完成！載入時間: ${loadTime} 秒，共 ${allFeatures.length} 個點位`);
+    // 完成後隱藏載入指示器（避免長時間遮擋畫面）
+    hideLoading();
     
 } catch (error) {
     hideLoading();
@@ -463,8 +488,21 @@ try {
 // 全域變數
 let map;
 let allFeatures = [];
+// 分層索引快取：加速分層篩選
+let layerIndex = null; // { layerName: Feature[] }
 let currentMarkers = L.layerGroup();
 let centerMarker = null;
+
+// 建立分層索引（一次 O(N)），提高後續分層切換效能
+function buildLayerIndex(features) {
+  const idx = Object.create(null);
+  for (const f of features) {
+    const props = f.properties || {};
+    const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+    (idx[layerName] ||= []).push(f);
+  }
+  return idx;
+}
 
 // 篩選功能 - 根據距離篩選點位
 function filterFeaturesByDistance(features, centerLat, centerLng, radiusKm = 50) {
@@ -517,13 +555,26 @@ return text.toString()
 // 隱藏/顯示控制面板
 function togglePanel() {
 const panel = document.getElementById('controlPanel');
+const toggleBtn = document.querySelector('.toggle-panel');
 
 if (isMobileDevice()) {
     // 手機版使用不同的class
     panel.classList.toggle('show-mobile');
+    // 面板開啟時讓按鈕位於面板之下或隱藏
+    if (panel.classList.contains('show-mobile')) {
+      toggleBtn.style.zIndex = '500';
+    } else {
+      toggleBtn.style.zIndex = '1001';
+    }
 } else {
     // 桌面版使用原有的hidden class
     panel.classList.toggle('hidden');
+    // 面板開啟(未隱藏)時將按鈕壓到下面
+    if (!panel.classList.contains('hidden')) {
+      toggleBtn.style.zIndex = '500';
+    } else {
+      toggleBtn.style.zIndex = '1001';
+    }
 }
 }
 
@@ -531,6 +582,7 @@ if (isMobileDevice()) {
 function initializePanelState() {
 const panel = document.getElementById('controlPanel');
 const mobileHint = document.getElementById('mobileHint');
+const toggleBtn = document.querySelector('.toggle-panel');
 
 if (isMobileDevice()) {
     // 手機版預設隱藏
@@ -539,12 +591,14 @@ if (isMobileDevice()) {
     panel.classList.remove('hidden');
     // 顯示手機版提示
     mobileHint.style.display = 'block';
+    toggleBtn.style.zIndex = '1001';
 } else {
     // 桌面版預設顯示
     panel.classList.remove('hidden');
     panel.classList.remove('show-mobile');
     // 隱藏手機版提示
     mobileHint.style.display = 'none';
+    toggleBtn.style.zIndex = '500';
 }
 }
 
@@ -552,6 +606,7 @@ if (isMobileDevice()) {
 function handleResize() {
 const panel = document.getElementById('controlPanel');
 const mobileHint = document.getElementById('mobileHint');
+const toggleBtn = document.querySelector('.toggle-panel');
 
 if (isMobileDevice()) {
     // 切換到手機版
@@ -564,19 +619,25 @@ if (isMobileDevice()) {
         panel.classList.add('show-mobile');
     }
     }
+    toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '500' : '1001';
 } else {
     // 切換到桌面版
     panel.classList.remove('show-mobile');
     mobileHint.style.display = 'none';
     // 桌面版預設顯示
     panel.classList.remove('hidden');
+    toggleBtn.style.zIndex = '500';
 }
 }
+
+// （保留由點擊地圖/切換按鈕控制面板開關）
 
 // 根據分層篩選特徵
 function filterFeaturesByLayer(features, selectedLayer) {
 if (!selectedLayer) return features;
-
+// 若已建立索引，直接回傳對應陣列（避免重複掃描全量 features）
+if (layerIndex && layerIndex[selectedLayer]) return layerIndex[selectedLayer];
+// 後備：無索引時退回線性過濾
 return features.filter(feature => {
     const props = feature.properties || {};
     const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
@@ -718,7 +779,7 @@ if (targetCoords) {
     
     centerMarker = L.marker([targetCoords.lat, targetCoords.lng], { icon: redIcon })
         .addTo(map)
-    .bindPopup(`<strong>🎯 搜尋中心</strong><br/>緯度: ${targetCoords.lat}<br/>經度: ${targetCoords.lng}<br/>搜尋半徑: ${radiusKm} 公里`);
+    .bindPopup(`<strong>搜尋中心</strong><br/>緯度: ${targetCoords.lat}<br/>經度: ${targetCoords.lng}<br/>搜尋半徑: ${radiusKm} 公里`);
     }
 
 // 設定地圖視野
@@ -808,9 +869,9 @@ map.setView(mapCenter, mapZoom);
         const isZeroDistance = distance < 0.1;
         
         if (isZeroDistance) {
-        popupContent += `<div class="popup-distance" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #ef4444; border: 2px solid #ef4444; animation: subtle-pulse 2s infinite;"><strong>🎯 就在搜尋中心!</strong> <span style="color: #ef4444; font-weight: 700;">${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}</span><br/><small style="color: #dc2626;">這個設施就在您指定的位置附近</small></div>`;
+        popupContent += `<div class="popup-distance" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #ef4444; border: 2px solid #ef4444; animation: subtle-pulse 2s infinite;"><strong>就在搜尋中心</strong> <span style="color: #ef4444; font-weight: 700;">${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}</span><br/><small style="color: #dc2626;">此設施位於您指定的位置附近</small></div>`;
         } else {
-        popupContent += `<div class="popup-distance"><strong>📍 距離搜尋中心:</strong> ${distance.toFixed(2)} 公里</div>`;
+        popupContent += `<div class="popup-distance"><strong>距離搜尋中心:</strong> ${distance.toFixed(2)} 公里</div>`;
         }
     }
 

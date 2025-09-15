@@ -60,10 +60,11 @@
     /* ---------- 3. 先嘗試寫入剪貼簿 ---------- */
     try {
       await navigator.clipboard.writeText(geojsonStr);
-      alert(`✅ 已複製 ${features.length} 筆資料（含「說明」等欄位）到剪貼簿。\n直接貼到檔案並存成 .geojson！`);
+      alert(`已複製 ${features.length} 筆資料到剪貼簿。\n可貼上並存成 .geojson`);
       return;
     } catch (err) {
-      console.info('Clipboard API 失敗，改用下載方式…', err);
+      // 僅在錯誤時以 error 呈現，避免資訊訊息干擾除錯視窗
+      console.error('Clipboard API 失敗，改用下載方式…', err);
     }
   
     /* ---------- 4. 後備：about:blank 分頁自動下載 ---------- */
@@ -79,6 +80,6 @@
     );
     setTimeout(() => { win.close(); URL.revokeObjectURL(url); }, 2000);
   
-    console.log(`✅ 已匯出 ${features.length} features → export.geojson（已含「說明」等欄位）`);
+    // 成功訊息以 UI 呈現，不在 console 顯示
   })();
   

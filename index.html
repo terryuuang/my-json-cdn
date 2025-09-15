@@ -20,9 +20,9 @@
   
   <!-- 控制面板 -->
   <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
-    <div class="control-title">🗺️ 地圖控制</div>
+    <div class="control-title">地圖控制</div>
     <div id="mobileHint" class="mobile-hint" style="display: none;">
-      📱 點擊地圖任意處關閉此面板
+      請點擊地圖任意處關閉此面板
     </div>
     
     <div class="input-group">
@@ -44,22 +44,22 @@
       <label class="input-label">分層篩選</label>
       <select id="layerFilter" class="input-field" onchange="filterByLayer()">
         <option value="">顯示全部分層</option>
-        <option value="中國軍工及航天產業">🔧 中國軍工及航天產業</option>
-        <option value="武裝警察、海外軍事設施及其他分類">🛡️ 武裝警察、海外軍事設施</option>
-        <option value="解放軍海軍、海軍陸戰隊基地及設施">⚓ 解放軍海軍、海軍陸戰隊</option>
-        <option value="解放軍火箭軍">🚀 解放軍火箭軍</option>
-        <option value="解放軍空軍、海軍航空兵基地及設施">✈️ 解放軍空軍、海軍航空兵</option>
-        <option value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊">🛰️ 軍事航天、網路空間部隊</option>
-        <option value="解放軍軍事院校、教育單位">🎓 解放軍軍事院校、教育</option>
-        <option value="解放軍重要訓場/特殊設施">🎯 解放軍重要訓場/特殊設施</option>
-        <option value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)">🪖 解放軍陸軍、聯勤保障</option>
-        <option value="黨和國家重要政經軍事機關">🏛️ 黨和國家重要政經軍事機關</option>
+        <option value="中國軍工及航天產業">中國軍工及航天產業</option>
+        <option value="武裝警察、海外軍事設施及其他分類">武裝警察、海外軍事設施</option>
+        <option value="解放軍海軍、海軍陸戰隊基地及設施">解放軍海軍、海軍陸戰隊</option>
+        <option value="解放軍火箭軍">解放軍火箭軍</option>
+        <option value="解放軍空軍、海軍航空兵基地及設施">解放軍空軍、海軍航空兵</option>
+        <option value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊">軍事航天、網路空間部隊</option>
+        <option value="解放軍軍事院校、教育單位">解放軍軍事院校、教育</option>
+        <option value="解放軍重要訓場/特殊設施">解放軍重要訓場/特殊設施</option>
+        <option value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)">解放軍陸軍、聯勤保障</option>
+        <option value="黨和國家重要政經軍事機關">黨和國家重要政經軍事機關</option>
       </select>
     </div>
     
-    <button class="btn btn-primary" onclick="searchLocation()">🔍 搜尋位置</button>
-    <button class="btn btn-secondary" onclick="showAllLocations()">🌍 顯示全部</button>
-    <button class="btn btn-secondary" onclick="copyUrl()">📋 複製連結</button>
+    <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
+    <button class="btn btn-secondary" onclick="showAllLocations()">顯示全部</button>
+    <button class="btn btn-secondary" onclick="copyUrl()">複製連結</button>
     
     <div id="infoPanel" class="info-panel" style="display: none;">
       <div id="infoText"></div>

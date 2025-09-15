@@ -125,10 +125,7 @@ html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMac
     align-items: center;
 }
 
-.equipment-info h4:before {
-    content: "🛡️";
-    margin-right: 6px;
-}
+.equipment-info h4:before { content: ""; }
 
 .equipment-item {
     margin-bottom: 12px;
