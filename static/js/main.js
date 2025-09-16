@@ -204,6 +204,9 @@ map.on('click', function() {
     if (toggleBtn) toggleBtn.style.zIndex = '1001';
   }
 });
+
+  // 初始化繪圖/測距工具（依裝置調整位置與可用性）
+  setupMapTools();
 }
 
 // SVG圖標系統
@@ -378,10 +381,13 @@ const startTime = performance.now(); // 效能計時開始
 showLoading();
  // 顯示頂部載入提醒（RWD）
  showTopNotice();
+ // 修補 Leaflet 相容性（抑制 _flat 的棄用警告）
+ patchLeafletDeprecations();
 
 try {
     // 初始化地圖
     initializeMap();
+    // 工具已在 initializeMap 內初始化
     
     // 初始化面板狀態（手機版預設隱藏）
     initializePanelState();
@@ -494,6 +500,10 @@ let allFeatures = [];
 let layerIndex = null; // { layerName: Feature[] }
 let currentMarkers = L.layerGroup();
 let centerMarker = null;
+// 繪圖/測距控制元件
+let drawnItems = null;
+let drawControl = null;
+let polylineMeasureControl = null;
 
 // 建立分層索引（一次 O(N)），提高後續分層切換效能
 function buildLayerIndex(features) {
@@ -524,6 +534,77 @@ document.querySelector('#loading div:last-child').textContent = '初始化地圖
 // 隱藏載入指示器
 function hideLoading() {
 document.getElementById('loading').style.display = 'none';
+}
+
+// 修補 Leaflet 棄用 API 警告（讓外掛使用 isFlat 而非 _flat）
+function patchLeafletDeprecations() {
+  try {
+    if (window.L && L.LineUtil && typeof L.LineUtil.isFlat === 'function') {
+      L.LineUtil._flat = L.LineUtil.isFlat; // 直接別名，避免觸發內建警告
+    }
+  } catch (e) {
+    // 靜默處理，不影響主要功能
+  }
+}
+
+// 初始化地圖工具：Leaflet.draw 與 PolylineMeasure
+function setupMapTools() {
+  try {
+    // 建立已繪製物件的圖層群組
+    if (!drawnItems) {
+      drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+    }
+
+    // 依裝置調整控制項位置（避免與自家面板衝突）
+    const isMobile = isMobileDevice();
+    const drawPosition = isMobile ? 'bottomleft' : 'topright';
+    const measurePosition = isMobile ? 'bottomright' : 'bottomright';
+
+    // 安裝 Leaflet.draw 控制項（僅保留常用工具，降低 UI 複雜度與事件負載）
+    if (window.L && L.Control && L.Control.Draw && !drawControl) {
+      drawControl = new L.Control.Draw({
+        position: drawPosition,
+        draw: {
+          polygon: { showArea: true, allowIntersection: false },
+          polyline: true,
+          rectangle: true,
+          circle: false,
+          circlemarker: false,
+          marker: true
+        },
+        edit: {
+          featureGroup: drawnItems,
+          remove: true
+        }
+      });
+      map.addControl(drawControl);
+
+      // 事件：新增圖形
+      map.on(L.Draw.Event.CREATED, function (e) {
+        const layer = e.layer;
+        drawnItems.addLayer(layer);
+      });
+
+      // 事件：編輯/刪除完成（這裡僅維持資料結構，避免昂貴運算）
+      map.on(L.Draw.Event.EDITED, function () {/* no-op for performance */});
+      map.on(L.Draw.Event.DELETED, function () {/* no-op for performance */});
+    }
+
+    // 安裝 PolylineMeasure（預設公里顯示，提供清除控制）
+    if (window.L && L.control && L.control.polylineMeasure && !polylineMeasureControl) {
+      polylineMeasureControl = L.control.polylineMeasure({
+        position: measurePosition,
+        unit: 'kilometres',
+        showUnitControl: true,
+        showClearControl: true,
+        clearMeasurementsOnStop: false
+      });
+      polylineMeasureControl.addTo(map);
+    }
+  } catch (err) {
+    console.warn('Map tools setup skipped:', err);
+  }
 }
 
 // 更新資訊面板
@@ -733,6 +814,15 @@ navigator.clipboard.writeText(url).then(() => {
     document.getElementById('infoPanel').style.display = 'none';
     }, 3000);
 });
+}
+
+// 清除目前繪製的圖形
+function clearDrawings() {
+  try {
+    if (drawnItems) drawnItems.clearLayers();
+  } catch (e) {
+    console.warn('clearDrawings failed', e);
+  }
 }
 
 // 渲染地圖功能 - 優化版本，支援延遲載入

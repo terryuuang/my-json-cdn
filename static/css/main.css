@@ -486,8 +486,37 @@ select.input-field:hover {
     opacity: 0;
     transition: all 0.3s ease;
     z-index: 1000;
-    }
-    
+}
+
+/* Leaflet 控制項：與自家控制面板與行動裝置的協調 */
+.leaflet-right .leaflet-control {
+  margin-right: 10px;
+}
+.leaflet-bottom .leaflet-control {
+  margin-bottom: 10px;
+}
+
+/* 行動裝置：縮小 Leaflet 控制項尺寸（維持可點擊） */
+@media (max-width: 768px) {
+  .leaflet-bar a,
+  .leaflet-control-zoom a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+  }
+  .leaflet-touch .leaflet-bar a { /* 觸控優化但不過大 */
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+  }
+  /* Draw 工具列按鈕縮小 */
+  .leaflet-draw-toolbar a {
+    width: 36px;
+    height: 36px;
+  }
+}
+
     .control-panel.show-mobile {
     transform: translateX(0);
     opacity: 1;

@@ -7,6 +7,9 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Plugins: Leaflet.draw + PolylineMeasure -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.css" />
   <link rel="stylesheet" href="static/css/main.css">
 </head>
 <body>
@@ -64,6 +67,7 @@
     <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
     <button class="btn btn-secondary" onclick="showAllLocations()">顯示全部</button>
     <button class="btn btn-secondary" onclick="copyUrl()">複製連結</button>
+    <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
     
     <div id="infoPanel" class="info-panel" style="display: none;">
       <div id="infoText"></div>
@@ -74,6 +78,8 @@
   <button class="toggle-panel" onclick="togglePanel()">⚙️</button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>
+  <script src="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js" defer></script>
   <script src="static/js/equipment_parser.js" defer></script>
   <script src="static/js/main.js" defer></script>
 </body>
