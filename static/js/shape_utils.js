@@ -99,60 +99,162 @@
     const globalRadius = parseFloat(urlParams.get('radius'));
     const text = (urlParams.get('text') || '').toString().trim();
 
-    const pushPoint = (lat, lng, rKm) => {
+    function normalizeText(value) {
+      if (typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      return trimmed ? trimmed : null;
+    }
+
+    function attachText(shape, textValue) {
+      const label = normalizeText(textValue);
+      if (label) shape.text = label;
+      return shape;
+    }
+
+    function extractInlineText(raw) {
+      if (typeof raw !== 'string') return { value: raw, text: null };
+      const parts = raw.split('|');
+      if (parts.length <= 1) return { value: raw, text: null };
+      return { value: parts[0].trim(), text: parts.slice(1).join('|') };
+    }
+
+    function resolveText(inline, arr, idx) {
+      const inlineLabel = normalizeText(inline);
+      if (inlineLabel) return inlineLabel;
+      if (!arr || idx >= arr.length) return null;
+      return normalizeText(arr[idx]);
+    }
+
+    function parseTextList(paramName) {
+      const sequential = [];
+      const indexed = [];
+
+      const pushSequential = (raw) => {
+        if (typeof raw !== 'string') return;
+        const trimmed = raw.trim();
+        if (!trimmed) return;
+        if (trimmed.startsWith('[')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) {
+              parsed.forEach(item => {
+                if (typeof item === 'string' && item.trim()) sequential.push(item.trim());
+              });
+              return;
+            }
+          } catch (_) {}
+        }
+        sequential.push(trimmed);
+      };
+
+      const assignIndexed = (raw, idx) => {
+        if (typeof raw !== 'string') return;
+        const trimmed = raw.trim();
+        if (!trimmed || !Number.isFinite(idx)) return;
+        indexed[idx] = trimmed;
+      };
+
+      urlParams.forEach((value, key) => {
+        if (key === paramName) {
+          pushSequential(value);
+          return;
+        }
+        const match = key.match(new RegExp('^' + paramName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\[(\\d+)\\]$'));
+        if (match) {
+          const idx = Number.parseInt(match[1], 10);
+          assignIndexed(value, idx);
+        }
+      });
+
+      const result = sequential.slice();
+      indexed.forEach((val, idx) => {
+        if (typeof val === 'string' && val.trim()) {
+          result[idx] = val.trim();
+        }
+      });
+      return result;
+    }
+
+    const pushPoint = (lat, lng, rKm, textValue) => {
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-      shapes.push({ type: 'point', center: { lat, lng }, radiusKm: rKm });
+      const shape = { type: 'point', center: { lat, lng } };
+      if (Number.isFinite(rKm)) shape.radiusKm = rKm;
+      shapes.push(attachText(shape, textValue));
     };
-    const pushLine = (list) => { if (list.length >= 2) shapes.push({ type: 'line', coords: list }); };
-    const pushPoly = (list) => { if (list.length >= 3) shapes.push({ type: 'polygon', coords: list }); };
-    const pushBbox = (w, s, e, n) => {
-      if ([w, s, e, n].every(Number.isFinite)) shapes.push({ type: 'bbox', bounds: { west: w, south: s, east: e, north: n } });
+    const pushLine = (list, textValue) => {
+      if (list.length < 2) return;
+      shapes.push(attachText({ type: 'line', coords: list }, textValue));
     };
-    const pushCircle = (lat, lng, r) => {
+    const pushPoly = (list, textValue) => {
+      if (list.length < 3) return;
+      shapes.push(attachText({ type: 'polygon', coords: list }, textValue));
+    };
+    const pushBbox = (w, s, e, n, textValue) => {
+      if (![w, s, e, n].every(Number.isFinite)) return;
+      shapes.push(attachText({ type: 'bbox', bounds: { west: w, south: s, east: e, north: n } }, textValue));
+    };
+    const pushCircle = (lat, lng, r, textValue) => {
       if (!Number.isFinite(lat) || !Number.isFinite(lng) || !Number.isFinite(r)) return;
-      shapes.push({ type: 'circle', center: { lat, lng }, radiusKm: r * kmPerUnit });
+      shapes.push(attachText({ type: 'circle', center: { lat, lng }, radiusKm: r * kmPerUnit }, textValue));
     };
-    const pushSector = (lat, lng, r, start, end) => {
+    const pushSector = (lat, lng, r, start, end, textValue) => {
       if ([lat, lng, r, start, end].some(v => !Number.isFinite(v))) return;
-      shapes.push({ type: 'sector', center: { lat, lng }, radiusKm: r * kmPerUnit, startDeg: start, endDeg: end });
+      shapes.push(attachText({ type: 'sector', center: { lat, lng }, radiusKm: r * kmPerUnit, startDeg: start, endDeg: end }, textValue));
     };
 
     if (shape === 'multi') {
-      urlParams.getAll('circle').forEach(val => {
-        const [lng, lat, r] = (val || '').split(',').map(Number);
-        if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(r)) pushCircle(lat, lng, r);
+      const circleTexts = parseTextList('circle_text');
+      const lineTexts = parseTextList('line_text');
+      const polyTexts = parseTextList('poly_text');
+      const sectorTexts = parseTextList('sector_text');
+
+      urlParams.getAll('circle').forEach((val, idx) => {
+        const { value, text: inlineText } = extractInlineText(val || '');
+        const [lng, lat, r] = (value || '').split(',').map(Number);
+        const label = resolveText(inlineText, circleTexts, idx);
+        if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(r)) pushCircle(lat, lng, r, label);
       });
-      urlParams.getAll('line').forEach(val => pushLine(parseLngLatList(val)));
-      urlParams.getAll('poly').forEach(val => pushPoly(parseLngLatList(val)));
-      urlParams.getAll('sector').forEach(val => {
-        const [lng, lat, r, start, end] = (val || '').split(',').map(Number);
-        if ([lat, lng, r, start, end].every(Number.isFinite)) pushSector(lat, lng, r, start, end);
+      urlParams.getAll('line').forEach((val, idx) => {
+        const { value, text: inlineText } = extractInlineText(val || '');
+        const label = resolveText(inlineText, lineTexts, idx);
+        pushLine(parseLngLatList(value), label);
+      });
+      urlParams.getAll('poly').forEach((val, idx) => {
+        const { value, text: inlineText } = extractInlineText(val || '');
+        const label = resolveText(inlineText, polyTexts, idx);
+        pushPoly(parseLngLatList(value), label);
+      });
+      urlParams.getAll('sector').forEach((val, idx) => {
+        const { value, text: inlineText } = extractInlineText(val || '');
+        const [lng, lat, r, start, end] = (value || '').split(',').map(Number);
+        const label = resolveText(inlineText, sectorTexts, idx);
+        if ([lat, lng, r, start, end].every(Number.isFinite)) pushSector(lat, lng, r, start, end, label);
       });
     } else if (shape) {
       if (shape === 'point') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const rKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 50;
-        pushPoint(lat, lng, rKm);
+        pushPoint(lat, lng, rKm, text);
       } else if (shape === 'line') {
-        pushLine(parseLngLatList(urlParams.get('line') || ''));
+        pushLine(parseLngLatList(urlParams.get('line') || ''), text);
       } else if (shape === 'polygon') {
-        pushPoly(parseLngLatList(urlParams.get('poly') || ''));
+        pushPoly(parseLngLatList(urlParams.get('poly') || ''), text);
       } else if (shape === 'bbox') {
         const [w, s, e, n] = (urlParams.get('bbox') || '').split(',').map(Number);
-        pushBbox(w, s, e, n);
+        pushBbox(w, s, e, n, text);
       } else if (shape === 'circle') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const r = parseFloat(urlParams.get('radius'));
-        pushCircle(lat, lng, r);
+        pushCircle(lat, lng, r, text);
       } else if (shape === 'sector') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const r = parseFloat(urlParams.get('radius'));
         const start = parseFloat(urlParams.get('start'));
         const end = parseFloat(urlParams.get('end'));
-        pushSector(lat, lng, r, start, end);
+        pushSector(lat, lng, r, start, end, text);
       }
     }
 
@@ -172,4 +274,3 @@
     parseShapeParams
   };
 })();
-

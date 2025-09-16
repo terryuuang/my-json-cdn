@@ -206,26 +206,29 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
           iconSize: [16, 16], iconAnchor: [8, 8]
         });
-        const text = (shapeSpec.text || '禁航點');
-        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(text);
+        const markerText = s.text || shapeSpec.text || '禁航點';
+        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(markerText);
         nfzLayerGroup.addLayer(m);
         extendBounds([[s.center.lat, s.center.lng]]);
         if (Number.isFinite(s.radiusKm) && s.radiusKm > 0) {
           const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-          if (shapeSpec.text) c.bindPopup(shapeSpec.text);
+          const circleText = s.text || shapeSpec.text;
+          if (circleText) c.bindPopup(circleText);
           nfzLayerGroup.addLayer(c);
           extendBounds(c.getBounds());
         }
       } else if (s.type === 'line') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
         const pl = L.polyline(latlngs, { color: '#ef4444', weight: 3 });
-        if (shapeSpec.text) pl.bindPopup(shapeSpec.text);
+        const lineText = s.text || shapeSpec.text;
+        if (lineText) pl.bindPopup(lineText);
         nfzLayerGroup.addLayer(pl);
         extendBounds(latlngs);
       } else if (s.type === 'polygon') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
         const poly = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        if (shapeSpec.text) poly.bindPopup(shapeSpec.text);
+        const polyText = s.text || shapeSpec.text;
+        if (polyText) poly.bindPopup(polyText);
         nfzLayerGroup.addLayer(poly);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(s.coords.map(p => ({ lat: p.lat, lng: p.lng })));
@@ -238,20 +241,23 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           [s.bounds.north, s.bounds.west]
         ];
         const rect = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.08 });
-        if (shapeSpec.text) rect.bindPopup(shapeSpec.text);
+        const rectText = s.text || shapeSpec.text;
+        if (rectText) rect.bindPopup(rectText);
         nfzLayerGroup.addLayer(rect);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
         s._bufferPolyline = perimeter;
       } else if (s.type === 'circle') {
         const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        if (shapeSpec.text) c.bindPopup(shapeSpec.text);
+        const circleText = s.text || shapeSpec.text;
+        if (circleText) c.bindPopup(circleText);
         nfzLayerGroup.addLayer(c);
         extendBounds(c.getBounds());
       } else if (s.type === 'sector') {
         const latlngs = window.shapeUtils.buildSectorLatLngs(s.center, s.radiusKm, s.startDeg, s.endDeg);
         const sec = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        if (shapeSpec.text) sec.bindPopup(shapeSpec.text);
+        const sectorText = s.text || shapeSpec.text;
+        if (sectorText) sec.bindPopup(sectorText);
         nfzLayerGroup.addLayer(sec);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
