@@ -1,5 +1,48 @@
 html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
+/* 頂部提醒樣式（RWD） */
+.top-notice {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 10px); /* 與頂部保持約5-10px距離並考慮瀏海區 */
+    left: 50%;
+    transform: translate(-50%, -20px); /* 初始在視口上方一點點 */
+    background: rgba(75, 85, 99, 0.95); /* 灰底 */
+    color: #ffffff; /* 白字 */
+    display: inline-block;
+    text-align: left; /* 卡片置中，但文字靠左對齊 */
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.35;
+    border-radius: 12px; /* 矩形圓角 */
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    max-width: min(520px, 92vw); /* 不滿版 */
+    z-index: 3000;
+    opacity: 0;
+    transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.top-notice.show {
+    transform: translate(-50%, 0); /* 自頂部滑下 */
+    opacity: 1;
+}
+
+.top-notice.hide {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .top-notice {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+}
+
 /* 優化 Popup 樣式 */
 .leaflet-popup-content-wrapper {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);

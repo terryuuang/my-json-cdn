@@ -376,6 +376,8 @@ return url.includes('twitter.com') || url.includes('x.com') ? 'Twitter/X' :
 async function init() {
 const startTime = performance.now(); // 效能計時開始
 showLoading();
+ // 顯示頂部載入提醒（RWD）
+ showTopNotice();
 
 try {
     // 初始化地圖
@@ -969,3 +971,25 @@ currentMarkers.addTo(map);
 
 // 當頁面載入完成時啟動應用程式
 document.addEventListener('DOMContentLoaded', init);
+
+// 頂部提醒：滑入+3秒後淡出
+function showTopNotice() {
+  try {
+    const el = document.getElementById('topNotice');
+    if (!el) return;
+    // 下一幀加入 .show 以觸發過渡
+    requestAnimationFrame(() => {
+      el.classList.add('show');
+    });
+    const DISPLAY_MS = 5000; // 顯示5秒
+    setTimeout(() => {
+      el.classList.add('hide');
+      el.addEventListener('transitionend', () => {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      }, { once: true });
+    }, DISPLAY_MS);
+  } catch (e) {
+    // 靜默失敗，不影響主流程
+    console.warn('top notice failed', e);
+  }
+}
