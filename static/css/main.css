@@ -320,6 +320,31 @@ select.input-field:hover {
     border: none !important;
 }
 
+/* --- Leaflet.draw / 測距 外觀微調（紅色主題）--- */
+/* 新繪圖形的預設紅色（JS 亦會設定；此為保險） */
+.leaflet-overlay-pane svg path.leaflet-interactive {
+  stroke: #ef4444;
+}
+.leaflet-overlay-pane svg path.leaflet-interactive + path {
+  stroke: #ef4444;
+}
+/* 編輯控制點顏色（若外掛使用此類名） */
+.leaflet-div-icon.leaflet-editing-icon,
+.leaflet-vertex-icon {
+  border-color: #ef4444 !important;
+  background: #ef4444 !important;
+}
+/* PolylineMeasure 常見類名（若版本相符即會生效，否則忽略） */
+.polyline-measure-path,
+.polyline-measure-tempLine,
+.polyline-measure-fixedLine {
+  stroke: #ef4444 !important;
+}
+.polyline-measure-vertex {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
 /* 零距離標記動畫效果 */
 @keyframes pulse {
     0% {

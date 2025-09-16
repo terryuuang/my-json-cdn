@@ -550,6 +550,115 @@ function patchLeafletDeprecations() {
 // 初始化地圖工具：Leaflet.draw 與 PolylineMeasure
 function setupMapTools() {
   try {
+    // 本地化 Leaflet.draw 介面為繁體中文（若可用）
+    if (window.L && L.drawLocal) {
+      L.drawLocal = {
+        draw: {
+          toolbar: {
+            actions: {
+              title: '取消繪圖',
+              text: '取消'
+            },
+            finish: {
+              title: '完成繪圖',
+              text: '完成'
+            },
+            undo: {
+              title: '刪除最後一點',
+              text: '上一步'
+            },
+            buttons: {
+              polyline: '繪製折線',
+              polygon: '繪製多邊形',
+              rectangle: '繪製矩形',
+              circle: '繪製圓形',
+              marker: '放置標記',
+              circlemarker: '繪製圓點'
+            }
+          },
+          handlers: {
+            simpleshape: {
+              tooltip: {
+                start: '拖曳以繪製形狀'
+              }
+            },
+            polyline: {
+              tooltip: {
+                start: '點擊開始繪製折線',
+                cont: '點擊以繼續，雙擊完成',
+                end: '雙擊以完成繪製'
+              }
+            },
+            polygon: {
+              tooltip: {
+                start: '點擊開始繪製多邊形',
+                cont: '點擊以繼續，點選起點以完成',
+                end: '點選起點以完成繪製'
+              }
+            },
+            rectangle: {
+              tooltip: {
+                start: '拖曳以繪製矩形'
+              }
+            },
+            marker: {
+              tooltip: {
+                start: '點擊地圖以放置標記'
+              }
+            },
+            circle: {
+              tooltip: {
+                start: '拖曳以繪製圓形',
+                cont: '調整半徑以變更大小',
+                end: '放開滑鼠以完成'
+              }
+            },
+            circlemarker: {
+              tooltip: {
+                start: '點擊以繪製圓點'
+              }
+            }
+          }
+        },
+        edit: {
+          toolbar: {
+            actions: {
+              save: {
+                title: '儲存變更',
+                text: '儲存'
+              },
+              cancel: {
+                title: '取消編輯，放棄變更',
+                text: '取消'
+              },
+              clearAll: {
+                title: '刪除所有圖形',
+                text: '全部清除'
+              }
+            },
+            buttons: {
+              edit: '編輯圖形',
+              editDisabled: '沒有可編輯的圖形',
+              remove: '刪除圖形',
+              removeDisabled: '沒有可刪除的圖形'
+            }
+          },
+          handlers: {
+            edit: {
+              tooltip: {
+                text: '拖曳控制點以編輯圖形',
+                subtext: '點擊取消可放棄變更'
+              }
+            },
+            remove: {
+              tooltip: {
+                text: '點選圖形以刪除'
+              }
+            }
+          }
+        }
+      };
+    }
     // 建立已繪製物件的圖層群組
     if (!drawnItems) {
       drawnItems = new L.FeatureGroup();
@@ -566,9 +675,17 @@ function setupMapTools() {
       drawControl = new L.Control.Draw({
         position: drawPosition,
         draw: {
-          polygon: { showArea: true, allowIntersection: false },
-          polyline: true,
-          rectangle: true,
+          polygon: {
+            showArea: true,
+            allowIntersection: false,
+            shapeOptions: { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 }
+          },
+          polyline: {
+            shapeOptions: { color: '#ef4444', weight: 3 }
+          },
+          rectangle: {
+            shapeOptions: { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.08 }
+          },
           circle: false,
           circlemarker: false,
           marker: true
@@ -579,10 +696,78 @@ function setupMapTools() {
         }
       });
       map.addControl(drawControl);
+      // 補強：設定工具列按鈕的 title 為繁中（避免部分版本未套用 drawLocal 的情況）
+      setTimeout(() => {
+        try {
+          const t = [
+            ['.leaflet-draw-draw-polyline', '繪製折線'],
+            ['.leaflet-draw-draw-polygon', '繪製多邊形'],
+            ['.leaflet-draw-draw-rectangle', '繪製矩形'],
+            ['.leaflet-draw-draw-marker', '放置標記'],
+            ['.leaflet-draw-edit-edit', '編輯圖形'],
+            ['.leaflet-draw-edit-remove', '刪除圖形']
+          ];
+          t.forEach(([sel, title]) => {
+            const el = document.querySelector(sel);
+            if (el) el.setAttribute('title', title);
+          });
+        } catch (_) { /* 忽略 */ }
+      }, 0);
 
       // 事件：新增圖形
       map.on(L.Draw.Event.CREATED, function (e) {
         const layer = e.layer;
+        const type = e.layerType;
+
+        try {
+          // 統一套用紅色樣式
+          if (layer.setStyle) {
+            layer.setStyle({ color: '#ef4444', weight: 3, fillColor: '#ef4444', fillOpacity: 0.12 });
+          }
+
+          // 建立即時資訊 popup
+          if (type === 'marker') {
+            // 使用紅色小圓點標記
+            const redIcon = L.divIcon({
+              className: 'custom-red-marker',
+              html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+              iconSize: [16, 16],
+              iconAnchor: [8, 8],
+              popupAnchor: [0, -8]
+            });
+            layer.setIcon(redIcon);
+            const { lat, lng } = layer.getLatLng();
+            layer.bindPopup(`標記座標<br/>緯度：${lat.toFixed(6)}<br/>經度：${lng.toFixed(6)}`);
+          } else if (type === 'polyline') {
+            const latlngs = layer.getLatLngs();
+            let total = 0;
+            for (let i = 1; i < latlngs.length; i++) {
+              total += map.distance(latlngs[i - 1], latlngs[i]);
+            }
+            const text = total < 1000
+              ? `長度：約 ${total.toFixed(0)} 公尺`
+              : `長度：約 ${(total / 1000).toFixed(2)} 公里`;
+            layer.bindPopup(text);
+          } else if (type === 'polygon' || type === 'rectangle') {
+            // 使用 Leaflet.draw 的 geodesicArea（若存在）
+            let areaText = '面積：無法計算';
+            try {
+              const latlngs = layer.getLatLngs();
+              const flat = Array.isArray(latlngs[0]) ? latlngs[0] : latlngs; // 兼容多邊形/矩形
+              if (L.GeometryUtil && typeof L.GeometryUtil.geodesicArea === 'function') {
+                const m2 = L.GeometryUtil.geodesicArea(flat);
+                areaText = m2 < 1e6
+                  ? `面積：約 ${m2.toFixed(0)} 平方公尺`
+                  : `面積：約 ${(m2 / 1e6).toFixed(2)} 平方公里`;
+              }
+            } catch (_) {}
+            layer.bindPopup(areaText);
+          }
+
+          // 點擊圖形時開啟資訊
+          layer.on('click', () => { if (layer.getPopup()) layer.openPopup(); });
+        } catch (_) { /* 忽略單一圖形錯誤 */ }
+
         drawnItems.addLayer(layer);
       });
 
@@ -598,9 +783,27 @@ function setupMapTools() {
         unit: 'kilometres',
         showUnitControl: true,
         showClearControl: true,
-        clearMeasurementsOnStop: false
+        clearMeasurementsOnStop: false,
+        // 若外掛支援則套用紅色主題；不支援時忽略
+        color: '#ef4444'
       });
       polylineMeasureControl.addTo(map);
+
+      // 嘗試本地化測距控制項的 title 文案為繁體中文
+      setTimeout(() => {
+        try {
+          const root = document.querySelector('.polyline-measure-control');
+          const onBtn = document.querySelector('.polyline-measure-controlOn');
+          const clearBtn = document.querySelector('.polyline-measure-clearControl');
+          const unitBtn = document.querySelector('.polyline-measure-unitControl');
+          const bearingBtn = document.querySelector('.polyline-measure-bearingControl');
+          const targets = [root, onBtn].filter(Boolean);
+          targets.forEach(el => el.setAttribute('title', '啟動/停止距離測量'));
+          if (clearBtn) clearBtn.setAttribute('title', '清除測量');
+          if (unitBtn) unitBtn.setAttribute('title', '切換單位');
+          if (bearingBtn) bearingBtn.setAttribute('title', '切換方位角');
+        } catch (_) { /* 忽略 DOM 無法定位時的錯誤 */ }
+      }, 0);
     }
   } catch (err) {
     console.warn('Map tools setup skipped:', err);
