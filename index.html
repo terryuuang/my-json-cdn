@@ -65,7 +65,7 @@
     </div>
     
     <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
-    <button class="btn btn-secondary" onclick="showAllLocations()">顯示全部</button>
+    <button class="btn btn-secondary" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()">隱藏單位</button>
     <button class="btn btn-secondary" onclick="copyUrl()">複製連結</button>
     <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
     
@@ -80,6 +80,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>
   <script src="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js" defer></script>
+  <script src="static/js/shape_utils.js" defer></script>
   <script src="static/js/equipment_parser.js" defer></script>
   <script src="static/js/main.js" defer></script>
 </body>

@@ -163,6 +163,157 @@ const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 return R * c;
 }
 
+//（已搬移到 static/js/shape_utils.js）
+
+// 根據 shape 規格渲染禁航區與附近點位
+function renderShapeMode(shapeSpec, selectedLayer = null) {
+  currentMarkers.clearLayers();
+  if (centerMarker) { try { map.removeLayer(centerMarker); } catch (_) {} centerMarker = null; }
+  try { nfzLayerGroup.clearLayers(); } catch (_) {}
+
+  let featuresToScan = allFeatures;
+  if (selectedLayer) featuresToScan = filterFeaturesByLayer(featuresToScan, selectedLayer);
+
+  const ensureClosedPolyline = (points) => {
+    if (!points || points.length === 0) return null;
+    const first = points[0];
+    const last = points[points.length - 1];
+    if (first.lat === last.lat && first.lng === last.lng) {
+      return points.slice();
+    }
+    return [...points, { lat: first.lat, lng: first.lng }];
+  };
+
+  let bounds = null;
+  const extendBounds = (input) => {
+    try {
+      let b = null;
+      if (Array.isArray(input)) {
+        b = L.latLngBounds(input);
+      } else if (input && typeof input.getSouthWest === 'function') {
+        b = input;
+      }
+      if (b) bounds = bounds ? bounds.extend(b) : b;
+    } catch (_) {}
+  };
+
+  shapeSpec.shapes.forEach(s => {
+    try {
+      s._bufferPolyline = null;
+      if (s.type === 'point') {
+        const redIcon = L.divIcon({
+          className: 'custom-red-marker',
+          html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+          iconSize: [16, 16], iconAnchor: [8, 8]
+        });
+        const text = (shapeSpec.text || '禁航點');
+        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(text);
+        nfzLayerGroup.addLayer(m);
+        extendBounds([[s.center.lat, s.center.lng]]);
+        if (Number.isFinite(s.radiusKm) && s.radiusKm > 0) {
+          const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+          if (shapeSpec.text) c.bindPopup(shapeSpec.text);
+          nfzLayerGroup.addLayer(c);
+          extendBounds(c.getBounds());
+        }
+      } else if (s.type === 'line') {
+        const latlngs = s.coords.map(p => [p.lat, p.lng]);
+        const pl = L.polyline(latlngs, { color: '#ef4444', weight: 3 });
+        if (shapeSpec.text) pl.bindPopup(shapeSpec.text);
+        nfzLayerGroup.addLayer(pl);
+        extendBounds(latlngs);
+      } else if (s.type === 'polygon') {
+        const latlngs = s.coords.map(p => [p.lat, p.lng]);
+        const poly = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        if (shapeSpec.text) poly.bindPopup(shapeSpec.text);
+        nfzLayerGroup.addLayer(poly);
+        extendBounds(latlngs);
+        const perimeter = ensureClosedPolyline(s.coords.map(p => ({ lat: p.lat, lng: p.lng })));
+        s._bufferPolyline = perimeter;
+      } else if (s.type === 'bbox') {
+        const latlngs = [
+          [s.bounds.south, s.bounds.west],
+          [s.bounds.south, s.bounds.east],
+          [s.bounds.north, s.bounds.east],
+          [s.bounds.north, s.bounds.west]
+        ];
+        const rect = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.08 });
+        if (shapeSpec.text) rect.bindPopup(shapeSpec.text);
+        nfzLayerGroup.addLayer(rect);
+        extendBounds(latlngs);
+        const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
+        s._bufferPolyline = perimeter;
+      } else if (s.type === 'circle') {
+        const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        if (shapeSpec.text) c.bindPopup(shapeSpec.text);
+        nfzLayerGroup.addLayer(c);
+        extendBounds(c.getBounds());
+      } else if (s.type === 'sector') {
+        const latlngs = window.shapeUtils.buildSectorLatLngs(s.center, s.radiusKm, s.startDeg, s.endDeg);
+        const sec = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        if (shapeSpec.text) sec.bindPopup(shapeSpec.text);
+        nfzLayerGroup.addLayer(sec);
+        extendBounds(latlngs);
+        const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
+        s._bufferPolyline = perimeter;
+      }
+    } catch (_) { /* 忽略單一形狀錯誤 */ }
+  });
+
+  const matched = [];
+  for (const feature of featuresToScan) {
+    const coords = feature.geometry && feature.geometry.coordinates;
+    if (!coords || coords.length < 2) continue;
+    const pt = { lat: coords[1], lng: coords[0] };
+
+    let hit = false;
+    for (const s of shapeSpec.shapes) {
+      try {
+        if (s.type === 'point') {
+          if (!s.center) continue;
+          const baseRadius = Number.isFinite(s.radiusKm) ? s.radiusKm : 0;
+          const dKm = calculateDistance(s.center.lat, s.center.lng, pt.lat, pt.lng);
+          if (dKm <= baseRadius + NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+        } else if (s.type === 'circle') {
+          if (!s.center) continue;
+          const radius = Number.isFinite(s.radiusKm) ? s.radiusKm : 0;
+          const dKm = calculateDistance(s.center.lat, s.center.lng, pt.lat, pt.lng);
+          if (dKm <= radius + NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+        } else if (s.type === 'polygon') {
+          if (window.shapeUtils.pointInPolygon(pt, s.coords)) { hit = true; break; }
+          if (s._bufferPolyline && s._bufferPolyline.length >= 2 && window.shapeUtils.distancePointToPolylineKm(pt, s._bufferPolyline) <= NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+        } else if (s.type === 'bbox') {
+          const inside = pt.lat >= s.bounds.south && pt.lat <= s.bounds.north && pt.lng >= s.bounds.west && pt.lng <= s.bounds.east;
+          if (inside) { hit = true; break; }
+          if (s._bufferPolyline && s._bufferPolyline.length >= 2 && window.shapeUtils.distancePointToPolylineKm(pt, s._bufferPolyline) <= NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+        } else if (s.type === 'line') {
+          if (!s.coords || s.coords.length < 2) continue;
+          const threshold = Math.max(Number.isFinite(shapeSpec.lineBufferKm) ? shapeSpec.lineBufferKm : 0, NFZ_NEARBY_BUFFER_KM);
+          if (window.shapeUtils.distancePointToPolylineKm(pt, s.coords) <= threshold) { hit = true; break; }
+        } else if (s.type === 'sector') {
+          if (!s.center) continue;
+          const radius = Number.isFinite(s.radiusKm) ? s.radiusKm : 0;
+          const dKm = calculateDistance(s.center.lat, s.center.lng, pt.lat, pt.lng);
+          const ang = window.shapeUtils.bearingDeg(s.center.lat, s.center.lng, pt.lat, pt.lng);
+          const withinAngle = window.shapeUtils.angleInRangeCW(ang, s.startDeg, s.endDeg);
+          if (withinAngle && dKm <= radius) { hit = true; break; }
+          if (withinAngle && dKm <= radius + NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+          if (s._bufferPolyline && s._bufferPolyline.length >= 2 && window.shapeUtils.distancePointToPolylineKm(pt, s._bufferPolyline) <= NFZ_NEARBY_BUFFER_KM) { hit = true; break; }
+        }
+      } catch (_) {}
+    }
+    if (hit) matched.push(feature);
+  }
+
+  try {
+    if (bounds) {
+      map.fitBounds(bounds.pad(0.2));
+    }
+  } catch (_) {}
+
+  addMarkersForFeatures(matched, null, selectedLayer, null);
+}
+
 // 初始化地圖
 function initializeMap() {
 map = L.map('map', { 
@@ -207,6 +358,8 @@ map.on('click', function() {
 
   // 初始化繪圖/測距工具（依裝置調整位置與可用性）
   setupMapTools();
+  // 初始化禁航區圖層
+  try { nfzLayerGroup.addTo(map); } catch (_) {}
 }
 
 // SVG圖標系統
@@ -471,9 +624,16 @@ try {
     layerIndex = buildLayerIndex(allFeatures);
     }
     
-    // 根據URL參數渲染地圖，如果沒有URL座標，使用預設位置
-    const targetCoords = urlCoords || { lat: 25.5100, lng: 119.7910 };
-    renderMap(targetCoords, radius, selectedLayer);
+    // 支援 shape 模式（禁航區繪制 + 附近點位）
+    const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
+    if (shapeParam) {
+      const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
+      renderShapeMode(shapeSpec, selectedLayer);
+    } else {
+      // 根據URL參數渲染地圖，如果沒有URL座標，使用預設位置
+      const targetCoords = urlCoords || { lat: 25.5100, lng: 119.7910 };
+      renderMap(targetCoords, radius, selectedLayer);
+    }
     
     // 效能統計
     const endTime = performance.now();
@@ -500,6 +660,10 @@ let allFeatures = [];
 let layerIndex = null; // { layerName: Feature[] }
 let currentMarkers = L.layerGroup();
 let centerMarker = null;
+// 禁航區圖層（No-Fly Zones）
+let nfzLayerGroup = L.layerGroup();
+const NFZ_NEARBY_BUFFER_KM = 50;
+let unitsVisible = true;
 // 繪圖/測距控制元件
 let drawnItems = null;
 let drawControl = null;
@@ -524,6 +688,142 @@ return features.filter(feature => {
     return distance <= radiusKm;
 });
 }
+
+// 將特徵批次加入為標記（共用於搜尋/shape 模式）
+function addMarkersForFeatures(features, targetCoords = null, selectedLayer = null, radiusKm = null) {
+  // 優化：分批載入標記以提升效能
+  const featuresToShow = features || [];
+  const batchSize = isMobileDevice() ? 50 : 100;
+  let currentBatch = 0;
+
+  const addMarkersBatch = () => {
+    const start = currentBatch * batchSize;
+    const end = Math.min(start + batchSize, featuresToShow.length);
+    const batchFeatures = featuresToShow.slice(start, end);
+
+    if (batchFeatures.length > 0) {
+      L.geoJSON({ type: 'FeatureCollection', features: batchFeatures }, {
+        pointToLayer: (feature, latlng) => {
+          const props = feature.properties || {};
+          const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+          let isZeroDistance = false;
+          if (targetCoords) {
+            const coords = feature.geometry.coordinates;
+            const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
+            isZeroDistance = distance < 0.1; // 小於100公尺視為零距離
+          }
+          const customIcon = createCustomIcon(layerName, isZeroDistance);
+          const marker = L.marker(latlng, { icon: customIcon });
+          currentMarkers.addLayer(marker);
+          return marker;
+        },
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties || {};
+          const layerName = props.layer || props['分層'] || props['類別'] || '武裝警察、海外軍事設施及其他分類';
+          const iconData = getLayerIcon(layerName);
+          let popupContent = '';
+          let referenceLinks = [];
+          let mainTitle = cleanText(props['名稱'] || props['name'] || '軍事設施');
+          popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${mainTitle}</h3></div>`;
+          const cleanLayerName = cleanText(layerName);
+          popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${cleanLayerName}</span></div>`;
+          let equipmentText = '';
+          Object.entries(props).forEach(([key, value]) => {
+            if (key === '說明') {
+              const urlRegex = /(https?:\/\/[^\s]+)/g;
+              const matchedURLs = value.match(urlRegex);
+              if (matchedURLs) {
+                referenceLinks.push(...matchedURLs);
+                value = value.replace(urlRegex, '').trim();
+              }
+              value = cleanText(value);
+              if (value.includes('裝備')) equipmentText = value;
+            }
+            if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
+            if (value && value.toString().trim()) {
+              const cleanValue = cleanText(value);
+              if (cleanValue) popupContent += `<div class=\"popup-field\"><strong>${key}:</strong><span class=\"popup-field-value\">${cleanValue}</span></div>`;
+            }
+          });
+          if (targetCoords) {
+            const coords = feature.geometry.coordinates;
+            const distance = calculateDistance(targetCoords.lat, targetCoords.lng, coords[1], coords[0]);
+            const isZeroDistance = distance < 0.1;
+            if (isZeroDistance) {
+              popupContent += `<div class=\"popup-distance\" style=\"background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #ef4444; border: 2px solid #ef4444; animation: subtle-pulse 2s infinite;\"><strong>就在搜尋中心</strong> <span style=\"color: #ef4444; font-weight: 700;\">${distance < 0.01 ? '< 10公尺' : `${(distance * 1000).toFixed(0)}公尺`}</span><br/><small style=\"color: #dc2626;\">此設施位於您指定的位置附近</small></div>`;
+            } else {
+              popupContent += `<div class=\"popup-distance\"><strong>距離搜尋中心:</strong> ${distance.toFixed(2)} 公里</div>`;
+            }
+          }
+          if (referenceLinks.length) {
+            popupContent += `<div class=\"popup-links\"><div class=\"popup-links-title\">相關連結</div>`;
+            referenceLinks.forEach(url => { popupContent += `<a class=\"link-btn\" href=\"${url}\" target=\"_blank\">${getLabel(url)}</a>`; });
+            popupContent += '</div>';
+          }
+          const popupOptions = { className: 'custom-popup' };
+          if (isMobileDevice()) {
+            popupOptions.maxWidth = Math.min(350, window.innerWidth - 40);
+            popupOptions.minWidth = Math.min(260, window.innerWidth - 60);
+            popupOptions.maxHeight = Math.min(500, window.innerHeight - 120);
+            popupOptions.autoPan = true;
+            popupOptions.autoPanPadding = [10, 10];
+            popupOptions.closeButton = true;
+            popupOptions.keepInView = true;
+            popupOptions.autoClose = false;
+            popupOptions.closeOnEscapeKey = true;
+          } else {
+            popupOptions.maxWidth = 350;
+            popupOptions.minWidth = 280;
+          }
+          layer.bindPopup(popupContent, popupOptions);
+          if (equipmentText && window.equipmentParser) {
+            processEquipmentAsync(layer, equipmentText);
+          }
+        }
+      });
+
+      currentBatch++;
+      const progress = Math.round((end / featuresToShow.length) * 100);
+      if (document.getElementById('loading').style.display === 'block') {
+        document.querySelector('#loading div:last-child').textContent = `載入標記中... ${progress}%`;
+      }
+      if (end < featuresToShow.length) {
+        setTimeout(addMarkersBatch, 10);
+      } else {
+        hideLoading();
+        let message = `顯示 ${featuresToShow.length} 個點位`;
+        if (selectedLayer) message += ` (${selectedLayer})`;
+        if (targetCoords && Number.isFinite(radiusKm)) message += ` (${radiusKm}公里內)`;
+        updateInfoPanel(message);
+      }
+    } else {
+      hideLoading();
+      let message = `顯示 0 個點位`;
+      if (selectedLayer) message += ` (${selectedLayer})`;
+      if (targetCoords && Number.isFinite(radiusKm)) message += ` (${radiusKm}公里內)`;
+      updateInfoPanel(message);
+    }
+  };
+
+  addMarkersBatch();
+  applyUnitVisibility();
+}
+function applyUnitVisibility() {
+  const toggleBtn = document.getElementById('toggleUnitsBtn');
+  if (toggleBtn) toggleBtn.textContent = unitsVisible ? '隱藏單位' : '顯示單位';
+  if (!map) return;
+  if (unitsVisible) {
+    currentMarkers.addTo(map);
+  } else {
+    try { map.removeLayer(currentMarkers); } catch (_) {}
+  }
+}
+
+function toggleUnitsVisibility() {
+  unitsVisible = !unitsVisible;
+  applyUnitVisibility();
+}
+
 
 // 顯示載入指示器
 function showLoading() {
@@ -948,8 +1248,14 @@ if (selectedLayer) {
 const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
 window.history.pushState({}, '', newUrl);
 
-// 重新渲染地圖
-renderMap(urlCoords, radius, selectedLayer);
+// 重新渲染（若為 shape 模式則維持 shape）
+const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
+if (shapeParam) {
+  const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
+  renderShapeMode(shapeSpec, selectedLayer);
+} else {
+  renderMap(urlCoords, radius, selectedLayer);
+}
 }
 
 // 搜尋位置功能
@@ -978,22 +1284,6 @@ window.history.pushState({}, '', newUrl);
 
 // 重新渲染地圖
 renderMap({ lat, lng }, radius, selectedLayer);
-}
-
-// 顯示全部位置
-function showAllLocations() {
-// 清除URL參數
-const newUrl = `${window.location.origin}${window.location.pathname}`;
-window.history.pushState({}, '', newUrl);
-
-// 清空輸入欄
-document.getElementById('latInput').value = '';
-document.getElementById('lngInput').value = '';
-document.getElementById('radiusInput').value = '50';
-document.getElementById('layerFilter').value = '';
-
-// 重新渲染地圖
-renderMap(null);
 }
 
 // 複製URL功能
@@ -1036,6 +1326,8 @@ if (centerMarker) {
     map.removeLayer(centerMarker);
     centerMarker = null;
 }
+// 清除禁航區圖層（切回搜尋模式時）
+try { nfzLayerGroup.clearLayers(); } catch (_) {}
 
 let featuresToShow = allFeatures;
 let mapCenter = [25.5100, 119.7910]; // 預設中心
@@ -1207,7 +1499,7 @@ map.setView(mapCenter, mapZoom);
         processEquipmentAsync(layer, equipmentText);
     }
         }
-        }).addTo(map);
+        });
         
         currentBatch++;
         
@@ -1259,7 +1551,7 @@ map.setView(mapCenter, mapZoom);
     addMarkersBatch();
 
 // 將標記群組添加到地圖
-currentMarkers.addTo(map);
+applyUnitVisibility();
 }
 
 // 當頁面載入完成時啟動應用程式

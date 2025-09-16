@@ -4,15 +4,24 @@
 - `index.html`: Entry point for the Leaflet-based map UI.
 - `static/js/main.js`: Core map logic, URL param handling, data fetch/render.
 - `static/js/equipment_parser.js`: Parses equipment text; fetches Wikipedia summaries.
+- `static/js/shape_utils.js`: Shared helpers for shape parsing and geodesic calculations.
 - `static/css/main.css`: UI styles for map, popups, controls, and mobile.
-- Data: `joseph_w.geojson` (primary), historical snapshots, and related JSON.
-- Utilities: `app.js` (GeoJSON exporter from page data), `classify_layer.py` (lists GeoJSON layer names).
+- Data: `joseph_w.geojson` (primary), `joseph_w-20250806.geojson` (snapshot), `submarinecablemap-cdn-json-20250618.json`, and related JSON.
+- Utilities: `download_googlemap.js` (bookmarklet to export Google Maps data as GeoJSON), `classify_layer.py` (lists GeoJSON layer names).
 - Assets: `static/assets/`, `favicon.ico`, `robots.txt`.
 
 ## Build, Test, and Development Commands
 - Run locally (no build step): `python3 -m http.server 8080` then open `http://localhost:8080`.
 - Alternative server: `npx serve` (if Node is available).
 - Validate layers: `python3 classify_layer.py` (edit the filename inside as needed).
+
+## URL Parameter Reference
+- Basic search: `lat`/`lng` or `coords=lat,lng` center the map (path suffix `/lat,lng` still works). Omit radius to default 100 km (50 km when coordinates supplied).
+- Range & filters: `radius=` (numeric, km by default) and optional `layer=` to preselect a layer filter.
+- Shape mode: `shape=` accepts `point`, `circle`, `line`, `polygon`, `bbox`, `sector`, or `multi`. Supply shared options `unit=nm|km|m` (affects `radius`) and `text=` for popup labels.
+- Inline coordinates for shapes use `lng,lat` pairs separated by semicolons. `line=` and `poly=` accept these lists; `bbox=` expects `west,south,east,north`.
+- Circle/sector inputs read `lat`, `lng`, and `radius`; sectors also need `start`/`end` bearings (degrees, clockwise from north).
+- Multi-shape mode supports multiple values: repeat `circle=lng,lat,r`, `line=...`, `poly=...`, and `sector=lng,lat,r,start,end` to render several overlays at once (radius scaled by `unit`).
 
 ## Coding Style & Naming Conventions
 - JavaScript: ES6+, browser-only, 2-space indent, use `const`/`let`, avoid adding dependencies/frameworks. Keep functions small and side-effect scoped.
@@ -36,4 +45,3 @@
 
 ## Agent-Specific Instructions
 - Keep changes minimal and in-scope; do not introduce build tools. Preserve structure and style; update this guide if conventions change.
-
