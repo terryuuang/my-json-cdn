@@ -357,16 +357,40 @@ const labelLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_lab
     pane: 'overlayPane'
 }).addTo(map);
 
-// 點擊地圖關閉控制面板（手機與桌面通用）
-map.on('click', function() {
-  const panel = document.getElementById('controlPanel');
-  const toggleBtn = document.querySelector('.toggle-panel');
-  if (panel.classList.contains('show-mobile') || !panel.classList.contains('hidden')) {
-    panel.classList.remove('show-mobile');
-    panel.classList.add('hidden');
-    if (toggleBtn) toggleBtn.style.zIndex = '1001';
-  }
-});
+  // 防止面板互動事件冒泡到地圖導致誤關閉（Leaflet 觸控環境尤為明顯）
+  try {
+    const panel = document.getElementById('controlPanel');
+    if (panel && L && L.DomEvent) {
+      L.DomEvent.disableClickPropagation(panel);
+      L.DomEvent.disableScrollPropagation(panel);
+    }
+  } catch (_) { /* 忽略 Leaflet 未就緒或 DOM 缺失 */ }
+
+  // 點擊地圖關閉控制面板（手機與桌面通用）
+  map.on('click', function(e) {
+    const panel = document.getElementById('controlPanel');
+    const toggleBtn = document.querySelector('.toggle-panel');
+    if (!panel) return;
+
+    const originalEvent = e?.originalEvent;
+    if (originalEvent) {
+      const target = originalEvent.target;
+      const composedPath = typeof originalEvent.composedPath === 'function'
+        ? originalEvent.composedPath()
+        : null;
+
+      const interactedWithPanel = (target && panel.contains(target)) ||
+        (toggleBtn && target && toggleBtn.contains(target)) ||
+        (Array.isArray(composedPath) && (
+          composedPath.includes(panel) ||
+          (toggleBtn && composedPath.includes(toggleBtn))
+        ));
+
+      if (interactedWithPanel) return;
+    }
+
+    closeControlPanel();
+  });
 
   // 初始化繪圖/測距工具（依裝置調整位置與可用性）
   setupMapTools();
@@ -1151,6 +1175,21 @@ return text.toString()
 }
 
 // 隱藏/顯示控制面板
+function closeControlPanel() {
+  const panel = document.getElementById('controlPanel');
+  const toggleBtn = document.querySelector('.toggle-panel');
+  if (!panel) return;
+
+  panel.classList.remove('show-mobile');
+  if (isMobileDevice()) {
+    panel.classList.remove('hidden');
+  } else {
+    panel.classList.add('hidden');
+  }
+
+  if (toggleBtn) toggleBtn.style.zIndex = '1001';
+}
+
 function togglePanel() {
 const panel = document.getElementById('controlPanel');
 const toggleBtn = document.querySelector('.toggle-panel');
