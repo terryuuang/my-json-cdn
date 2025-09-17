@@ -663,6 +663,8 @@ try {
     // 支援 shape 模式（禁航區繪制 + 附近點位）
     const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
     if (shapeParam) {
+      // shape 模式預設不顯示單位（點位）
+      unitsVisible = false;
       const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
       renderShapeMode(shapeSpec, selectedLayer);
     } else {
