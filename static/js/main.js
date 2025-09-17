@@ -1,3 +1,9 @@
+// ==========================================================
+// 資料來源 URL 設定（支援自訂 DOMAIN）
+// ==========================================================
+const DATA_BASE_URL = './';  // 使用相對路徑以支援自訂域名
+const GEOJSON_FILENAME = 'joseph_w.geojson';
+
 // 異步處理裝備資訊的函數
 // 非同步處理裝備資訊（加上防重與效能優化）
 async function processEquipmentAsync(layer, equipmentText) {
@@ -575,7 +581,7 @@ try {
     document.getElementById('layerFilter').value = selectedLayer;
     
     // 載入地圖資料 - 優化版本，支援進度顯示
-    const geojsonURL = 'https://terryuuang.github.io/my-json-cdn/joseph_w.geojson';
+    const geojsonURL = DATA_BASE_URL + GEOJSON_FILENAME;
     
     // 更新載入狀態顯示進度
     document.querySelector('#loading div:last-child').textContent = '載入地圖資料中...';
