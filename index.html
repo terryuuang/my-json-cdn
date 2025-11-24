@@ -18,13 +18,23 @@
     ⚠️ 圖資 preload 可能造成首次卡頓；遇效能問題可重新整理
   </div>
   <div id="map"></div>
-  
+
   <!-- 載入指示器 -->
   <div id="loading" class="loading">
     <div class="spinner"></div>
     <div>載入地圖資料中...</div>
   </div>
-  
+
+  <!-- 手機版固定搜尋列 -->
+  <div id="mobileSearchBar" class="mobile-search-bar">
+    <div class="mobile-search-container">
+      <button class="mobile-toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">⚙️</button>
+      <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="搜尋地點..." autocomplete="off" aria-label="搜尋地點">
+      <button class="mobile-search-btn" onclick="performMobileSearch()" aria-label="執行搜尋">🔍</button>
+    </div>
+    <div id="mobileSearchResults" class="mobile-search-results" style="display: none;" role="listbox" aria-label="搜尋結果"></div>
+  </div>
+
   <!-- 控制面板 -->
   <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
     <div class="control-title">地圖控制</div>
