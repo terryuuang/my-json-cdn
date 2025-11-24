@@ -73,7 +73,7 @@
 
     <!-- 分層篩選 (改為多選下拉選單) -->
     <div class="input-group">
-      <label class="input-label">分層篩選</label>
+      <label class="input-label">單位篩選</label>
       <div class="unified-dropdown">
         <button type="button" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇圖層">
           <span id="layerSelectedCount">顯示全部分層</span>
@@ -112,8 +112,7 @@
               <label><input type="checkbox" value="黨和國家重要政經軍事機關" onchange="handleLayerChange(this)"><span>黨和國家重要政經軍事機關</span></label>
             </div>
           </div>
-          <div class="dropdown-actions">
-            <button type="button" class="btn-dropdown-action" onclick="clearAllLayerSelections()">清除全部</button>
+          <div class="dropdown-actions" style="display: none;">
           </div>
         </div>
       </div>
@@ -184,7 +183,6 @@
     
     <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
     <button class="btn btn-secondary" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()">隱藏單位</button>
-    <button class="btn btn-secondary" onclick="copyUrl()">複製連結</button>
     <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
     
     <div id="infoPanel" class="info-panel" style="display: none;">
