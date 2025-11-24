@@ -1189,7 +1189,7 @@ function closeControlPanel() {
     panel.classList.add('hidden');
   }
 
-  if (toggleBtn) toggleBtn.style.zIndex = '1001';
+  if (toggleBtn) toggleBtn.style.zIndex = '1600';
 }
 
 function togglePanel() {
@@ -1201,18 +1201,18 @@ if (isMobileDevice()) {
     panel.classList.toggle('show-mobile');
     // 面板開啟時讓按鈕位於面板之下或隱藏
     if (panel.classList.contains('show-mobile')) {
-      toggleBtn.style.zIndex = '500';
+      toggleBtn.style.zIndex = '1400';
     } else {
-      toggleBtn.style.zIndex = '1001';
+      toggleBtn.style.zIndex = '1600';
     }
 } else {
     // 桌面版使用原有的hidden class
     panel.classList.toggle('hidden');
     // 面板開啟(未隱藏)時將按鈕壓到下面
     if (!panel.classList.contains('hidden')) {
-      toggleBtn.style.zIndex = '500';
+      toggleBtn.style.zIndex = '1400';
     } else {
-      toggleBtn.style.zIndex = '1001';
+      toggleBtn.style.zIndex = '1600';
     }
 }
 }
@@ -1230,14 +1230,14 @@ if (isMobileDevice()) {
     panel.classList.remove('hidden');
     // 顯示手機版提示
     mobileHint.style.display = 'block';
-    toggleBtn.style.zIndex = '1001';
+    toggleBtn.style.zIndex = '1600';
 } else {
     // 桌面版預設顯示
     panel.classList.remove('hidden');
     panel.classList.remove('show-mobile');
     // 隱藏手機版提示
     mobileHint.style.display = 'none';
-    toggleBtn.style.zIndex = '500';
+    toggleBtn.style.zIndex = '1400';
 }
 }
 
@@ -1258,14 +1258,14 @@ if (isMobileDevice()) {
         panel.classList.add('show-mobile');
     }
     }
-    toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '500' : '1001';
+    toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '1400' : '1600';
 } else {
     // 切換到桌面版
     panel.classList.remove('show-mobile');
     mobileHint.style.display = 'none';
     // 桌面版預設顯示
     panel.classList.remove('hidden');
-    toggleBtn.style.zIndex = '500';
+    toggleBtn.style.zIndex = '1400';
 }
 }
 
@@ -1337,6 +1337,11 @@ window.history.pushState({}, '', newUrl);
 
 // 重新渲染地圖
 renderMap({ lat, lng }, radius, selectedLayer);
+
+// 手機版自動關閉控制面板
+if (isMobileDevice()) {
+    closeControlPanel();
+}
 }
 
 // 複製URL功能
@@ -1630,4 +1635,226 @@ function showTopNotice() {
     // 靜默失敗，不影響主流程
     console.warn('top notice failed', e);
   }
+}
+
+// ==========================================================
+// 搜尋功能
+// ==========================================================
+
+// 執行搜尋
+async function performSearch() {
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+  const query = searchInput.value.trim();
+
+  if (!query) {
+    searchResults.style.display = 'none';
+    return;
+  }
+
+  // 檢查 searchUtils 是否已載入
+  if (!window.searchUtils) {
+    console.error('Search utils not loaded');
+    searchResults.innerHTML = '<div class="search-no-results">搜尋功能載入中，請稍後再試...</div>';
+    searchResults.style.display = 'block';
+    return;
+  }
+
+  // 顯示載入狀態
+  searchResults.innerHTML = '<div class="search-loading">🔍 搜尋中...</div>';
+  searchResults.style.display = 'block';
+
+  try {
+    // 使用混合搜尋：本地 GeoJSON + Nominatim API
+    const results = await window.searchUtils.searchCombined(allFeatures, query, {
+      searchFields: ['名稱', '說明', 'layer'],
+      maxResults: isMobileDevice() ? 20 : 50,
+      includeNominatim: true,
+      nominatimMaxResults: 5
+    });
+
+    displaySearchResults(results, query);
+  } catch (error) {
+    console.error('Search error:', error);
+    searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+  }
+}
+
+// 顯示搜尋結果
+function displaySearchResults(results, query) {
+  const searchResults = document.getElementById('searchResults');
+
+  if (!results || results.length === 0) {
+    searchResults.innerHTML = '<div class="search-no-results">找不到相關地點</div>';
+    searchResults.style.display = 'block';
+    return;
+  }
+
+  let html = '';
+  results.forEach((result, index) => {
+    const name = result.displayName || result.name || '未命名';
+    const layer = result.layer || '未分類';
+    const coords = result.coordinates;
+    const coordsText = coords ? `${coords[1].toFixed(4)}, ${coords[0].toFixed(4)}` : '';
+    const source = result.source || 'local';
+
+    // 高亮匹配文本（僅對本地結果）
+    const displayName = source === 'local'
+      ? window.searchUtils.highlightMatch(name, query)
+      : name;
+
+    // 來源標記
+    const sourceIcon = source === 'nominatim'
+      ? '<span class="search-source-badge" title="來自 OpenStreetMap">🌍</span>'
+      : '';
+
+    html += `
+      <div class="search-result-item ${source === 'nominatim' ? 'nominatim-result' : ''}" onclick="selectSearchResult(${index})">
+        <div class="search-result-name">${displayName} ${sourceIcon}</div>
+        <div class="search-result-layer">${layer}</div>
+        <div class="search-result-coords">${coordsText}</div>
+      </div>
+    `;
+  });
+
+  searchResults.innerHTML = html;
+  searchResults.style.display = 'block';
+
+  // 保存結果供選擇使用
+  window.currentSearchResults = results;
+}
+
+// 選擇搜尋結果
+function selectSearchResult(index) {
+  const results = window.currentSearchResults;
+  if (!results || !results[index]) return;
+
+  const result = results[index];
+  const coords = result.coordinates;
+
+  if (!coords || coords.length < 2) return;
+
+  const lat = coords[1];
+  const lng = coords[0];
+
+  // 填入座標
+  document.getElementById('latInput').value = lat;
+  document.getElementById('lngInput').value = lng;
+
+  // 隱藏搜尋結果
+  document.getElementById('searchResults').style.display = 'none';
+
+  // 設定預設半徑
+  const radiusInput = document.getElementById('radiusInput');
+  if (!radiusInput.value || parseFloat(radiusInput.value) > 100) {
+    radiusInput.value = 10; // 搜尋結果預設使用較小半徑
+  }
+
+  // 更新 URL
+  const selectedLayer = document.getElementById('layerFilter').value;
+  const radius = parseFloat(radiusInput.value) || 10;
+
+  const urlParams = new URLSearchParams();
+  urlParams.set('lat', lat);
+  urlParams.set('lng', lng);
+  urlParams.set('radius', radius);
+  if (selectedLayer) {
+    urlParams.set('layer', selectedLayer);
+  }
+
+  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+  window.history.pushState({}, '', newUrl);
+
+  // 渲染地圖
+  renderMap({ lat, lng }, radius, selectedLayer);
+
+  // 手機版自動關閉面板
+  if (isMobileDevice()) {
+    closeControlPanel();
+  }
+
+  // 清空搜尋框（可選）
+  // document.getElementById('searchInput').value = '';
+}
+
+// 即時搜尋（當用戶輸入時）
+function setupSearchInput() {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+
+  let searchTimeout;
+  let selectedResultIndex = -1;
+
+  // 輸入時即時搜尋（防抖）
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+
+    selectedResultIndex = -1; // 重置選中項
+
+    if (!query) {
+      document.getElementById('searchResults').style.display = 'none';
+      return;
+    }
+
+    // 延遲搜尋以避免過於頻繁
+    searchTimeout = setTimeout(() => {
+      performSearch();
+    }, 300); // 300ms 延遲
+  });
+
+  // 鍵盤導航
+  searchInput.addEventListener('keydown', function(e) {
+    const searchResults = document.getElementById('searchResults');
+    const resultItems = searchResults.querySelectorAll('.search-result-item');
+
+    if (!resultItems.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedResultIndex = Math.min(selectedResultIndex + 1, resultItems.length - 1);
+      updateSelectedResult(resultItems, selectedResultIndex);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedResultIndex = Math.max(selectedResultIndex - 1, -1);
+      updateSelectedResult(resultItems, selectedResultIndex);
+    } else if (e.key === 'Enter' && selectedResultIndex >= 0) {
+      e.preventDefault();
+      selectSearchResult(selectedResultIndex);
+    } else if (e.key === 'Escape') {
+      searchResults.style.display = 'none';
+      selectedResultIndex = -1;
+    }
+  });
+
+  // 點擊外部關閉搜尋結果
+  document.addEventListener('click', function(e) {
+    const searchResults = document.getElementById('searchResults');
+    const controlPanel = document.getElementById('controlPanel');
+
+    if (!controlPanel.contains(e.target)) {
+      searchResults.style.display = 'none';
+      selectedResultIndex = -1;
+    }
+  });
+
+  // 更新選中的結果項
+  function updateSelectedResult(items, index) {
+    items.forEach((item, i) => {
+      if (i === index) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  }
+}
+
+// 在 init 函數中調用
+// 需要在 DOMContentLoaded 後執行
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupSearchInput);
+} else {
+  setupSearchInput();
 }

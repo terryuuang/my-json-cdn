@@ -258,7 +258,7 @@ html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMac
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    z-index: 1000;
+    z-index: 1500;
     min-width: 280px;
     max-width: 320px;
 }
@@ -272,6 +272,7 @@ html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMac
 
 .input-group {
     margin-bottom: 12px;
+    position: relative;
 }
 
 .input-label {
@@ -449,6 +450,169 @@ select.input-field:hover {
     margin-top: 10px;
 }
 
+/* 搜尋元件樣式 */
+.search-container {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+}
+
+.btn-search {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 2000;
+    margin-top: 4px;
+    scroll-behavior: smooth;
+}
+
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.search-result-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item.selected {
+    background: #f8fafc;
+}
+
+.search-result-item.selected {
+    background: #eff6ff;
+    border-left: 3px solid #3b82f6;
+}
+
+.search-result-item.nominatim-result {
+    background: #fefce8;
+    border-left: 2px solid #fbbf24;
+}
+
+.search-result-item.nominatim-result:hover,
+.search-result-item.nominatim-result.selected {
+    background: #fef3c7;
+}
+
+.search-source-badge {
+    font-size: 10px;
+    margin-left: 4px;
+    opacity: 0.8;
+}
+
+.search-result-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.search-result-layer {
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.search-result-coords {
+    font-size: 10px;
+    color: #9ca3af;
+    font-family: monospace;
+}
+
+.search-highlight {
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.search-no-results {
+    padding: 16px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.search-loading {
+    padding: 16px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+/* 手機版搜尋優化 */
+@media (max-width: 768px) {
+    .search-container {
+        gap: 4px;
+    }
+
+    .btn-search {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .search-results {
+        max-height: 200px;
+    }
+
+    .search-result-item {
+        padding: 8px 10px;
+    }
+
+    .search-result-name {
+        font-size: 12px;
+    }
+
+    .search-result-layer {
+        font-size: 10px;
+    }
+
+    .search-result-coords {
+        font-size: 9px;
+    }
+}
+
 /* 載入指示器 */
 .loading {
     position: absolute;
@@ -488,7 +652,7 @@ select.input-field:hover {
     padding: 10px;
     border-radius: 8px;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 1600;
     font-size: 18px;
 }
 
@@ -510,7 +674,7 @@ select.input-field:hover {
     transform: translateX(-100%);
     opacity: 0;
     transition: all 0.3s ease;
-    z-index: 1000;
+    z-index: 1500;
 }
 
 /* Leaflet 控制項：與自家控制面板與行動裝置的協調 */

@@ -31,7 +31,17 @@
     <div id="mobileHint" class="mobile-hint" style="display: none;">
       請點擊地圖任意處關閉此面板
     </div>
-    
+
+    <!-- 地點搜尋 -->
+    <div class="input-group">
+      <label class="input-label">搜尋地點</label>
+      <div class="search-container">
+        <input type="text" id="searchInput" class="input-field search-input" placeholder="輸入地點名稱..." autocomplete="off" aria-label="搜尋地點">
+        <button class="btn btn-search" onclick="performSearch()" aria-label="執行搜尋">搜尋</button>
+      </div>
+      <div id="searchResults" class="search-results" style="display: none;" role="listbox" aria-label="搜尋結果"></div>
+    </div>
+
     <div class="input-group">
       <label class="input-label">緯度 (Latitude)</label>
       <input type="number" id="latInput" class="input-field" step="any" placeholder="例如: 31.9424765">
@@ -80,8 +90,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>
   <script src="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js" defer></script>
+  <!-- OpenCC.js for Traditional/Simplified Chinese conversion -->
+  <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
   <script src="static/js/shape_utils.js" defer></script>
   <script src="static/js/equipment_parser.js" defer></script>
+  <script src="static/js/search_utils.js" defer></script>
   <script src="static/js/main.js" defer></script>
 </body>
 </html>
