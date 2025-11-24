@@ -4,6 +4,40 @@
 const DATA_BASE_URL = './';  // 使用相對路徑以支援自訂域名
 const GEOJSON_FILENAME = 'joseph_w.geojson';
 
+// ==========================================================
+// 更新日誌設定（統一維護）
+// ==========================================================
+const CHANGELOG = [
+  {
+    date: '2025年11月24日',
+    description: '整合統一下拉選單系統，新增多選功能以支援分層篩選及公共設施選擇'
+  },
+  {
+    date: '2025年11月24日',
+    description: '新增手機版搜尋功能，優化搜尋體驗及競態條件處理'
+  },
+  {
+    date: '2025年11月24日',
+    description: '新增地點搜尋功能，支援 Nominatim API 進行地理編碼查詢'
+  },
+  {
+    date: '2025年09月17日',
+    description: '改進控制面板互動邏輯，防止誤關閉並優化點擊事件處理'
+  },
+  {
+    date: '2025年09月16日',
+    description: '新增形狀模式支援，包含圓形、線段、多邊形等地圖標記功能'
+  },
+  {
+    date: '2025年09月16日',
+    description: '本地化 Leaflet.draw 介面為繁體中文，新增紅色主題樣式'
+  },
+  {
+    date: '2025年09月16日',
+    description: '新增 Google 地圖資料匯出為 GeoJSON 格式的功能'
+  }
+];
+
 // 異步處理裝備資訊的函數
 // 非同步處理裝備資訊（加上防重與效能優化）
 async function processEquipmentAsync(layer, equipmentText) {
@@ -1152,11 +1186,55 @@ function setupMapTools() {
 }
 
 // 更新資訊面板
+// 更新資訊面板，顯示點位統計資訊
 function updateInfoPanel(message) {
-const infoPanel = document.getElementById('infoPanel');
-const infoText = document.getElementById('infoText');
-infoText.textContent = message;
-infoPanel.style.display = 'block';
+  const infoPanel = document.getElementById('infoPanel');
+  const infoText = document.getElementById('infoText');
+  infoText.innerHTML = `
+    <div class="info-panel-content">
+      <span class="info-message">${message}</span>
+      <span class="changelog-link" onclick="showChangelog(event)">更新資訊</span>
+    </div>
+  `;
+  infoPanel.style.display = 'block';
+}
+
+// 顯示更新日誌彈窗
+function showChangelog(event) {
+  event.stopPropagation();
+  
+  // 關閉控制面板（如果是手機版）
+  const controlPanel = document.getElementById('controlPanel');
+  const panelBackdrop = document.getElementById('panelBackdrop');
+  if (window.innerWidth <= 768) {
+    controlPanel.classList.remove('active');
+    panelBackdrop.style.display = 'none';
+  }
+  
+  // 動態生成更新日誌內容
+  const changelogBody = document.querySelector('.changelog-body');
+  if (changelogBody) {
+    changelogBody.innerHTML = CHANGELOG.map(item => `
+      <div class="changelog-item">
+        <span class="changelog-date">${item.date}：</span>
+        <span class="changelog-desc">${item.description}</span>
+      </div>
+    `).join('');
+  }
+  
+  // 顯示更新日誌 modal
+  const modal = document.getElementById('changelogModal');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+// 關閉更新日誌彈窗
+function closeChangelog() {
+  const modal = document.getElementById('changelogModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
 }
 
 // 檢測是否為手機設備

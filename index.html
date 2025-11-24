@@ -193,6 +193,19 @@
   <!-- 隱藏面板按鈕 -->
   <button class="toggle-panel" onclick="togglePanel()">⚙️</button>
 
+  <!-- 更新日誌 Modal -->
+  <div id="changelogModal" class="changelog-modal" onclick="closeChangelog()">
+    <div class="changelog-content" onclick="event.stopPropagation()">
+      <div class="changelog-header">
+        <h3>更新日誌</h3>
+        <button class="changelog-close" onclick="closeChangelog()" aria-label="關閉">✕</button>
+      </div>
+      <div class="changelog-body">
+        <!-- 內容將由 JavaScript 動態生成 -->
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>
   <script src="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js" defer></script>
