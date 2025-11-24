@@ -29,8 +29,10 @@
   <div id="mobileSearchBar" class="mobile-search-bar">
     <div class="mobile-search-container">
       <button class="mobile-toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">⚙️</button>
-      <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="搜尋地點..." autocomplete="off" aria-label="搜尋地點">
-      <button class="mobile-search-btn" onclick="performMobileSearch()" aria-label="執行搜尋">🔍</button>
+      <div class="mobile-search-input-wrapper">
+        <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="搜尋地點..." autocomplete="off" aria-label="搜尋地點">
+        <button id="mobileClearBtn" class="mobile-clear-btn" onclick="clearMobileSearch()" aria-label="清除搜尋" style="display: none;">✕</button>
+      </div>
     </div>
     <div id="mobileSearchResults" class="mobile-search-results" style="display: none;" role="listbox" aria-label="搜尋結果"></div>
   </div>

@@ -1642,6 +1642,9 @@ function showTopNotice() {
 // ==========================================================
 
 // 執行搜尋
+// 使用搜尋請求 ID 來避免競態條件
+let desktopSearchRequestId = 0;
+
 async function performSearch() {
   const searchInput = document.getElementById('searchInput');
   const searchResults = document.getElementById('searchResults');
@@ -1660,8 +1663,11 @@ async function performSearch() {
     return;
   }
 
+  // 生成新的搜尋請求 ID
+  const currentRequestId = ++desktopSearchRequestId;
+
   // 顯示載入狀態
-  searchResults.innerHTML = '<div class="search-loading">🔍 搜尋中...</div>';
+  searchResults.innerHTML = '<div class="search-loading">搜尋中...</div>';
   searchResults.style.display = 'block';
 
   try {
@@ -1673,10 +1679,18 @@ async function performSearch() {
       nominatimMaxResults: 5
     });
 
-    displaySearchResults(results, query);
+    // 只有當這個請求仍然是最新的時候才顯示結果
+    if (currentRequestId === desktopSearchRequestId) {
+      displaySearchResults(results, query);
+    } else {
+      console.log('Ignoring outdated desktop search result');
+    }
   } catch (error) {
     console.error('Search error:', error);
-    searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+    // 只有當這個請求仍然是最新的時候才顯示錯誤
+    if (currentRequestId === desktopSearchRequestId) {
+      searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+    }
   }
 }
 
@@ -1778,6 +1792,9 @@ function selectSearchResult(index) {
 }
 
 // 手機版搜尋功能
+// 使用搜尋請求 ID 來避免競態條件
+let mobileSearchRequestId = 0;
+
 async function performMobileSearch() {
   const searchInput = document.getElementById('mobileSearchInput');
   const searchResults = document.getElementById('mobileSearchResults');
@@ -1796,8 +1813,11 @@ async function performMobileSearch() {
     return;
   }
 
+  // 生成新的搜尋請求 ID
+  const currentRequestId = ++mobileSearchRequestId;
+
   // 顯示載入狀態
-  searchResults.innerHTML = '<div class="search-loading">🔍 搜尋中...</div>';
+  searchResults.innerHTML = '<div class="search-loading">搜尋中...</div>';
   searchResults.style.display = 'block';
 
   try {
@@ -1809,10 +1829,18 @@ async function performMobileSearch() {
       nominatimMaxResults: 5
     });
 
-    displayMobileSearchResults(results, query);
+    // 只有當這個請求仍然是最新的時候才顯示結果
+    if (currentRequestId === mobileSearchRequestId) {
+      displayMobileSearchResults(results, query);
+    } else {
+      console.log('Ignoring outdated mobile search result');
+    }
   } catch (error) {
     console.error('Search error:', error);
-    searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+    // 只有當這個請求仍然是最新的時候才顯示錯誤
+    if (currentRequestId === mobileSearchRequestId) {
+      searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+    }
   }
 }
 
@@ -1882,6 +1910,7 @@ function selectMobileSearchResult(index) {
 
   // 清空搜尋框
   document.getElementById('mobileSearchInput').value = '';
+  document.getElementById('mobileClearBtn').style.display = 'none';
 
   // 設定預設半徑
   const radiusInput = document.getElementById('radiusInput');
@@ -1908,9 +1937,22 @@ function selectMobileSearchResult(index) {
   renderMap({ lat, lng }, radius, selectedLayer);
 }
 
+// 清除手機版搜尋
+function clearMobileSearch() {
+  const searchInput = document.getElementById('mobileSearchInput');
+  const searchResults = document.getElementById('mobileSearchResults');
+  const clearBtn = document.getElementById('mobileClearBtn');
+
+  searchInput.value = '';
+  searchResults.style.display = 'none';
+  clearBtn.style.display = 'none';
+  searchInput.focus();
+}
+
 // 設置手機版搜尋輸入監聽
 function setupMobileSearchInput() {
   const searchInput = document.getElementById('mobileSearchInput');
+  const clearBtn = document.getElementById('mobileClearBtn');
   if (!searchInput) return;
 
   let searchTimeout;
@@ -1922,6 +1964,13 @@ function setupMobileSearchInput() {
     const query = this.value.trim();
 
     selectedResultIndex = -1; // 重置選中項
+
+    // 顯示/隱藏清除按鈕
+    if (this.value.length > 0) {
+      clearBtn.style.display = 'flex';
+    } else {
+      clearBtn.style.display = 'none';
+    }
 
     if (!query) {
       document.getElementById('mobileSearchResults').style.display = 'none';
