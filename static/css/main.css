@@ -248,6 +248,26 @@ html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMac
     border-color: #9ca3af;
 }
 
+/* 背景遮罩 */
+.panel-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1400;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.panel-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
 /* 控制面板樣式 */
 .control-panel {
     position: absolute;
@@ -255,12 +275,36 @@ html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMac
     left: 10px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    padding: 15px;
+    padding: 18px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     z-index: 1500;
-    min-width: 280px;
-    max-width: 320px;
+    min-width: 320px;
+    max-width: 380px;
+    max-height: calc(100vh - 30px);
+    overflow-y: auto;
+    overflow-x: visible;
+    box-sizing: border-box;
+}
+
+/* 桌面版控制面板滾動條樣式 */
+.control-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.control-panel::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.control-panel::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.control-panel::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 .control-title {
@@ -699,13 +743,16 @@ select.input-field:hover {
         position: fixed;
         top: 10px;
         left: 10px;
-        right: 10px;
-        z-index: 1400; /* 低於控制面板，讓控制面板可以蓋住 */
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(10px);
+        right: 50px;
+        width: auto;
+        max-width: 300px;
+        z-index: 1400;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+        backdrop-filter: blur(12px);
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
         padding: 8px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     .mobile-search-container {
@@ -717,16 +764,16 @@ select.input-field:hover {
 
     .mobile-toggle-panel {
         flex-shrink: 0;
-        padding: 10px;
-        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-        border: 1px solid #cbd5e1;
+        padding: 8px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: 1px solid #1d4ed8;
         border-radius: 10px;
-        font-size: 18px;
+        font-size: 16px;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         transition: all 0.2s ease;
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 38px;
+        min-height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -734,7 +781,8 @@ select.input-field:hover {
 
     .mobile-toggle-panel:active {
         transform: scale(0.95);
-        background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
     }
 
     .mobile-search-input-wrapper {
@@ -747,17 +795,24 @@ select.input-field:hover {
     .mobile-search-input {
         flex: 1;
         padding: 11px 38px 11px 14px;
-        border: 1px solid #d1d5db;
+        border: 1px solid #e2e8f0;
         border-radius: 10px;
         font-size: 15px;
         background: white;
         box-sizing: border-box;
         transition: all 0.2s ease;
+        color: #1e293b;
+        font-weight: 400;
+    }
+    
+    .mobile-search-input::placeholder {
+        color: #94a3b8;
     }
 
     .mobile-search-input:focus {
         outline: none;
         border-color: #3b82f6;
+        background: white;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
@@ -790,7 +845,9 @@ select.input-field:hover {
         position: fixed;
         top: 66px;
         left: 10px;
-        right: 10px;
+        right: 50px;
+        width: auto;
+        max-width: 300px;
         background: white;
         border: 1px solid #d1d5db;
         border-radius: 12px;
@@ -857,17 +914,29 @@ select.input-field:hover {
 @media (max-width: 768px) {
     .control-panel {
     position: fixed;
-    top: 10px; /* 與搜尋列同高，蓋住搜尋列 */
+    /* 調整位置往上，並蓋住搜尋列 */
+    top: 5px;
     left: 10px;
-    right: 10px;
-    max-width: none;
+    right: auto;
+    width: calc(100vw - 50px);
+    max-width: 400px;
     min-width: auto;
-    transform: translateX(-100%);
+    transform: translateX(-120%);
     opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1500; /* 高於搜尋列，可以蓋住 */
-    max-height: calc(100vh - 20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1500;
+    max-height: calc(100vh - 15px);
     overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    padding-bottom: 24px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+    backdrop-filter: blur(12px);
+    /* 與搜尋列相同的圓角和邊框 */
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 /* Leaflet 控制項：與自家控制面板與行動裝置的協調 */
@@ -911,6 +980,140 @@ select.input-field:hover {
     transform: translateX(0);
     opacity: 1;
     }
+    
+    /* 手機版控制面板標題優化 */
+    .control-panel .control-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    }
+    
+    .control-panel .control-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 2px;
+    margin-right: 8px;
+    }
+    
+    /* 手機版輸入組優化 */
+    .control-panel .input-group {
+    margin-bottom: 16px;
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .control-panel .input-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    }
+    
+    .control-panel .input-field {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    }
+    
+    .control-panel .input-field:focus {
+    background: white;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* 手機版按鈕組區域 */
+    .control-panel > .btn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-right: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    }
+    
+    .control-panel > .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    }
+    
+    .control-panel > .btn:active {
+    transform: scale(0.97);
+    }
+    
+    .control-panel > .btn:active::before {
+    transform: translateX(0);
+    }
+    
+    .control-panel .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+    
+    .control-panel .btn-secondary {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+    
+    .control-panel .btn-secondary:active {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    }
+    
+    /* 手機版按鈕區域分隔 */
+    .control-panel > .btn:first-of-type {
+    margin-top: 8px;
+    }
+    
+    .control-panel > button[onclick*="searchLocation"] {
+    border-bottom: 2px solid #1d4ed8;
+    }
+    
+    /* 手機版提示優化 */
+    .mobile-hint {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #93c5fd;
+    border-left: 3px solid #3b82f6;
+    color: #1e40af;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 500;
+    }
 
     /* 桌面版齒輪按鈕在手機版已移到搜尋列內，這裡不需要額外樣式 */
     
@@ -928,6 +1131,24 @@ select.input-field:hover {
     max-height: calc(100vh - 180px) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    }
+    
+    /* 手機版控制面板滾動條樣式 */
+    .control-panel::-webkit-scrollbar {
+    width: 4px;
+    }
+    
+    .control-panel::-webkit-scrollbar-track {
+    background: transparent;
+    }
+    
+    .control-panel::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+    }
+    
+    .control-panel::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
     }
     
     /* 手機版覆蓋桌面版滾動條樣式 */
@@ -1046,45 +1267,51 @@ select.input-field:hover {
     margin-bottom: 6px;
     }
     
-    /* 手機版控制面板內容優化 */
-    .control-title {
-    font-size: 15px;
-    margin-bottom: 8px;
-    position: relative;
+    /* 手機版下拉選單按鈕優化 */
+    .control-panel .dropdown-toggle {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
     }
-    
-    .mobile-hint {
-    font-size: 10px;
-    color: #6b7280;
-    background: #f3f4f6;
-    padding: 4px 8px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    text-align: center;
-    border: 1px solid #e5e7eb;
+
+    .control-panel .dropdown-toggle:active {
+    background: #f8fafc;
+    border-color: #cbd5e1;
     }
-    
-    .input-label {
-    font-size: 11px;
-    margin-bottom: 3px;
+
+    .control-panel .dropdown-option label {
+    padding: 12px 10px;
+    border-radius: 8px;
     }
-    
-    .input-field {
-    padding: 6px 10px;
+
+    .control-panel .dropdown-option input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    }
+
+    .control-panel .dropdown-option span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    }
+
+    .control-panel .btn-dropdown-action {
+    padding: 10px 14px;
     font-size: 13px;
-    }
-    
-    .btn {
-    padding: 6px 12px;
-    font-size: 12px;
-    margin-right: 6px;
-    margin-bottom: 6px;
+    font-weight: 600;
+    border-radius: 8px;
     }
     
     .info-panel {
-    padding: 6px 10px;
-    font-size: 11px;
-    margin-top: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     }
     
     /* 極小螢幕優化 */
@@ -1096,8 +1323,20 @@ select.input-field:hover {
     
     .control-panel {
     left: 5px;
-    right: 5px;
-    top: 55px;
+    right: auto;
+    top: 5px;
+    width: calc(100vw - 50px);
+    max-width: 400px;
+    }
+    
+    .mobile-search-bar {
+    left: 5px;
+    right: 40px;
+    }
+    
+    .mobile-search-results {
+    left: 5px;
+    right: 40px;
     }
     
     .toggle-panel {
@@ -1105,4 +1344,289 @@ select.input-field:hover {
     padding: 10px;
     font-size: 18px;
     }
+}
+
+/* ========================================
+   統一下拉選單樣式 (適用於分層篩選和公共設施)
+   ======================================== */
+
+.unified-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.dropdown-toggle:hover {
+  border-color: #3b82f6;
+  background: #f9fafb;
+}
+
+.dropdown-toggle:active {
+  background: #f3f4f6;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  color: #6b7280;
+}
+
+.dropdown-toggle.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* 桌面版：下拉選單使用 fixed 定位，可超出面板 */
+.dropdown-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+  max-height: 360px;
+  min-width: 280px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dropdownSlideIn 0.2s ease-out;
+}
+
+/* 向上顯示的選單 */
+.dropdown-menu.show-above {
+  animation: dropdownSlideUp 0.2s ease-out;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.dropdown-option {
+  padding: 0 12px;
+}
+
+.dropdown-option label {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.dropdown-option label:hover {
+  background: #f3f4f6;
+  transform: translateX(2px);
+}
+
+.dropdown-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: #3b82f6;
+}
+
+.dropdown-option span {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+}
+
+.dropdown-actions {
+  border-top: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  background: #f9fafb;
+}
+
+.btn-dropdown-action {
+  width: 100%;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-dropdown-action:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.btn-dropdown-action:active {
+  background: #e5e7eb;
+}
+
+/* 手機版：下拉選單展開為內聯區塊 */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    max-height: none;
+    box-shadow: none;
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0;
+    margin-top: 8px;
+    animation: none;
+    min-width: auto;
+  }
+
+  .dropdown-content {
+    overflow-y: visible;
+    overflow-x: visible;
+    max-height: none;
+  }
+}
+
+/* OSM 狀態顯示（topNotice 樣式） */
+.osm-notice {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  left: 50%;
+  transform: translate(-50%, -20px);
+  background: rgba(34, 197, 94, 0.95);
+  color: #ffffff;
+  display: inline-block;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 1.35;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+  max-width: min(420px, 90vw);
+  z-index: 3000;
+  opacity: 0;
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.osm-notice.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.osm-notice.hide {
+  opacity: 0;
+  transform: translate(-50%, -10px);
+}
+
+@media (max-width: 768px) {
+  .osm-notice {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: min(360px, 88vw);
+  }
+}
+
+/* OSM Marker 自定義樣式 */
+.osm-custom-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.osm-marker {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.osm-marker-icon {
+  transition: transform 0.2s ease;
+}
+
+.osm-marker:hover .osm-marker-icon {
+  transform: scale(1.1);
+}
+
+/* OSM Popup 樣式增強 */
+.osm-feature-popup .leaflet-popup-content-wrapper {
+  border-left: 4px solid #3b82f6;
+}
+
+.osm-popup h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 手機版優化 */
+@media (max-width: 768px) {
+  .dropdown-toggle {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .dropdown-option label {
+    padding: 8px 6px;
+  }
+
+  .dropdown-option span {
+    font-size: 13px;
+  }
 }

@@ -336,6 +336,9 @@ map = L.map('map', {
     tapTolerance: 15 // 增加點擊容差
 }).setView([25.5100, 119.7910], 7);
 
+// 將 map 實例掛載到 window 供其他模組使用
+window.map = map;
+
 // 根據設備類型調整縮放控制器位置
 if (isMobileDevice()) {
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -602,7 +605,7 @@ try {
     document.getElementById('lngInput').value = 119.7910;
     }
     document.getElementById('radiusInput').value = radius;
-    document.getElementById('layerFilter').value = selectedLayer;
+    // layerFilter 已改為多選下拉選單，由 unified_dropdown.js 處理
     
     // 載入地圖資料 - 優化版本，支援進度顯示
     const geojsonURL = DATA_BASE_URL + GEOJSON_FILENAME;
@@ -1228,16 +1231,24 @@ if (isMobileDevice()) {
     panel.classList.remove('show-mobile');
     // 確保不使用桌面版的hidden class
     panel.classList.remove('hidden');
-    // 顯示手機版提示
-    mobileHint.style.display = 'block';
-    toggleBtn.style.zIndex = '1600';
+    // 顯示手機版提示（如果存在）
+    if (mobileHint) {
+        mobileHint.style.display = 'block';
+    }
+    if (toggleBtn) {
+        toggleBtn.style.zIndex = '1600';
+    }
 } else {
     // 桌面版預設顯示
     panel.classList.remove('hidden');
     panel.classList.remove('show-mobile');
-    // 隱藏手機版提示
-    mobileHint.style.display = 'none';
-    toggleBtn.style.zIndex = '1400';
+    // 隱藏手機版提示（如果存在）
+    if (mobileHint) {
+        mobileHint.style.display = 'none';
+    }
+    if (toggleBtn) {
+        toggleBtn.style.zIndex = '1400';
+    }
 }
 }
 
@@ -1250,7 +1261,9 @@ const toggleBtn = document.querySelector('.toggle-panel');
 if (isMobileDevice()) {
     // 切換到手機版
     panel.classList.remove('hidden');
-    mobileHint.style.display = 'block';
+    if (mobileHint) {
+        mobileHint.style.display = 'block';
+    }
     if (!panel.classList.contains('show-mobile')) {
     // 如果面板是開啟狀態，保持開啟
     const wasVisible = !panel.classList.contains('hidden');
@@ -1258,14 +1271,20 @@ if (isMobileDevice()) {
         panel.classList.add('show-mobile');
     }
     }
-    toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '1400' : '1600';
+    if (toggleBtn) {
+        toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '1400' : '1600';
+    }
 } else {
     // 切換到桌面版
     panel.classList.remove('show-mobile');
-    mobileHint.style.display = 'none';
+    if (mobileHint) {
+        mobileHint.style.display = 'none';
+    }
     // 桌面版預設顯示
     panel.classList.remove('hidden');
-    toggleBtn.style.zIndex = '1400';
+    if (toggleBtn) {
+        toggleBtn.style.zIndex = '1400';
+    }
 }
 }
 
@@ -1284,31 +1303,10 @@ return features.filter(feature => {
 });
 }
 
-// 分層篩選功能
+// 分層篩選功能（已棄用，由 unified_dropdown.js 處理）
 function filterByLayer() {
-const selectedLayer = document.getElementById('layerFilter').value;
-const urlCoords = parseUrlCoordinates();
-const urlParams = new URLSearchParams(window.location.search);
-const radius = parseFloat(urlParams.get('radius')) || 50;
-
-// 更新URL參數
-if (selectedLayer) {
-    urlParams.set('layer', selectedLayer);
-} else {
-    urlParams.delete('layer');
-}
-
-const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-window.history.pushState({}, '', newUrl);
-
-// 重新渲染（若為 shape 模式則維持 shape）
-const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
-if (shapeParam) {
-  const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
-  renderShapeMode(shapeSpec, selectedLayer);
-} else {
-  renderMap(urlCoords, radius, selectedLayer);
-}
+  // 此函數已被 unified_dropdown.js 的多選系統取代
+  console.warn('filterByLayer() is deprecated. Use unified_dropdown.js system instead.');
 }
 
 // 搜尋位置功能
@@ -1316,27 +1314,50 @@ function searchLocation() {
 const lat = parseFloat(document.getElementById('latInput').value);
 const lng = parseFloat(document.getElementById('lngInput').value);
 const radius = parseFloat(document.getElementById('radiusInput').value) || 50;
-const selectedLayer = document.getElementById('layerFilter').value;
 
 if (isNaN(lat) || isNaN(lng)) {
     alert('請輸入有效的經緯度數值！');
     return;
 }
 
-// 更新URL
-const urlParams = new URLSearchParams();
+// 獲取當前選中的圖層
+const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
+
+// 更新URL（保留 layers 參數，但清除 SHAPE 相關參數）
+const urlParams = new URLSearchParams(window.location.search);
+
+// 清除 SHAPE 模式的所有參數
+urlParams.delete('shape');
+urlParams.delete('line');
+urlParams.delete('polygon');
+urlParams.delete('circle');
+urlParams.delete('sector');
+urlParams.delete('bbox');
+urlParams.delete('text');
+urlParams.delete('unit');
+
+// 設置座標搜尋參數
 urlParams.set('lat', lat);
 urlParams.set('lng', lng);
 urlParams.set('radius', radius);
-if (selectedLayer) {
-    urlParams.set('layer', selectedLayer);
+
+// 如果沒有選中任何圖層，刪除 layers 參數（表示顯示所有圖層）
+if (selectedLayers.length === 0) {
+    urlParams.delete('layers');
 }
 
 const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
 window.history.pushState({}, '', newUrl);
 
 // 重新渲染地圖
-renderMap({ lat, lng }, radius, selectedLayer);
+// 如果沒有選中任何圖層，直接調用 renderMap 顯示所有圖層
+if (selectedLayers.length === 0) {
+    renderMap({ lat, lng }, radius, null);
+} else if (window.renderMapWithMultipleLayers) {
+    window.renderMapWithMultipleLayers({ lat, lng }, radius, selectedLayers);
+} else {
+    renderMap({ lat, lng }, radius, null);
+}
 
 // 手機版自動關閉控制面板
 if (isMobileDevice()) {
@@ -1764,23 +1785,45 @@ function selectSearchResult(index) {
     radiusInput.value = 10; // 搜尋結果預設使用較小半徑
   }
 
-  // 更新 URL
-  const selectedLayer = document.getElementById('layerFilter').value;
+  // 獲取當前選中的圖層
+  const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
   const radius = parseFloat(radiusInput.value) || 10;
 
-  const urlParams = new URLSearchParams();
+  // 更新 URL（保留 layers 參數，但清除 SHAPE 相關參數）
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // 清除 SHAPE 模式的所有參數
+  urlParams.delete('shape');
+  urlParams.delete('line');
+  urlParams.delete('polygon');
+  urlParams.delete('circle');
+  urlParams.delete('sector');
+  urlParams.delete('bbox');
+  urlParams.delete('text');
+  urlParams.delete('unit');
+
+  // 設置座標搜尋參數
   urlParams.set('lat', lat);
   urlParams.set('lng', lng);
   urlParams.set('radius', radius);
-  if (selectedLayer) {
-    urlParams.set('layer', selectedLayer);
+
+  // 如果沒有選中任何圖層，刪除 layers 參數（表示顯示所有圖層）
+  if (selectedLayers.length === 0) {
+    urlParams.delete('layers');
   }
 
   const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
   window.history.pushState({}, '', newUrl);
 
   // 渲染地圖
-  renderMap({ lat, lng }, radius, selectedLayer);
+  // 如果沒有選中任何圖層，直接調用 renderMap 顯示所有圖層
+  if (selectedLayers.length === 0) {
+    renderMap({ lat, lng }, radius, null);
+  } else if (window.renderMapWithMultipleLayers) {
+    window.renderMapWithMultipleLayers({ lat, lng }, radius, selectedLayers);
+  } else {
+    renderMap({ lat, lng }, radius, null);
+  }
 
   // 手機版自動關閉面板
   if (isMobileDevice()) {
@@ -1918,23 +1961,45 @@ function selectMobileSearchResult(index) {
     radiusInput.value = 10; // 搜尋結果預設使用較小半徑
   }
 
-  // 更新 URL
-  const selectedLayer = document.getElementById('layerFilter').value;
+  // 獲取當前選中的圖層
+  const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
   const radius = parseFloat(radiusInput.value) || 10;
 
-  const urlParams = new URLSearchParams();
+  // 更新 URL（保留 layers 參數，但清除 SHAPE 相關參數）
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // 清除 SHAPE 模式的所有參數
+  urlParams.delete('shape');
+  urlParams.delete('line');
+  urlParams.delete('polygon');
+  urlParams.delete('circle');
+  urlParams.delete('sector');
+  urlParams.delete('bbox');
+  urlParams.delete('text');
+  urlParams.delete('unit');
+
+  // 設置座標搜尋參數
   urlParams.set('lat', lat);
   urlParams.set('lng', lng);
   urlParams.set('radius', radius);
-  if (selectedLayer) {
-    urlParams.set('layer', selectedLayer);
+
+  // 如果沒有選中任何圖層，刪除 layers 參數（表示顯示所有圖層）
+  if (selectedLayers.length === 0) {
+    urlParams.delete('layers');
   }
 
   const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
   window.history.pushState({}, '', newUrl);
 
   // 渲染地圖
-  renderMap({ lat, lng }, radius, selectedLayer);
+  // 如果沒有選中任何圖層，直接調用 renderMap 顯示所有圖層
+  if (selectedLayers.length === 0) {
+    renderMap({ lat, lng }, radius, null);
+  } else if (window.renderMapWithMultipleLayers) {
+    window.renderMapWithMultipleLayers({ lat, lng }, radius, selectedLayers);
+  } else {
+    renderMap({ lat, lng }, radius, null);
+  }
 }
 
 // 清除手機版搜尋
@@ -2120,3 +2185,20 @@ if (document.readyState === 'loading') {
   setupSearchInput();
   setupMobileSearchInput();
 }
+
+// 導出函數和變數供 unified_dropdown.js 使用
+window.renderMap = renderMap;
+window.renderShapeMode = renderShapeMode;
+window.filterFeaturesByLayer = filterFeaturesByLayer;
+window.parseUrlCoordinates = parseUrlCoordinates;
+
+// 導出全域變數（需要在初始化後更新）
+Object.defineProperty(window, 'allFeatures', {
+  get: () => allFeatures,
+  set: (value) => { allFeatures = value; }
+});
+
+Object.defineProperty(window, 'map', {
+  get: () => map,
+  set: (value) => { map = value; }
+});

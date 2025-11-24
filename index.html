@@ -10,6 +10,8 @@
   <!-- Plugins: Leaflet.draw + PolylineMeasure -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.css" />
+  <!-- Bootstrap Icons for OSM facility markers -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="static/css/main.css">
 </head>
 <body>
@@ -37,12 +39,12 @@
     <div id="mobileSearchResults" class="mobile-search-results" style="display: none;" role="listbox" aria-label="搜尋結果"></div>
   </div>
 
+  <!-- 背景遮罩 (用於手機版點擊關閉面板) -->
+  <div id="panelBackdrop" class="panel-backdrop" onclick="closePanel()"></div>
+
   <!-- 控制面板 -->
   <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
     <div class="control-title">地圖控制</div>
-    <div id="mobileHint" class="mobile-hint" style="display: none;">
-      請點擊地圖任意處關閉此面板
-    </div>
 
     <!-- 地點搜尋 -->
     <div class="input-group">
@@ -58,32 +60,126 @@
       <label class="input-label">緯度 (Latitude)</label>
       <input type="number" id="latInput" class="input-field" step="any" placeholder="例如: 31.9424765">
     </div>
-    
+
     <div class="input-group">
       <label class="input-label">經度 (Longitude)</label>
       <input type="number" id="lngInput" class="input-field" step="any" placeholder="例如: 120.2903877">
     </div>
-    
+
     <div class="input-group">
       <label class="input-label">搜尋半徑 (公里)</label>
       <input type="number" id="radiusInput" class="input-field" value="50" min="1" max="500" step="5">
     </div>
-    
+
+    <!-- 分層篩選 (改為多選下拉選單) -->
     <div class="input-group">
       <label class="input-label">分層篩選</label>
-      <select id="layerFilter" class="input-field" onchange="filterByLayer()">
-        <option value="">顯示全部分層</option>
-        <option value="中國軍工及航天產業">中國軍工及航天產業</option>
-        <option value="武裝警察、海外軍事設施及其他分類">武裝警察、海外軍事設施</option>
-        <option value="解放軍海軍、海軍陸戰隊基地及設施">解放軍海軍、海軍陸戰隊</option>
-        <option value="解放軍火箭軍">解放軍火箭軍</option>
-        <option value="解放軍空軍、海軍航空兵基地及設施">解放軍空軍、海軍航空兵</option>
-        <option value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊">軍事航天、網路空間部隊</option>
-        <option value="解放軍軍事院校、教育單位">解放軍軍事院校、教育</option>
-        <option value="解放軍重要訓場/特殊設施">解放軍重要訓場/特殊設施</option>
-        <option value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)">解放軍陸軍、聯勤保障</option>
-        <option value="黨和國家重要政經軍事機關">黨和國家重要政經軍事機關</option>
-      </select>
+      <div class="unified-dropdown">
+        <button type="button" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇圖層">
+          <span id="layerSelectedCount">顯示全部分層</span>
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <div id="layerDropdownMenu" class="dropdown-menu" style="display: none;">
+          <div class="dropdown-content">
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="中國軍工及航天產業" onchange="handleLayerChange(this)"><span>中國軍工及航天產業</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="武裝警察、海外軍事設施及其他分類" onchange="handleLayerChange(this)"><span>武裝警察、海外軍事設施</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍海軍、海軍陸戰隊基地及設施" onchange="handleLayerChange(this)"><span>解放軍海軍、海軍陸戰隊</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍火箭軍" onchange="handleLayerChange(this)"><span>解放軍火箭軍</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍空軍、海軍航空兵基地及設施" onchange="handleLayerChange(this)"><span>解放軍空軍、海軍航空兵</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊" onchange="handleLayerChange(this)"><span>軍事航天、網路空間部隊</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍軍事院校、教育單位" onchange="handleLayerChange(this)"><span>解放軍軍事院校、教育</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍重要訓場/特殊設施" onchange="handleLayerChange(this)"><span>解放軍重要訓場/特殊設施</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)" onchange="handleLayerChange(this)"><span>解放軍陸軍、聯勤保障</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="黨和國家重要政經軍事機關" onchange="handleLayerChange(this)"><span>黨和國家重要政經軍事機關</span></label>
+            </div>
+          </div>
+          <div class="dropdown-actions">
+            <button type="button" class="btn-dropdown-action" onclick="clearAllLayerSelections()">清除全部</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OSM 公共設施圖層選擇 (改用統一樣式) -->
+    <div class="input-group">
+      <label class="input-label">公共設施</label>
+      <div class="unified-dropdown">
+        <button type="button" class="dropdown-toggle" onclick="toggleOSMDropdown()" aria-label="選擇公共設施圖層">
+          <span id="osmSelectedCount">選擇設施類型</span>
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <div id="osmDropdownMenu" class="dropdown-menu" style="display: none;">
+          <div class="dropdown-content">
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="surveillance" onchange="handleOSMFacilityChange(this)"><span>監視設備</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="school" onchange="handleOSMFacilityChange(this)"><span>學校</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="university" onchange="handleOSMFacilityChange(this)"><span>大學</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="college" onchange="handleOSMFacilityChange(this)"><span>學院</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="hospital" onchange="handleOSMFacilityChange(this)"><span>醫療設施</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="stadium" onchange="handleOSMFacilityChange(this)"><span>體育場</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="sports_centre" onchange="handleOSMFacilityChange(this)"><span>運動中心</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="parking" onchange="handleOSMFacilityChange(this)"><span>停車場</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="fuel" onchange="handleOSMFacilityChange(this)"><span>加油站</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="helipad" onchange="handleOSMFacilityChange(this)"><span>直升機停機坪</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="airport" onchange="handleOSMFacilityChange(this)"><span>機場</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="tower" onchange="handleOSMFacilityChange(this)"><span>高塔</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="water_tower" onchange="handleOSMFacilityChange(this)"><span>水塔</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="bridge" onchange="handleOSMFacilityChange(this)"><span>橋樑</span></label>
+            </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="power_station" onchange="handleOSMFacilityChange(this)"><span>發電廠</span></label>
+            </div>
+          </div>
+          <div class="dropdown-actions">
+            <button type="button" class="btn-dropdown-action" onclick="clearAllOSMSelections()">清除全部</button>
+          </div>
+        </div>
+      </div>
     </div>
     
     <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
@@ -107,6 +203,10 @@
   <script src="static/js/shape_utils.js" defer></script>
   <script src="static/js/equipment_parser.js" defer></script>
   <script src="static/js/search_utils.js" defer></script>
+  <!-- OSM Facilities -->
+  <script src="static/js/osm_facilities.js" defer></script>
+  <!-- Unified Dropdown System -->
+  <script src="static/js/unified_dropdown.js" defer></script>
   <script src="static/js/main.js" defer></script>
 </body>
 </html>
