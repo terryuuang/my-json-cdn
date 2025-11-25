@@ -1,6 +1,6 @@
 /**
  * Service Worker - APEINTEL ATLAS PWA
- * 版本：v0.0.4
+ * 版本：v0.0.5
  * 功能：快取管理、離線支援、自動更新
  * 
  * ============================================
@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.0.4';
+const APP_VERSION = '0.0.5';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -66,6 +66,7 @@ const CORE_ASSETS = [
   '/static/js/shape_utils.js',
   '/static/js/osm_facilities.js',
   '/static/js/unified_dropdown.js',
+  '/static/js/notes.js',
   '/static/js/pwa.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
   '/static/assets/APEINTEL ATLAS_512x512.png'

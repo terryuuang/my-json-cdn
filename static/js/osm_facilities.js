@@ -276,7 +276,21 @@ function createPopup(feature, type) {
   const lat = coord ? coord[1] : null;
   const lon = coord ? coord[0] : null;
 
-  return `<div style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}</div>`;
+  // 建立筆記按鈕 HTML
+  let noteButtonHtml = '';
+  if (lat && lon && window.Notes && typeof window.Notes.getNoteButtonHtml === 'function') {
+    const featureId = `osm_${props.osmType}_${props.osmId}`;
+    noteButtonHtml = window.Notes.getNoteButtonHtml({
+      type: 'osm',
+      featureId: featureId,
+      featureName: displayName,
+      layerName: def.name,
+      lat: lat,
+      lng: lon
+    });
+  }
+
+  return `<div style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}${noteButtonHtml}</div>`;
 }
 
 // 渲染圖層到地圖

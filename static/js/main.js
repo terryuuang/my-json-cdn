@@ -10,6 +10,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2025年11月25日',
+    description: '新增筆記功能，支援離線筆記儲存'
+  },
+  {
+    date: '2025年11月25日',
     description: '新增pwa功能，支援手機應用'
   },
   {
@@ -241,6 +245,31 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     } catch (_) {}
   };
 
+  // 輔助函數：建立含筆記功能的 popup 內容
+  const buildShapePopup = (type, text, center, shapeInfo = {}) => {
+    const baseText = text || '區域標記';
+    let popupHtml = `<div class="shape-popup"><strong>${baseText}</strong>`;
+    
+    // 添加形狀資訊
+    if (shapeInfo.radius) popupHtml += `<br><small>半徑: ${shapeInfo.radius}</small>`;
+    if (shapeInfo.area) popupHtml += `<br><small>面積: ${shapeInfo.area}</small>`;
+    if (shapeInfo.length) popupHtml += `<br><small>長度: ${shapeInfo.length}</small>`;
+    
+    // 添加儲存筆記按鈕
+    if (window.Notes && typeof window.Notes.getShapeNoteButtonHtml === 'function') {
+      popupHtml += window.Notes.getShapeNoteButtonHtml({
+        shapeType: type,
+        lat: center.lat,
+        lng: center.lng,
+        text: baseText,
+        shapeInfo: shapeInfo
+      });
+    }
+    
+    popupHtml += '</div>';
+    return popupHtml;
+  };
+
   shapeSpec.shapes.forEach(s => {
     try {
       s._bufferPolyline = null;
@@ -251,28 +280,41 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           iconSize: [16, 16], iconAnchor: [8, 8]
         });
         const markerText = s.text || shapeSpec.text || '禁航點';
-        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(markerText);
+        const popupContent = buildShapePopup('point', markerText, s.center, {});
+        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(popupContent);
         nfzLayerGroup.addLayer(m);
         extendBounds([[s.center.lat, s.center.lng]]);
         if (Number.isFinite(s.radiusKm) && s.radiusKm > 0) {
+          const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
           const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-          const circleText = s.text || shapeSpec.text;
-          if (circleText) c.bindPopup(circleText);
+          const circleText = s.text || shapeSpec.text || '圓形區域';
+          const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText });
+          c.bindPopup(circlePopup);
           nfzLayerGroup.addLayer(c);
           extendBounds(c.getBounds());
         }
       } else if (s.type === 'line') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
         const pl = L.polyline(latlngs, { color: '#ef4444', weight: 3 });
-        const lineText = s.text || shapeSpec.text;
-        if (lineText) pl.bindPopup(lineText);
+        // 計算線段長度
+        let totalLength = 0;
+        for (let i = 1; i < latlngs.length; i++) {
+          totalLength += calculateDistance(latlngs[i-1][0], latlngs[i-1][1], latlngs[i][0], latlngs[i][1]);
+        }
+        const lengthText = totalLength < 1 ? `${(totalLength * 1000).toFixed(0)} 公尺` : `${totalLength.toFixed(2)} 公里`;
+        const center = pl.getBounds().getCenter();
+        const lineText = s.text || shapeSpec.text || '線段';
+        const linePopup = buildShapePopup('line', lineText, { lat: center.lat, lng: center.lng }, { length: lengthText });
+        pl.bindPopup(linePopup);
         nfzLayerGroup.addLayer(pl);
         extendBounds(latlngs);
       } else if (s.type === 'polygon') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
         const poly = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        const polyText = s.text || shapeSpec.text;
-        if (polyText) poly.bindPopup(polyText);
+        const center = poly.getBounds().getCenter();
+        const polyText = s.text || shapeSpec.text || '多邊形區域';
+        const polyPopup = buildShapePopup('polygon', polyText, { lat: center.lat, lng: center.lng }, {});
+        poly.bindPopup(polyPopup);
         nfzLayerGroup.addLayer(poly);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(s.coords.map(p => ({ lat: p.lat, lng: p.lng })));
@@ -285,23 +327,32 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           [s.bounds.north, s.bounds.west]
         ];
         const rect = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.08 });
-        const rectText = s.text || shapeSpec.text;
-        if (rectText) rect.bindPopup(rectText);
+        const center = rect.getBounds().getCenter();
+        const rectText = s.text || shapeSpec.text || '矩形區域';
+        const rectPopup = buildShapePopup('bbox', rectText, { lat: center.lat, lng: center.lng }, {});
+        rect.bindPopup(rectPopup);
         nfzLayerGroup.addLayer(rect);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
         s._bufferPolyline = perimeter;
       } else if (s.type === 'circle') {
+        const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
         const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        const circleText = s.text || shapeSpec.text;
-        if (circleText) c.bindPopup(circleText);
+        const circleText = s.text || shapeSpec.text || '圓形區域';
+        const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText });
+        c.bindPopup(circlePopup);
         nfzLayerGroup.addLayer(c);
         extendBounds(c.getBounds());
       } else if (s.type === 'sector') {
         const latlngs = window.shapeUtils.buildSectorLatLngs(s.center, s.radiusKm, s.startDeg, s.endDeg);
         const sec = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
-        const sectorText = s.text || shapeSpec.text;
-        if (sectorText) sec.bindPopup(sectorText);
+        const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
+        const sectorText = s.text || shapeSpec.text || '扇形區域';
+        const sectorPopup = buildShapePopup('sector', sectorText, s.center, { 
+          radius: radiusText,
+          angle: `${s.startDeg}° - ${s.endDeg}°`
+        });
+        sec.bindPopup(sectorPopup);
         nfzLayerGroup.addLayer(sec);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
@@ -619,6 +670,11 @@ try {
     initializeMap();
     // 工具已在 initializeMap 內初始化
     
+    // 初始化筆記系統（IndexedDB）
+    if (window.Notes && typeof window.Notes.init === 'function') {
+      await window.Notes.init(map);
+    }
+    
     // 初始化面板狀態（手機版預設隱藏）
     initializePanelState();
     
@@ -834,11 +890,32 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
               popupContent += `<div class=\"popup-distance\"><strong>距離搜尋中心:</strong> ${distance.toFixed(2)} 公里</div>`;
             }
           }
+          // 相關連結
           if (referenceLinks.length) {
-            popupContent += `<div class=\"popup-links\"><div class=\"popup-links-title\">相關連結</div>`;
-            referenceLinks.forEach(url => { popupContent += `<a class=\"link-btn\" href=\"${url}\" target=\"_blank\">${getLabel(url)}</a>`; });
+            popupContent += `<div class="popup-links"><div class="popup-links-title">相關連結</div>`;
+            referenceLinks.forEach(url => { popupContent += `<a class="link-btn" href="${url}" target="_blank">${getLabel(url)}</a>`; });
             popupContent += '</div>';
           }
+          
+          // 筆記按鈕（獨立區塊）
+          const geoCoords = feature.geometry.coordinates;
+          const featureId = `geojson_${geoCoords[1].toFixed(6)}_${geoCoords[0].toFixed(6)}`;
+          const escapeAttr = (str) => String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          popupContent += `<div class="popup-actions"><a href="#" class="link-btn" onclick="openNoteFromPopup(this);return false;" 
+            data-type="geojson"
+            data-feature-id="${featureId}"
+            data-feature-name="${escapeAttr(mainTitle)}"
+            data-layer-name="${escapeAttr(layerName)}"
+            data-lat="${geoCoords[1]}"
+            data-lng="${geoCoords[0]}"
+            data-metadata='{}'>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:2px;">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>筆記</a></div>`;
+          
           const popupOptions = { className: 'custom-popup' };
           if (isMobileDevice()) {
             popupOptions.maxWidth = Math.min(350, window.innerWidth - 40);
@@ -1104,7 +1181,10 @@ function setupMapTools() {
             layer.setStyle({ color: '#ef4444', weight: 3, fillColor: '#ef4444', fillOpacity: 0.12 });
           }
 
-          // 建立即時資訊 popup
+          // 建立即時資訊 popup（含筆記按鈕）
+          const drawingId = `drawing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          layer.drawingId = drawingId; // 儲存 ID 以便後續使用
+          
           if (type === 'marker') {
             // 使用紅色小圓點標記
             const redIcon = L.divIcon({
@@ -1116,31 +1196,95 @@ function setupMapTools() {
             });
             layer.setIcon(redIcon);
             const { lat, lng } = layer.getLatLng();
-            layer.bindPopup(`標記座標<br/>緯度：${lat.toFixed(6)}<br/>經度：${lng.toFixed(6)}`);
+            let popupHtml = `<div class="drawing-popup"><strong>📍 標記點</strong><br/>緯度：${lat.toFixed(6)}<br/>經度：${lng.toFixed(6)}`;
+            if (window.Notes && typeof window.Notes.getNoteButtonHtml === 'function') {
+              popupHtml += window.Notes.getNoteButtonHtml({
+                type: 'drawing',
+                featureId: drawingId,
+                featureName: '標記點',
+                layerName: '手動標記',
+                lat: lat,
+                lng: lng,
+                metadata: { drawingType: 'marker' }
+              });
+            }
+            popupHtml += '</div>';
+            layer.bindPopup(popupHtml);
           } else if (type === 'polyline') {
             const latlngs = layer.getLatLngs();
             let total = 0;
             for (let i = 1; i < latlngs.length; i++) {
               total += map.distance(latlngs[i - 1], latlngs[i]);
             }
-            const text = total < 1000
-              ? `長度：約 ${total.toFixed(0)} 公尺`
-              : `長度：約 ${(total / 1000).toFixed(2)} 公里`;
-            layer.bindPopup(text);
+            const lengthText = total < 1000
+              ? `約 ${total.toFixed(0)} 公尺`
+              : `約 ${(total / 1000).toFixed(2)} 公里`;
+            const center = layer.getBounds().getCenter();
+            let popupHtml = `<div class="drawing-popup"><strong>📏 線段</strong><br/>長度：${lengthText}`;
+            if (window.Notes && typeof window.Notes.getNoteButtonHtml === 'function') {
+              popupHtml += window.Notes.getNoteButtonHtml({
+                type: 'drawing',
+                featureId: drawingId,
+                featureName: `線段 (${lengthText})`,
+                layerName: '手動繪製',
+                lat: center.lat,
+                lng: center.lng,
+                metadata: { drawingType: 'polyline', length: total }
+              });
+            }
+            popupHtml += '</div>';
+            layer.bindPopup(popupHtml);
           } else if (type === 'polygon' || type === 'rectangle') {
             // 使用 Leaflet.draw 的 geodesicArea（若存在）
-            let areaText = '面積：無法計算';
+            let areaText = '無法計算';
+            let area = 0;
             try {
               const latlngs = layer.getLatLngs();
               const flat = Array.isArray(latlngs[0]) ? latlngs[0] : latlngs; // 兼容多邊形/矩形
               if (L.GeometryUtil && typeof L.GeometryUtil.geodesicArea === 'function') {
-                const m2 = L.GeometryUtil.geodesicArea(flat);
-                areaText = m2 < 1e6
-                  ? `面積：約 ${m2.toFixed(0)} 平方公尺`
-                  : `面積：約 ${(m2 / 1e6).toFixed(2)} 平方公里`;
+                area = L.GeometryUtil.geodesicArea(flat);
+                areaText = area < 1e6
+                  ? `約 ${area.toFixed(0)} 平方公尺`
+                  : `約 ${(area / 1e6).toFixed(2)} 平方公里`;
               }
             } catch (_) {}
-            layer.bindPopup(areaText);
+            const shapeType = type === 'rectangle' ? '矩形' : '多邊形';
+            const center = layer.getBounds().getCenter();
+            let popupHtml = `<div class="drawing-popup"><strong>📐 ${shapeType}</strong><br/>面積：${areaText}`;
+            if (window.Notes && typeof window.Notes.getNoteButtonHtml === 'function') {
+              popupHtml += window.Notes.getNoteButtonHtml({
+                type: 'drawing',
+                featureId: drawingId,
+                featureName: `${shapeType} (${areaText})`,
+                layerName: '手動繪製',
+                lat: center.lat,
+                lng: center.lng,
+                metadata: { drawingType: type, area: area }
+              });
+            }
+            popupHtml += '</div>';
+            layer.bindPopup(popupHtml);
+          } else if (type === 'circle') {
+            // 圓形處理
+            const center = layer.getLatLng();
+            const radius = layer.getRadius();
+            const radiusText = radius < 1000
+              ? `${radius.toFixed(0)} 公尺`
+              : `${(radius / 1000).toFixed(2)} 公里`;
+            let popupHtml = `<div class="drawing-popup"><strong>⭕ 圓形</strong><br/>半徑：${radiusText}`;
+            if (window.Notes && typeof window.Notes.getNoteButtonHtml === 'function') {
+              popupHtml += window.Notes.getNoteButtonHtml({
+                type: 'drawing',
+                featureId: drawingId,
+                featureName: `圓形 (半徑 ${radiusText})`,
+                layerName: '手動繪製',
+                lat: center.lat,
+                lng: center.lng,
+                metadata: { drawingType: 'circle', radius: radius }
+              });
+            }
+            popupHtml += '</div>';
+            layer.bindPopup(popupHtml);
           }
 
           // 點擊圖形時開啟資訊
@@ -1631,6 +1775,25 @@ map.setView(mapCenter, mapZoom);
         });
         popupContent += '</div>';
     }
+    
+    // 筆記按鈕（獨立區塊）
+    const geoCoords = feature.geometry.coordinates;
+    const featureId = `geojson_${geoCoords[1].toFixed(6)}_${geoCoords[0].toFixed(6)}`;
+    const escapeAttr = (str) => String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    popupContent += `<div class="popup-actions"><a href="#" class="link-btn" onclick="openNoteFromPopup(this);return false;" 
+      data-type="geojson"
+      data-feature-id="${featureId}"
+      data-feature-name="${escapeAttr(mainTitle)}"
+      data-layer-name="${escapeAttr(layerName)}"
+      data-lat="${geoCoords[1]}"
+      data-lng="${geoCoords[0]}"
+      data-metadata='{}'>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:2px;">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14,2 14,8 20,8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>筆記</a></div>`;
 
     // 根據設備類型調整popup設定
     const popupOptions = {
