@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.0.6';
+const APP_VERSION = '0.0.7';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -59,6 +59,7 @@ const CORE_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
+  '/.well-known/web-app-origin-association',
   '/static/css/main.css',
   '/static/js/main.js',
   '/static/js/equipment_parser.js',

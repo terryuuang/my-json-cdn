@@ -2,7 +2,7 @@
   "name": "溫SINT地圖 - APEINTEL ATLAS",
   "short_name": "APEINTEL ATLAS",
   "description": "互動式地理資訊地圖",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "start_url": "/?source=pwa",
   "scope": "/",
   "id": "/",
@@ -93,9 +93,15 @@
   "related_applications": [],
   "prefer_related_applications": false,
   "handle_links": "preferred",
+  "capture_links": "existing-client-navigate",
   "launch_handler": {
-    "client_mode": "navigate-existing"
+    "client_mode": ["navigate-existing", "auto"]
   },
+  "url_handlers": [
+    {
+      "origin": "https://rnap.riotoolkit.cc"
+    }
+  ],
   "edge_side_panel": {
     "preferred_width": 400
   }
