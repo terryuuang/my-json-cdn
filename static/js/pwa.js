@@ -8,7 +8,7 @@
 // ============================================
 let deferredPrompt = null; // Android 安裝提示事件
 let swRegistration = null; // Service Worker 註冊物件
-let currentAppVersion = '0.0.1';
+let currentAppVersion = '0.0.2';
 
 // ============================================
 // 初始化
@@ -109,8 +109,20 @@ function setupInstallPrompt() {
   });
 }
 
-// 顯示安裝橫幅（Android）
+// 檢查是否為行動裝置
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
+}
+
+// 顯示安裝提示（僅手機版，使用 confirm 對話框）
 function showInstallBanner() {
+  // 僅在手機版顯示，電腦版跳過
+  if (!isMobileDevice()) {
+    console.log('[PWA] 電腦版不顯示安裝提示');
+    return;
+  }
+
   // 檢查是否已經安裝（standalone 模式）
   if (window.matchMedia('(display-mode: standalone)').matches) {
     return;
@@ -122,36 +134,21 @@ function showInstallBanner() {
     return; // 7 天內不再顯示
   }
 
-  // 建立安裝橫幅
-  const banner = document.createElement('div');
-  banner.id = 'pwa-install-banner';
-  banner.className = 'pwa-install-banner';
-  banner.innerHTML = `
-    <div class="pwa-install-content">
-      <img src="static/assets/APEINTEL ATLAS_192x192.png" alt="App Icon" class="pwa-install-icon">
-      <div class="pwa-install-text">
-        <strong>安裝 APEINTEL ATLAS</strong>
-        <span>將地圖加入主畫面，享受更佳體驗</span>
-      </div>
-    </div>
-    <div class="pwa-install-actions">
-      <button class="pwa-install-btn pwa-install-btn-primary" onclick="installPWA()">安裝</button>
-      <button class="pwa-install-btn pwa-install-btn-secondary" onclick="dismissInstallBanner()">稍後</button>
-    </div>
-  `;
-  document.body.appendChild(banner);
-
-  // 延遲顯示動畫
-  setTimeout(() => banner.classList.add('show'), 100);
+  // 延遲顯示 confirm 對話框（避免干擾頁面載入）
+  setTimeout(() => {
+    const userConfirmed = confirm('📱 安裝 APEINTEL ATLAS\n\n將地圖加入主畫面，享受更佳體驗！\n\n是否立即安裝？');
+    if (userConfirmed) {
+      installPWA();
+    } else {
+      dismissInstallBanner();
+    }
+  }, 1500);
 }
 
-// 隱藏安裝橫幅
+// 隱藏安裝橫幅（保留函式相容性，改為 confirm 後不再需要實體移除）
 function hideInstallBanner() {
-  const banner = document.getElementById('pwa-install-banner');
-  if (banner) {
-    banner.classList.remove('show');
-    setTimeout(() => banner.remove(), 300);
-  }
+  // 改用 confirm 對話框後，無需移除 DOM 元素
+  console.log('[PWA] 安裝提示已關閉');
 }
 
 // 拒絕安裝
