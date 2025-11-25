@@ -50,7 +50,7 @@ input, textarea, [contenteditable="true"] {
   }
 }
 
-/* iOS 狀態欄背景（standalone 模式） */
+/* iOS 狀態欄背景（standalone 模式）- 適應系統深淺色 */
 @supports (padding-top: env(safe-area-inset-top)) {
   @media (display-mode: standalone) {
     body::before {
@@ -60,10 +60,17 @@ input, textarea, [contenteditable="true"] {
       left: 0;
       right: 0;
       height: env(safe-area-inset-top);
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95));
+      background: rgba(248, 250, 252, 0.85);
       z-index: 9998;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+    }
+  }
+  
+  /* 深色模式下的狀態欄背景 */
+  @media (display-mode: standalone) and (prefers-color-scheme: dark) {
+    body::before {
+      background: rgba(26, 26, 46, 0.85);
     }
   }
 }
@@ -815,12 +822,22 @@ select.input-field:hover {
         width: auto;
         max-width: 300px;
         z-index: 1400;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
-        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
         border-radius: 12px;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         padding: 8px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* 深色模式下的搜尋列 */
+    @media (prefers-color-scheme: dark) {
+        .mobile-search-bar {
+            background: rgba(30, 30, 46, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
     }
 
     .mobile-search-container {
@@ -833,12 +850,12 @@ select.input-field:hover {
     .mobile-toggle-panel {
         flex-shrink: 0;
         padding: 8px;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        border: 1px solid #1d4ed8;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 10px;
         font-size: 16px;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: all 0.2s ease;
         min-width: 38px;
         min-height: 38px;
@@ -849,8 +866,21 @@ select.input-field:hover {
 
     .mobile-toggle-panel:active {
         transform: scale(0.95);
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+        background: rgba(240, 240, 240, 0.9);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 深色模式下的齒輪按鈕 */
+    @media (prefers-color-scheme: dark) {
+        .mobile-toggle-panel {
+            background: rgba(50, 50, 70, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-toggle-panel:active {
+            background: rgba(60, 60, 80, 0.9);
+        }
     }
 
     .mobile-search-input-wrapper {
@@ -863,10 +893,10 @@ select.input-field:hover {
     .mobile-search-input {
         flex: 1;
         padding: 11px 38px 11px 14px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 10px;
         font-size: 15px;
-        background: white;
+        background: rgba(255, 255, 255, 0.9);
         box-sizing: border-box;
         transition: all 0.2s ease;
         color: #1e293b;
@@ -879,9 +909,28 @@ select.input-field:hover {
 
     .mobile-search-input:focus {
         outline: none;
-        border-color: #3b82f6;
-        background: white;
+        border-color: rgba(59, 130, 246, 0.5);
+        background: rgba(255, 255, 255, 0.95);
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* 深色模式下的搜尋輸入框 */
+    @media (prefers-color-scheme: dark) {
+        .mobile-search-input {
+            background: rgba(50, 50, 70, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+        }
+        
+        .mobile-search-input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .mobile-search-input:focus {
+            background: rgba(60, 60, 80, 0.95);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
     }
 
     .mobile-clear-btn {

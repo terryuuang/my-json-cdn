@@ -15,11 +15,12 @@
   <!-- ============================================
        PWA 通用設定
        ============================================ -->
-  <meta name="theme-color" content="#3b82f6">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e293b">
+  <!-- 狀態欄顏色：淺色模式用淺色，深色模式用深色 -->
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="APEINTEL ATLAS">
-  <meta name="msapplication-TileColor" content="#3b82f6">
+  <meta name="msapplication-TileColor" content="#1a1a2e">
   <meta name="msapplication-TileImage" content="static/assets/APEINTEL ATLAS_192x192.png">
   <meta name="msapplication-config" content="none">
   
@@ -28,8 +29,8 @@
        ============================================ -->
   <!-- 啟用全螢幕模式 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- 狀態欄樣式：black-translucent 讓內容延伸到狀態欄下方 -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- 狀態欄樣式：default 讓狀態欄符合系統深淺色模式 -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <!-- APP 名稱（主畫面顯示） -->
   <meta name="apple-mobile-web-app-title" content="APEINTEL ATLAS">
   <!-- 停用自動偵測電話號碼（避免誤觸） -->
