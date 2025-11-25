@@ -72,6 +72,9 @@ async function createNote(noteData) {
     content: noteData.content || '',
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    // 幾何資料（用於繪製圖形）
+    // 支援: Point, LineString, Polygon, Circle, Sector, Rectangle
+    geometry: noteData.geometry || null,
     // 額外資料（用於繪圖資訊等）
     metadata: noteData.metadata || {}
   };
@@ -249,19 +252,126 @@ async function refreshNotesLayer() {
   
   notes.forEach(note => {
     if (note.lat && note.lng) {
-      const marker = L.marker([note.lat, note.lng], {
-        icon: createNoteIcon()
-      });
+      // 根據幾何類型繪製不同圖形
+      const layers = createNoteGeometryLayers(note);
       
-      marker.bindPopup(() => createNotePopupContent(note), {
-        maxWidth: 350,
-        className: 'note-popup'
+      layers.forEach(layer => {
+        layer.bindPopup(() => createNotePopupContent(note), {
+          maxWidth: 350,
+          className: 'note-popup'
+        });
+        layer.noteId = note.id;
+        notesLayerGroup.addLayer(layer);
       });
-      
-      marker.noteId = note.id;
-      notesLayerGroup.addLayer(marker);
     }
   });
+}
+
+// 根據筆記的幾何資料建立圖層
+function createNoteGeometryLayers(note) {
+  const layers = [];
+  const geometry = note.geometry;
+  
+  // 筆記圖形樣式（藍綠色系，與 shape 模式的紅色區分）
+  const noteStyle = {
+    color: '#0891b2',      // cyan-600
+    weight: 3,
+    fillColor: '#06b6d4',  // cyan-500
+    fillOpacity: 0.15,
+    dashArray: '5, 5'      // 虛線表示是筆記
+  };
+  
+  // 如果有幾何資料，根據類型繪製
+  if (geometry && geometry.type) {
+    switch (geometry.type) {
+      case 'Point':
+        // 單點：使用筆記圖標
+        layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+        break;
+        
+      case 'LineString':
+        // 線段
+        if (geometry.coordinates && geometry.coordinates.length >= 2) {
+          const latlngs = geometry.coordinates.map(c => [c[1], c[0]]); // [lng, lat] -> [lat, lng]
+          const polyline = L.polyline(latlngs, { ...noteStyle, fillOpacity: 0 });
+          layers.push(polyline);
+          // 在中心點加上筆記圖標
+          const center = polyline.getBounds().getCenter();
+          layers.push(L.marker(center, { icon: createNoteIcon() }));
+        }
+        break;
+        
+      case 'Polygon':
+        // 多邊形
+        if (geometry.coordinates && geometry.coordinates.length >= 3) {
+          const latlngs = geometry.coordinates.map(c => [c[1], c[0]]);
+          const polygon = L.polygon(latlngs, noteStyle);
+          layers.push(polygon);
+          // 在中心點加上筆記圖標
+          const center = polygon.getBounds().getCenter();
+          layers.push(L.marker(center, { icon: createNoteIcon() }));
+        }
+        break;
+        
+      case 'Circle':
+        // 圓形
+        if (geometry.center && Number.isFinite(geometry.radiusKm)) {
+          const circle = L.circle(
+            [geometry.center[1], geometry.center[0]], 
+            { ...noteStyle, radius: geometry.radiusKm * 1000 }
+          );
+          layers.push(circle);
+          // 在中心點加上筆記圖標
+          layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+        }
+        break;
+        
+      case 'Sector':
+        // 扇形
+        if (geometry.center && Number.isFinite(geometry.radiusKm) && 
+            Number.isFinite(geometry.startDeg) && Number.isFinite(geometry.endDeg)) {
+          // 使用 shapeUtils 建立扇形座標
+          if (window.shapeUtils && window.shapeUtils.buildSectorLatLngs) {
+            const centerObj = { lat: geometry.center[1], lng: geometry.center[0] };
+            const sectorLatLngs = window.shapeUtils.buildSectorLatLngs(
+              centerObj, geometry.radiusKm, geometry.startDeg, geometry.endDeg
+            );
+            const sector = L.polygon(sectorLatLngs, noteStyle);
+            layers.push(sector);
+            // 在中心點加上筆記圖標
+            layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+          }
+        }
+        break;
+        
+      case 'Rectangle':
+        // 矩形 (BBox)
+        if (geometry.bounds) {
+          const { west, south, east, north } = geometry.bounds;
+          const rectLatLngs = [
+            [south, west],
+            [south, east],
+            [north, east],
+            [north, west]
+          ];
+          const rectangle = L.polygon(rectLatLngs, noteStyle);
+          layers.push(rectangle);
+          // 在中心點加上筆記圖標
+          const center = rectangle.getBounds().getCenter();
+          layers.push(L.marker(center, { icon: createNoteIcon() }));
+        }
+        break;
+        
+      default:
+        // 未知類型，fallback 到單點
+        layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+    }
+  } else {
+    // 沒有幾何資料，使用預設的單點標記
+    layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+  }
+  
+  return layers;
 }
 
 // 建立筆記 Popup 內容
@@ -317,7 +427,8 @@ async function showNoteDialog(options = {}) {
     layerName = '',
     lat = null,
     lng = null,
-    metadata = {}
+    metadata = {},
+    geometry = null
   } = options;
 
   let existingNote = null;
@@ -332,6 +443,21 @@ async function showNoteDialog(options = {}) {
   const title = existingNote?.title || '';
   const content = existingNote?.content || '';
   const dialogTitle = mode === 'edit' ? '編輯筆記' : '新增筆記';
+  
+  // 顯示幾何類型資訊（如果有的話）
+  const finalGeometry = existingNote?.geometry || geometry;
+  let geometryInfoHtml = '';
+  if (finalGeometry && finalGeometry.type) {
+    const typeLabels = {
+      'Point': '點標記',
+      'LineString': '線段',
+      'Polygon': '多邊形',
+      'Circle': '圓形',
+      'Sector': '扇形',
+      'Rectangle': '矩形'
+    };
+    geometryInfoHtml = `<span style="color:#0891b2;margin-left:8px;">📐 ${typeLabels[finalGeometry.type] || finalGeometry.type}</span>`;
+  }
 
   // 建立對話框
   const dialog = document.createElement('div');
@@ -344,7 +470,7 @@ async function showNoteDialog(options = {}) {
         <button class="note-dialog-close" onclick="closeNoteDialog()">&times;</button>
       </div>
       <div class="note-dialog-body">
-        ${featureName ? `<div class="note-dialog-feature">${escapeHtml(featureName)}</div>` : ''}
+        ${featureName ? `<div class="note-dialog-feature">${escapeHtml(featureName)}${geometryInfoHtml}</div>` : ''}
         <div class="note-input-group">
           <label for="noteTitle">標題</label>
           <input type="text" id="noteTitle" class="note-input" placeholder="輸入筆記標題..." value="${escapeHtml(title)}" maxlength="100">
@@ -364,7 +490,7 @@ async function showNoteDialog(options = {}) {
     </div>
   `;
 
-  // 儲存對話框資料
+  // 儲存對話框資料（包含幾何資料）
   dialog.dataset.mode = mode;
   dialog.dataset.noteId = noteId || '';
   dialog.dataset.type = type;
@@ -374,6 +500,7 @@ async function showNoteDialog(options = {}) {
   dialog.dataset.lat = lat || '';
   dialog.dataset.lng = lng || '';
   dialog.dataset.metadata = JSON.stringify(metadata);
+  dialog.dataset.geometry = JSON.stringify(finalGeometry);
 
   document.body.appendChild(dialog);
   
@@ -429,6 +556,8 @@ async function saveNoteFromDialog() {
         lng,
         title,
         content,
+        // 儲存完整的幾何資料
+        geometry: JSON.parse(dialog.dataset.geometry || 'null'),
         metadata: JSON.parse(dialog.dataset.metadata || '{}')
       });
       showNoteToast('筆記已儲存');
@@ -724,8 +853,9 @@ function showNoteToast(message, type = 'success') {
 // ============================================
 
 // 取得或建立筆記按鈕 HTML
+// 支援 geometry 參數來儲存完整的幾何資料（用於 Leaflet.draw 繪製的圖形）
 function getNoteButtonHtml(options) {
-  const { type, featureId, featureName, layerName, lat, lng, metadata = {} } = options;
+  const { type, featureId, featureName, layerName, lat, lng, metadata = {}, geometry = null } = options;
   const dataAttrs = `
     data-type="${type}"
     data-feature-id="${featureId || ''}"
@@ -734,6 +864,7 @@ function getNoteButtonHtml(options) {
     data-lat="${lat}"
     data-lng="${lng}"
     data-metadata='${JSON.stringify(metadata)}'
+    data-geometry='${JSON.stringify(geometry)}'
   `;
   
   // 使用 SVG ICON 和一般按鈕樣式
@@ -755,6 +886,7 @@ async function openNoteFromPopup(btn) {
   const lat = parseFloat(btn.dataset.lat);
   const lng = parseFloat(btn.dataset.lng);
   const metadata = JSON.parse(btn.dataset.metadata || '{}');
+  const geometry = JSON.parse(btn.dataset.geometry || 'null');
 
   // 檢查是否已有筆記
   if (featureId) {
@@ -770,7 +902,8 @@ async function openNoteFromPopup(btn) {
         layerName,
         lat,
         lng,
-        metadata
+        metadata,
+        geometry: existingNote.geometry || geometry
       });
       return;
     }
@@ -785,7 +918,8 @@ async function openNoteFromPopup(btn) {
     layerName,
     lat,
     lng,
-    metadata
+    metadata,
+    geometry
   });
 }
 
@@ -849,14 +983,22 @@ async function initNotes(map) {
 // ============================================
 
 // 取得 Shape 筆記按鈕 HTML（用於 URL shape 模式）
+// geometry 格式：
+// - Point: { type: 'Point', coordinates: [lng, lat] }
+// - LineString: { type: 'LineString', coordinates: [[lng, lat], ...] }
+// - Polygon: { type: 'Polygon', coordinates: [[lng, lat], ...] }
+// - Circle: { type: 'Circle', center: [lng, lat], radiusKm: number }
+// - Sector: { type: 'Sector', center: [lng, lat], radiusKm: number, startDeg: number, endDeg: number }
+// - Rectangle: { type: 'Rectangle', bounds: { west, south, east, north } }
 function getShapeNoteButtonHtml(shapeData) {
-  const { shapeType, lat, lng, text, shapeInfo } = shapeData;
+  const { shapeType, lat, lng, text, shapeInfo, geometry } = shapeData;
   const dataAttrs = `
     data-shape-type="${shapeType}"
     data-lat="${lat}"
     data-lng="${lng}"
     data-text="${escapeHtml(text || '')}"
     data-shape-info='${JSON.stringify(shapeInfo || {})}'
+    data-geometry='${JSON.stringify(geometry || null)}'
   `;
   
   return `<button class="link-btn shape-save-btn" onclick="showShapeSaveDialog(this)" ${dataAttrs}>儲存此圖形</button>`;
@@ -869,6 +1011,7 @@ function showShapeSaveDialog(btn) {
   const lng = parseFloat(btn.dataset.lng);
   const text = btn.dataset.text || '';
   const shapeInfo = JSON.parse(btn.dataset.shapeInfo || '{}');
+  const geometry = JSON.parse(btn.dataset.geometry || 'null');
 
   const shapeTypeLabels = {
     'point': '標記點',
@@ -879,6 +1022,16 @@ function showShapeSaveDialog(btn) {
     'sector': '扇形區域'
   };
   const typeLabel = shapeTypeLabels[shapeType] || '圖形';
+
+  // 顯示幾何資訊摘要
+  let geometryInfoHtml = '';
+  if (geometry) {
+    if (geometry.type === 'LineString' && geometry.coordinates) {
+      geometryInfoHtml = `<br><small>頂點數: ${geometry.coordinates.length}</small>`;
+    } else if (geometry.type === 'Polygon' && geometry.coordinates) {
+      geometryInfoHtml = `<br><small>頂點數: ${geometry.coordinates.length}</small>`;
+    }
+  }
 
   const dialog = document.createElement('div');
   dialog.id = 'shape-save-dialog';
@@ -895,6 +1048,8 @@ function showShapeSaveDialog(btn) {
           ${shapeInfo.radius ? `<br><small>半徑: ${shapeInfo.radius}</small>` : ''}
           ${shapeInfo.area ? `<br><small>面積: ${shapeInfo.area}</small>` : ''}
           ${shapeInfo.length ? `<br><small>長度: ${shapeInfo.length}</small>` : ''}
+          ${shapeInfo.angle ? `<br><small>角度: ${shapeInfo.angle}</small>` : ''}
+          ${geometryInfoHtml}
         </div>
         <div class="note-input-group">
           <label for="shapeNoteName">名稱 <span style="color:#ef4444">*</span></label>
@@ -923,11 +1078,12 @@ function showShapeSaveDialog(btn) {
     </div>
   `;
 
-  // 儲存對話框資料
+  // 儲存對話框資料（包含幾何資料）
   dialog.dataset.shapeType = shapeType;
   dialog.dataset.lat = lat;
   dialog.dataset.lng = lng;
   dialog.dataset.shapeInfo = JSON.stringify(shapeInfo);
+  dialog.dataset.geometry = JSON.stringify(geometry);
 
   document.body.appendChild(dialog);
   
@@ -963,6 +1119,7 @@ async function saveShapeNote() {
   const lat = parseFloat(dialog.dataset.lat);
   const lng = parseFloat(dialog.dataset.lng);
   const shapeInfo = JSON.parse(dialog.dataset.shapeInfo || '{}');
+  const geometry = JSON.parse(dialog.dataset.geometry || 'null');
 
   try {
     const featureId = `shape_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -976,6 +1133,8 @@ async function saveShapeNote() {
       lng: lng,
       title: name,
       content: content,
+      // 儲存完整的幾何資料
+      geometry: geometry,
       metadata: {
         drawingType: shapeType,
         source: 'url_shape',

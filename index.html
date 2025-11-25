@@ -8,10 +8,23 @@
        基礎 Meta 標籤
        ============================================ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="description" content="APEINTEL ATLAS - 互動式軍事設施與地理資訊地圖">
+  <meta name="description" content="APEINTEL ATLAS - 互動式地理資訊地圖">
   <meta name="author" content="APEINTEL">
   <meta name="keywords" content="地圖,軍事,設施,OSINT,情報,GeoJSON">
-  
+
+  <!-- ============================================
+       OpenGraph 社群媒體預覽標籤
+       ============================================ -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rnap.riotoolkit.cc">
+  <meta property="og:site_name" content="APEINTEL ATLAS">
+  <meta property="og:title" content="溫SINT地圖">
+  <meta property="og:description" content="互動式地理資訊地圖">
+  <meta property="og:image" content="static/assets/opengraph.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_TW">
+
   <!-- ============================================
        PWA 通用設定
        ============================================ -->
@@ -21,7 +34,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="APEINTEL ATLAS">
   <meta name="msapplication-TileColor" content="#1a1a2e">
-  <meta name="msapplication-TileImage" content="static/assets/APEINTEL ATLAS_192x192.png">
+  <meta name="msapplication-TileImage" content="static/assets/APP_LOGO_192x192.png">
   <meta name="msapplication-config" content="none">
   
   <!-- ============================================
@@ -59,91 +72,28 @@
        Favicon 和圖示
        ============================================ -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="192x192" href="static/assets/APEINTEL ATLAS_192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="static/assets/APEINTEL ATLAS_512x512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="static/assets/APP_LOGO_192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="static/assets/APP_LOGO_512x512.png">
   
   <!-- ============================================
        Apple Touch Icons（iOS 主畫面圖示）
        ============================================ -->
   <!-- 預設 -->
-  <link rel="apple-touch-icon" href="static/assets/APEINTEL ATLAS_180x180.png">
+  <link rel="apple-touch-icon" href="static/assets/APP_LOGO_180x180.png">
   <!-- iPad (非 Retina) -->
-  <link rel="apple-touch-icon" sizes="76x76" href="static/assets/APEINTEL ATLAS_152x152.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="static/assets/APP_LOGO_152x152.png">
   <!-- iPad (Retina) -->
-  <link rel="apple-touch-icon" sizes="152x152" href="static/assets/APEINTEL ATLAS_152x152.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="static/assets/APP_LOGO_152x152.png">
   <!-- iPhone (Retina) -->
-  <link rel="apple-touch-icon" sizes="180x180" href="static/assets/APEINTEL ATLAS_180x180.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/assets/APP_LOGO_180x180.png">
   <!-- iPad Pro -->
-  <link rel="apple-touch-icon" sizes="167x167" href="static/assets/APEINTEL ATLAS_180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="static/assets/APP_LOGO_180x180.png">
   
   <!-- ============================================
        iOS 啟動畫面（Splash Screen）
-       使用 media query 適配不同裝置
+       注意：iOS 需要完整螢幕解析度的圖片才會顯示
+       目前使用 background_color 作為啟動畫面背景
        ============================================ -->
-  <!-- iPhone SE, 6s, 7, 8 (750x1334) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPhone 6s Plus, 7 Plus, 8 Plus (1242x2208) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone X, Xs, 11 Pro (1125x2436) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone Xr, 11 (828x1792) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPhone Xs Max, 11 Pro Max (1242x2688) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12 mini (1080x2340) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12, 12 Pro, 13, 13 Pro, 14 (1170x2532) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12 Pro Max, 13 Pro Max, 14 Plus (1284x2778) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 14 Pro (1179x2556) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 14 Pro Max, 15 Plus, 15 Pro Max (1290x2796) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 15, 15 Pro (1179x2556) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_512x512.png"
-        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPad 9.7" (1536x2048) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_1024x1024.png"
-        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad 10.2" (1620x2160) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_1024x1024.png"
-        media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Air 10.5" (1668x2224) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_1024x1024.png"
-        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Pro 11" (1668x2388) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_1024x1024.png"
-        media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Pro 12.9" (2048x2732) -->
-  <link rel="apple-touch-startup-image" 
-        href="static/assets/APEINTEL ATLAS_1024x1024.png"
-        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
 
   <!-- ============================================
        樣式表預載與載入
