@@ -2,7 +2,7 @@
   "name": "溫SINT地圖 - APEINTEL ATLAS",
   "short_name": "APEINTEL ATLAS",
   "description": "互動式地理資訊地圖",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "start_url": "/?source=pwa",
   "scope": "/",
   "id": "/",

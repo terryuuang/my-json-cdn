@@ -5,17 +5,21 @@
 html, body, #map { 
   height: 100%; 
   margin: 0; 
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   /* 防止 iOS 橡皮筋效果 */
   overscroll-behavior: none;
+  /* 深色背景防止白色區塊 */
+  background-color: #1a1a2e;
+  /* 禁止滾動 */
+  overflow: hidden;
 }
 
 /* iOS 原生 APP 體驗 */
 html {
   /* 防止雙擊縮放 */
   touch-action: manipulation;
-  /* 支援 iOS 瀏海和 Home Indicator */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  /* 移除 padding，改用其他方式處理 safe area */
 }
 
 body {
@@ -28,6 +32,12 @@ body {
   -webkit-touch-callout: none;
   /* 移除點擊高亮 */
   -webkit-tap-highlight-color: transparent;
+  /* 固定定位防止滾動 */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 /* 允許輸入框選取文字 */
@@ -38,15 +48,13 @@ input, textarea, [contenteditable="true"] {
 
 /* 獨立模式（已安裝為 APP）時的特殊處理 */
 @media (display-mode: standalone) {
-  body {
-    /* 確保內容不被瀏海遮擋 */
-    padding-top: env(safe-area-inset-top);
-  }
-  
   #map {
-    /* 地圖區域扣除安全區域 */
-    height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    margin-top: env(safe-area-inset-top);
+    /* 地圖佔滿全螢幕 */
+    height: 100% !important;
+    width: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
   }
 }
 
@@ -822,22 +830,11 @@ select.input-field:hover {
         width: auto;
         max-width: 300px;
         z-index: 1400;
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        padding: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    /* 深色模式下的搜尋列 */
-    @media (prefers-color-scheme: dark) {
-        .mobile-search-bar {
-            background: rgba(30, 30, 46, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        }
+        /* 完全透明背景 */
+        background: transparent;
+        padding: 0;
+        border: none;
+        box-shadow: none;
     }
 
     .mobile-search-container {
@@ -850,12 +847,14 @@ select.input-field:hover {
     .mobile-toggle-panel {
         flex-shrink: 0;
         padding: 8px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: rgba(40, 40, 60, 0.7);
+        backdrop-filter: blur(12px) saturate(150%);
+        -webkit-backdrop-filter: blur(12px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 10px;
         font-size: 16px;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         transition: all 0.2s ease;
         min-width: 38px;
         min-height: 38px;
@@ -866,21 +865,8 @@ select.input-field:hover {
 
     .mobile-toggle-panel:active {
         transform: scale(0.95);
-        background: rgba(240, 240, 240, 0.9);
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* 深色模式下的齒輪按鈕 */
-    @media (prefers-color-scheme: dark) {
-        .mobile-toggle-panel {
-            background: rgba(50, 50, 70, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .mobile-toggle-panel:active {
-            background: rgba(60, 60, 80, 0.9);
-        }
+        background: rgba(50, 50, 70, 0.8);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
     }
 
     .mobile-search-input-wrapper {
@@ -893,44 +879,27 @@ select.input-field:hover {
     .mobile-search-input {
         flex: 1;
         padding: 11px 38px 11px 14px;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 10px;
         font-size: 15px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(40, 40, 60, 0.7);
+        backdrop-filter: blur(12px) saturate(150%);
+        -webkit-backdrop-filter: blur(12px) saturate(150%);
         box-sizing: border-box;
         transition: all 0.2s ease;
-        color: #1e293b;
+        color: #f1f5f9;
         font-weight: 400;
     }
     
     .mobile-search-input::placeholder {
-        color: #94a3b8;
+        color: rgba(255, 255, 255, 0.6);
     }
 
     .mobile-search-input:focus {
         outline: none;
         border-color: rgba(59, 130, 246, 0.5);
-        background: rgba(255, 255, 255, 0.95);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    
-    /* 深色模式下的搜尋輸入框 */
-    @media (prefers-color-scheme: dark) {
-        .mobile-search-input {
-            background: rgba(50, 50, 70, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-        }
-        
-        .mobile-search-input::placeholder {
-            color: #94a3b8;
-        }
-        
-        .mobile-search-input:focus {
-            background: rgba(60, 60, 80, 0.95);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
+        background: rgba(50, 50, 70, 0.8);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
 
     .mobile-clear-btn {
@@ -940,11 +909,11 @@ select.input-field:hover {
         transform: translateY(-50%);
         width: 28px;
         height: 28px;
-        background: rgba(107, 114, 128, 0.15);
+        background: rgba(255, 255, 255, 0.15);
         border: none;
         border-radius: 50%;
         font-size: 14px;
-        color: #6b7280;
+        color: rgba(255, 255, 255, 0.7);
         cursor: pointer;
         display: flex;
         align-items: center;
