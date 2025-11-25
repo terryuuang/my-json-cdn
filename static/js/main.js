@@ -245,28 +245,31 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     } catch (_) {}
   };
 
-  // 輔助函數：建立含筆記功能的 popup 內容
+  // 輔助函數：建立含筆記功能的 popup 內容（跟軍事設施彈窗樣式一致）
   const buildShapePopup = (type, text, center, shapeInfo = {}) => {
     const baseText = text || '區域標記';
-    let popupHtml = `<div class="shape-popup"><strong>${baseText}</strong>`;
+    const shapeTypeLabels = { 'point': '標記點', 'circle': '圓形區域', 'line': '線段', 'polygon': '多邊形', 'bbox': '矩形區域', 'sector': '扇形區域' };
+    const typeLabel = shapeTypeLabels[type] || '圖形';
+    
+    let popupHtml = `<h3 class="popup-title" style="margin-bottom:10px">${baseText}</h3>`;
+    popupHtml += `<div class="popup-field"><strong>類型:</strong><span class="popup-field-value">${typeLabel}</span></div>`;
     
     // 添加形狀資訊
-    if (shapeInfo.radius) popupHtml += `<br><small>半徑: ${shapeInfo.radius}</small>`;
-    if (shapeInfo.area) popupHtml += `<br><small>面積: ${shapeInfo.area}</small>`;
-    if (shapeInfo.length) popupHtml += `<br><small>長度: ${shapeInfo.length}</small>`;
+    if (shapeInfo.radius) popupHtml += `<div class="popup-field"><strong>半徑:</strong><span class="popup-field-value">${shapeInfo.radius}</span></div>`;
+    if (shapeInfo.area) popupHtml += `<div class="popup-field"><strong>面積:</strong><span class="popup-field-value">${shapeInfo.area}</span></div>`;
+    if (shapeInfo.length) popupHtml += `<div class="popup-field"><strong>長度:</strong><span class="popup-field-value">${shapeInfo.length}</span></div>`;
     
     // 添加儲存筆記按鈕
     if (window.Notes && typeof window.Notes.getShapeNoteButtonHtml === 'function') {
-      popupHtml += window.Notes.getShapeNoteButtonHtml({
+      popupHtml += `<div class="popup-actions">${window.Notes.getShapeNoteButtonHtml({
         shapeType: type,
         lat: center.lat,
         lng: center.lng,
         text: baseText,
         shapeInfo: shapeInfo
-      });
+      })}</div>`;
     }
     
-    popupHtml += '</div>';
     return popupHtml;
   };
 

@@ -3308,50 +3308,9 @@ select.input-field:hover {
    Shape 模式筆記樣式
    ======================================== */
 
-/* Shape Popup 容器 */
-.shape-popup {
-  min-width: 200px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.shape-popup strong {
-  display: block;
-  font-size: 15px;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.shape-popup small {
-  color: #64748b;
-}
-
-/* Shape 儲存按鈕 */
+/* Shape 儲存按鈕 - 繼承 link-btn 樣式 */
 .shape-save-btn {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px !important;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2) !important;
-  border: 1px solid #fca5a5 !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #dc2626 !important;
-  cursor: pointer;
-  transition: all 0.2s ease !important;
-  margin-top: 10px !important;
-}
-
-.shape-save-btn svg {
-  flex-shrink: 0;
-}
-
-.shape-save-btn:hover {
-  background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
-  border-color: #f87171 !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25) !important;
+  margin-top: 0 !important;
 }
 
 /* Drawing Popup 容器 */
@@ -3403,7 +3362,6 @@ select.input-field:hover {
 
 /* 改善觸控體驗 */
 .note-btn,
-.shape-save-btn,
 .notes-control-btn {
   /* 增加點擊區域 */
   min-height: 44px;
@@ -3415,6 +3373,7 @@ select.input-field:hover {
   /* 移除點擊高亮 */
   -webkit-tap-highlight-color: transparent;
 }
+
 
 /* 對話框輸入框觸控優化 */
 .note-input,
@@ -3434,8 +3393,7 @@ select.input-field:hover {
 }
 
 /* 按鈕點擊反饋 */
-.note-btn:active,
-.shape-save-btn:active {
+.note-btn:active {
   transform: scale(0.97) !important;
   opacity: 0.9;
 }
@@ -3471,16 +3429,8 @@ select.input-field:hover {
   }
 }
 
-/* 深色模式下的 Shape 樣式 */
+/* 深色模式下的 Drawing Popup 樣式 */
 @media (prefers-color-scheme: dark) {
-  .shape-popup strong {
-    color: #f1f5f9;
-  }
-
-  .shape-popup small {
-    color: #94a3b8;
-  }
-
   .drawing-popup strong {
     color: #f1f5f9;
   }

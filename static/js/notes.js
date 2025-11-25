@@ -859,16 +859,7 @@ function getShapeNoteButtonHtml(shapeData) {
     data-shape-info='${JSON.stringify(shapeInfo || {})}'
   `;
   
-  return `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #e5e7eb;">
-    <button class="popup-note-btn shape-save-btn" onclick="showShapeSaveDialog(this)" ${dataAttrs}>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-        <polyline points="17,21 17,13 7,13 7,21"/>
-        <polyline points="7,3 7,8 15,8"/>
-      </svg>
-      儲存此圖形
-    </button>
-  </div>`;
+  return `<button class="link-btn shape-save-btn" onclick="showShapeSaveDialog(this)" ${dataAttrs}>儲存此圖形</button>`;
 }
 
 // 顯示 Shape 儲存對話框
@@ -907,11 +898,11 @@ function showShapeSaveDialog(btn) {
         </div>
         <div class="note-input-group">
           <label for="shapeNoteName">名稱 <span style="color:#ef4444">*</span></label>
-          <input type="text" id="shapeNoteName" class="note-input" placeholder="輸入圖形名稱（必填）..." value="${escapeHtml(text)}" maxlength="100" required>
+          <input type="text" id="shapeNoteName" class="note-input" placeholder="輸入圖形名稱（必填）..." value="" maxlength="100" required>
         </div>
         <div class="note-input-group">
           <label for="shapeNoteContent">備註說明</label>
-          <textarea id="shapeNoteContent" class="note-textarea" placeholder="輸入備註說明（選填）..." rows="4" maxlength="2000"></textarea>
+          <textarea id="shapeNoteContent" class="note-textarea" placeholder="輸入備註說明（選填）..." rows="4" maxlength="2000">${escapeHtml(text)}</textarea>
         </div>
         <div class="note-dialog-info">
           <span>座標：${lat.toFixed(5)}, ${lng.toFixed(5)}</span>
