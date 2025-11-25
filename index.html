@@ -2,9 +2,151 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>溫SINT地圖</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>溫SINT地圖 - APEINTEL ATLAS</title>
+  
+  <!-- ============================================
+       基礎 Meta 標籤
+       ============================================ -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="APEINTEL ATLAS - 互動式軍事設施與地理資訊地圖">
+  <meta name="author" content="APEINTEL">
+  <meta name="keywords" content="地圖,軍事,設施,OSINT,情報,GeoJSON">
+  
+  <!-- ============================================
+       PWA 通用設定
+       ============================================ -->
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e293b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="APEINTEL ATLAS">
+  <meta name="msapplication-TileColor" content="#3b82f6">
+  <meta name="msapplication-TileImage" content="static/assets/APEINTEL ATLAS_192x192.png">
+  <meta name="msapplication-config" content="none">
+  
+  <!-- ============================================
+       iOS/Safari 完整設定（原生 APP 體驗）
+       ============================================ -->
+  <!-- 啟用全螢幕模式 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- 狀態欄樣式：black-translucent 讓內容延伸到狀態欄下方 -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- APP 名稱（主畫面顯示） -->
+  <meta name="apple-mobile-web-app-title" content="APEINTEL ATLAS">
+  <!-- 停用自動偵測電話號碼（避免誤觸） -->
+  <meta name="format-detection" content="telephone=no">
+  <!-- 停用自動偵測地址 -->
+  <meta name="format-detection" content="address=no">
+  <!-- 停用自動偵測 Email -->
+  <meta name="format-detection" content="email=no">
+  <!-- 停用自動偵測日期 -->
+  <meta name="format-detection" content="date=no">
+  <!-- 觸控高亮顏色（設為透明以獲得原生感） -->
+  <meta name="apple-touch-fullscreen" content="yes">
+  
+  <!-- ============================================
+       Android/Chrome 設定
+       ============================================ -->
+  <!-- 停用翻譯提示 -->
+  <meta name="google" content="notranslate">
+  
+  <!-- ============================================
+       PWA Manifest
+       ============================================ -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- ============================================
+       Favicon 和圖示
+       ============================================ -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="static/assets/APEINTEL ATLAS_192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="static/assets/APEINTEL ATLAS_512x512.png">
+  
+  <!-- ============================================
+       Apple Touch Icons（iOS 主畫面圖示）
+       ============================================ -->
+  <!-- 預設 -->
+  <link rel="apple-touch-icon" href="static/assets/APEINTEL ATLAS_180x180.png">
+  <!-- iPad (非 Retina) -->
+  <link rel="apple-touch-icon" sizes="76x76" href="static/assets/APEINTEL ATLAS_152x152.png">
+  <!-- iPad (Retina) -->
+  <link rel="apple-touch-icon" sizes="152x152" href="static/assets/APEINTEL ATLAS_152x152.png">
+  <!-- iPhone (Retina) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="static/assets/APEINTEL ATLAS_180x180.png">
+  <!-- iPad Pro -->
+  <link rel="apple-touch-icon" sizes="167x167" href="static/assets/APEINTEL ATLAS_180x180.png">
+  
+  <!-- ============================================
+       iOS 啟動畫面（Splash Screen）
+       使用 media query 適配不同裝置
+       ============================================ -->
+  <!-- iPhone SE, 6s, 7, 8 (750x1334) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPhone 6s Plus, 7 Plus, 8 Plus (1242x2208) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone X, Xs, 11 Pro (1125x2436) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone Xr, 11 (828x1792) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPhone Xs Max, 11 Pro Max (1242x2688) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 12 mini (1080x2340) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 12, 12 Pro, 13, 13 Pro, 14 (1170x2532) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 12 Pro Max, 13 Pro Max, 14 Plus (1284x2778) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 14 Pro (1179x2556) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 14 Pro Max, 15 Plus, 15 Pro Max (1290x2796) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPhone 15, 15 Pro (1179x2556) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_512x512.png"
+        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+  <!-- iPad 9.7" (1536x2048) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_1024x1024.png"
+        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPad 10.2" (1620x2160) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_1024x1024.png"
+        media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPad Air 10.5" (1668x2224) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_1024x1024.png"
+        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPad Pro 11" (1668x2388) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_1024x1024.png"
+        media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iPad Pro 12.9" (2048x2732) -->
+  <link rel="apple-touch-startup-image" 
+        href="static/assets/APEINTEL ATLAS_1024x1024.png"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+
+  <!-- ============================================
+       樣式表預載與載入
+       ============================================ -->
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Plugins: Leaflet.draw + PolylineMeasure -->
@@ -82,34 +224,34 @@
         <div id="layerDropdownMenu" class="dropdown-menu" style="display: none;">
           <div class="dropdown-content">
             <div class="dropdown-option">
-              <label><input type="checkbox" value="中國軍工及航天產業" onchange="handleLayerChange(this)"><span>中國軍工及航天產業</span></label>
+              <label><input type="checkbox" value="中國軍工及航天產業" onchange="handleLayerChange(this)"><span>中共軍工及航天產業</span></label>
             </div>
             <div class="dropdown-option">
               <label><input type="checkbox" value="武裝警察、海外軍事設施及其他分類" onchange="handleLayerChange(this)"><span>武裝警察、海外軍事設施</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍海軍、海軍陸戰隊基地及設施" onchange="handleLayerChange(this)"><span>解放軍海軍、海軍陸戰隊</span></label>
+              <label><input type="checkbox" value="解放軍海軍、海軍陸戰隊基地及設施" onchange="handleLayerChange(this)"><span>共軍海軍、海軍陸戰隊</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍火箭軍" onchange="handleLayerChange(this)"><span>解放軍火箭軍</span></label>
+              <label><input type="checkbox" value="解放軍火箭軍" onchange="handleLayerChange(this)"><span>共軍火箭軍</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍空軍、海軍航空兵基地及設施" onchange="handleLayerChange(this)"><span>解放軍空軍、海軍航空兵</span></label>
+              <label><input type="checkbox" value="解放軍空軍、海軍航空兵基地及設施" onchange="handleLayerChange(this)"><span>共軍空軍、海軍航空兵</span></label>
             </div>
             <div class="dropdown-option">
               <label><input type="checkbox" value="解放軍軍事航天部隊、網路空間部隊、信息支援部隊" onchange="handleLayerChange(this)"><span>軍事航天、網路空間部隊</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍軍事院校、教育單位" onchange="handleLayerChange(this)"><span>解放軍軍事院校、教育</span></label>
+              <label><input type="checkbox" value="解放軍軍事院校、教育單位" onchange="handleLayerChange(this)"><span>共軍軍事院校、教育</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍重要訓場/特殊設施" onchange="handleLayerChange(this)"><span>解放軍重要訓場/特殊設施</span></label>
+              <label><input type="checkbox" value="解放軍重要訓場/特殊設施" onchange="handleLayerChange(this)"><span>共軍重要訓場/特殊設施</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)" onchange="handleLayerChange(this)"><span>解放軍陸軍、聯勤保障</span></label>
+              <label><input type="checkbox" value="解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)" onchange="handleLayerChange(this)"><span>共軍陸軍、聯勤保障</span></label>
             </div>
             <div class="dropdown-option">
-              <label><input type="checkbox" value="黨和國家重要政經軍事機關" onchange="handleLayerChange(this)"><span>黨和國家重要政經軍事機關</span></label>
+              <label><input type="checkbox" value="黨和國家重要政經軍事機關" onchange="handleLayerChange(this)"><span>共產黨和國家重要政經軍事機關</span></label>
             </div>
           </div>
           <div class="dropdown-actions" style="display: none;">
@@ -218,6 +360,8 @@
   <script src="static/js/osm_facilities.js" defer></script>
   <!-- Unified Dropdown System -->
   <script src="static/js/unified_dropdown.js" defer></script>
+  <!-- PWA -->
+  <script src="static/js/pwa.js" defer></script>
   <script src="static/js/main.js" defer></script>
 </body>
 </html>

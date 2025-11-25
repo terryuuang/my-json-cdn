@@ -1,4 +1,72 @@
-html, body, #map { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+/* ========================================
+   基礎樣式與原生 APP 體驗優化
+   ======================================== */
+
+html, body, #map { 
+  height: 100%; 
+  margin: 0; 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  /* 防止 iOS 橡皮筋效果 */
+  overscroll-behavior: none;
+}
+
+/* iOS 原生 APP 體驗 */
+html {
+  /* 防止雙擊縮放 */
+  touch-action: manipulation;
+  /* 支援 iOS 瀏海和 Home Indicator */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+body {
+  /* 防止 iOS 過度捲動 */
+  -webkit-overflow-scrolling: touch;
+  /* 防止文字選取（更像原生 APP） */
+  -webkit-user-select: none;
+  user-select: none;
+  /* 防止長按彈出選單 */
+  -webkit-touch-callout: none;
+  /* 移除點擊高亮 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 允許輸入框選取文字 */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* 獨立模式（已安裝為 APP）時的特殊處理 */
+@media (display-mode: standalone) {
+  body {
+    /* 確保內容不被瀏海遮擋 */
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  #map {
+    /* 地圖區域扣除安全區域 */
+    height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    margin-top: env(safe-area-inset-top);
+  }
+}
+
+/* iOS 狀態欄背景（standalone 模式） */
+@supports (padding-top: env(safe-area-inset-top)) {
+  @media (display-mode: standalone) {
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-top);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95));
+      z-index: 9998;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  }
+}
 
 /* 頂部提醒樣式（RWD） */
 .top-notice {
@@ -925,7 +993,7 @@ select.input-field:hover {
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1500;
-    max-height: calc(100vh - 15px);
+    max-height: calc(100vh - 40px);
     overflow-y: auto;
     overflow-x: hidden;
     padding: 16px;
@@ -1807,5 +1875,740 @@ select.input-field:hover {
 
   .info-panel-content {
     gap: 8px;
+  }
+}
+
+/* ========================================
+   PWA 相關樣式
+   ======================================== */
+
+/* Android 安裝橫幅 */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 9999;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  /* iOS Safe Area */
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.pwa-install-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pwa-install-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pwa-install-text strong {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pwa-install-text span {
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pwa-install-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-install-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pwa-install-btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.pwa-install-btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+}
+
+.pwa-install-btn-primary:active {
+  transform: translateY(0);
+}
+
+.pwa-install-btn-secondary {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.pwa-install-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-color: #64748b;
+}
+
+/* iOS 安裝教學 */
+.pwa-ios-guide {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  width: calc(100% - 32px);
+  max-width: 380px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  /* iOS Safe Area */
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+.pwa-ios-guide.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.pwa-ios-content {
+  padding: 24px;
+  position: relative;
+}
+
+.pwa-ios-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-ios-close:active {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(0.95);
+}
+
+.pwa-ios-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-right: 40px;
+}
+
+.pwa-ios-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.pwa-ios-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-ios-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.pwa-ios-subtitle {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pwa-ios-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.pwa-ios-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.pwa-ios-step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+}
+
+.pwa-ios-step-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pwa-ios-step strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.pwa-ios-share-icon,
+.pwa-ios-add-icon,
+.pwa-ios-done-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.pwa-ios-share-icon {
+  background: #007AFF;
+  color: white;
+}
+
+.pwa-ios-add-icon {
+  background: #34c759;
+  color: white;
+}
+
+.pwa-ios-done-icon {
+  background: #30d158;
+  color: white;
+  font-weight: bold;
+}
+
+/* iOS 安裝優勢區塊 */
+.pwa-ios-benefits {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 18px;
+  padding: 12px 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pwa-ios-benefit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.pwa-ios-benefit-icon {
+  font-size: 20px;
+}
+
+/* iOS 稍後再說按鈕 */
+.pwa-ios-dismiss-btn {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-ios-dismiss-btn:active {
+  background: #f8fafc;
+  transform: scale(0.98);
+}
+
+.pwa-ios-note {
+  margin: 0;
+  padding: 12px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #1e40af;
+  text-align: center;
+}
+
+/* 更新通知 Toast */
+.pwa-update-toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 60px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10001;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pwa-update-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.pwa-update-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-update-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.pwa-update-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.pwa-update-text strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pwa-update-text span {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.pwa-update-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pwa-update-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.pwa-update-btn-primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+.pwa-update-btn-primary:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.pwa-update-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pwa-update-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+/* Toast 通知 */
+.pwa-toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(30, 41, 59, 0.95);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10002;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  max-width: calc(100% - 40px);
+  text-align: center;
+}
+
+.pwa-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* 通知權限說明 */
+.pwa-notification-guide {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: calc(100% - 32px);
+  max-width: 400px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 10003;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pwa-notification-guide.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.pwa-notification-content {
+  padding: 24px;
+  position: relative;
+}
+
+.pwa-notification-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pwa-notification-close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pwa-notification-content h4 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.pwa-notification-content p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.pwa-notification-content ol {
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.8;
+}
+
+.pwa-notification-dismiss {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-notification-dismiss:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* 手機版 PWA 樣式調整 */
+@media (max-width: 768px) {
+  .pwa-install-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+    padding-bottom: max(14px, calc(env(safe-area-inset-bottom) + 10px));
+  }
+
+  .pwa-install-content {
+    justify-content: flex-start;
+  }
+
+  .pwa-install-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+  }
+
+  .pwa-install-text strong {
+    font-size: 15px;
+  }
+
+  .pwa-install-text span {
+    font-size: 13px;
+  }
+
+  .pwa-install-actions {
+    justify-content: stretch;
+  }
+
+  .pwa-install-btn {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .pwa-ios-guide {
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: calc(100% - 24px);
+    max-width: none;
+  }
+
+  .pwa-ios-content {
+    padding: 20px;
+  }
+
+  .pwa-ios-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+  }
+
+  .pwa-ios-header h3 {
+    font-size: 17px;
+  }
+
+  .pwa-ios-subtitle {
+    font-size: 12px;
+  }
+
+  .pwa-ios-steps {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .pwa-ios-step {
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .pwa-ios-step-num {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .pwa-ios-share-icon,
+  .pwa-ios-add-icon,
+  .pwa-ios-done-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  .pwa-ios-benefits {
+    padding: 10px 0;
+    margin-bottom: 14px;
+  }
+
+  .pwa-ios-benefit {
+    font-size: 11px;
+  }
+
+  .pwa-ios-benefit-icon {
+    font-size: 18px;
+  }
+
+  .pwa-ios-dismiss-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .pwa-update-toast {
+    top: calc(env(safe-area-inset-top, 0px) + 70px);
+    width: calc(100% - 24px);
+  }
+
+  .pwa-update-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .pwa-toast {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
+    font-size: 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
+  }
+}
+
+/* iPad 專用樣式 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .pwa-ios-guide {
+    max-width: 420px;
+  }
+  
+  .pwa-install-banner {
+    flex-direction: row;
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 16px;
+    margin: 0 auto;
+    bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .pwa-install-banner.show {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 獨立模式（已安裝為 APP）時的調整 */
+@media (display-mode: standalone) {
+  /* 隱藏安裝相關元素 */
+  .pwa-install-banner,
+  .pwa-ios-guide {
+    display: none !important;
+  }
+  
+  /* 頂部提醒位置調整（考慮狀態欄背景） */
+  .top-notice {
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+  }
+
+  /* 手機版搜尋列調整 */
+  .mobile-search-bar {
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+  }
+
+  /* Leaflet 控制項調整 */
+  .leaflet-top.leaflet-right {
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+  }
+
+  /* 控制面板調整 */
+  .control-panel {
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+  }
+
+  /* 更新通知位置調整 */
+  .pwa-update-toast {
+    top: calc(env(safe-area-inset-top, 0px) + 60px);
+  }
+
+  /* Toast 位置調整 */
+  .pwa-toast {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  }
+}
+
+/* iOS PWA 全螢幕模式特殊處理 */
+@media (display-mode: standalone) and (max-width: 768px) {
+  /* 確保手機版 APP 體驗最佳 */
+  .mobile-search-bar {
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+  }
+
+  .control-panel {
+    top: calc(env(safe-area-inset-top, 0px) + 5px);
+    max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
   }
 }

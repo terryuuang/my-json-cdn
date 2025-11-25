@@ -9,6 +9,14 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2025年11月25日',
+    description: '新增pwa功能，支援手機應用'
+  },
+  {
+    date: '2025年11月24日',
+    description: '新增更新日誌功能，顯示最新版本更新內容'
+  },
+  {
     date: '2025年11月24日',
     description: '整合統一下拉選單系統，新增多選功能以支援分層篩選及公共設施選擇'
   },
@@ -31,10 +39,6 @@ const CHANGELOG = [
   {
     date: '2025年09月16日',
     description: '本地化 Leaflet.draw 介面為繁體中文，新增紅色主題樣式'
-  },
-  {
-    date: '2025年09月16日',
-    description: '新增 Google 地圖資料匯出為 GeoJSON 格式的功能'
   }
 ];
 
