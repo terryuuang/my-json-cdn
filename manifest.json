@@ -1,6 +1,6 @@
 {
   "name": "溫SINT地圖 - APEINTEL ATLAS",
-  "short_name": "APEINTEL ATLAS",
+  "short_name": "溫SINT地圖",
   "description": "互動式地理資訊地圖",
   "version": "0.0.8",
   "start_url": "/?source=pwa",
