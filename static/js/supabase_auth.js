@@ -1431,6 +1431,7 @@ window.SupabaseAuth = {
   getOnlineUsers,
   updatePendingBadge,
   showSettings: showSettingsDialog,
+  getSupabaseClient,
   _getClient: getSupabaseClient,
   // 管理員 API
   admin: {

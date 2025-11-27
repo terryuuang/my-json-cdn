@@ -243,8 +243,8 @@ async function getPendingCount() {
 // ============================================
 
 function getSupabaseClient() {
-  return window.supabase?.createClient ? null : 
-    (window.SupabaseAuth?._getClient?.() || window._supabaseClient);
+  // 優先使用傳入的 client，其次使用 SupabaseAuth 的 client
+  return window._supabaseClient || window.SupabaseAuth?.getSupabaseClient?.();
 }
 
 // 設定 Supabase Client 參考
