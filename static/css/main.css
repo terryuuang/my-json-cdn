@@ -377,6 +377,8 @@ input, textarea, [contenteditable="true"] {
     overflow-y: auto;
     overflow-x: visible;
     box-sizing: border-box;
+    /* 桌面版動畫過渡 */
+    transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 /* 桌面版控制面板滾動條樣式 */
@@ -797,7 +799,7 @@ select.input-field:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* 隱藏控制面板的按鈕 */
+/* 隱藏控制面板的按鈕（統一樣式） */
 .toggle-panel {
     position: absolute;
     top: 10px;
@@ -809,7 +811,7 @@ select.input-field:hover {
     cursor: pointer;
     z-index: 1600;
     font-size: 18px;
-    transition: all 0.3s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -832,9 +834,17 @@ select.input-field:hover {
     color: #0f172a;
 }
 
+/* 當面板展開時，桌面版按鈕立即隱藏避免重疊 */
+.toggle-panel.panel-open {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+}
+
 @media (max-width: 768px) {
-    .toggle-panel {
-        display: none; /* 手機版隱藏原本的齒輪按鈕，改用搜尋列內的 */
+    /* 手機版隱藏原本的齒輪按鈕，改用搜尋列內的 */
+    .toggle-panel:not(.toggle-panel-mobile) {
+        display: none;
     }
 }
 
@@ -873,7 +883,9 @@ select.input-field:hover {
         position: relative;
     }
 
-    .mobile-toggle-panel {
+    /* 手機版按鈕樣式（統一使用 .toggle-panel 加 .toggle-panel-mobile） */
+    .toggle-panel.toggle-panel-mobile {
+        position: static;
         flex-shrink: 0;
         padding: 8px;
         background: rgba(40, 40, 60, 0.7);
@@ -891,23 +903,31 @@ select.input-field:hover {
         align-items: center;
         justify-content: center;
         color: #f1f5f9;
+        z-index: auto;
     }
 
-    .mobile-toggle-panel i {
+    .toggle-panel.toggle-panel-mobile i {
         font-size: 20px;
         line-height: 1;
         color: #f1f5f9;
         transition: color 0.2s ease;
     }
 
-    .mobile-toggle-panel:active {
+    .toggle-panel.toggle-panel-mobile:active {
         transform: scale(0.95);
         background: rgba(50, 50, 70, 0.8);
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
     }
 
-    .mobile-toggle-panel:active i {
+    .toggle-panel.toggle-panel-mobile:active i {
         color: #ffffff;
+    }
+
+    /* 手機版按鈕不需要 panel-open 隱藏效果 */
+    .toggle-panel.toggle-panel-mobile.panel-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
     }
 
     .mobile-search-input-wrapper {

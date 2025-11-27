@@ -1507,7 +1507,7 @@ return text.toString()
 // 隱藏/顯示控制面板
 function closeControlPanel() {
   const panel = document.getElementById('controlPanel');
-  const toggleBtn = document.querySelector('.toggle-panel');
+  const toggleBtn = document.querySelector('.toggle-panel:not(.toggle-panel-mobile)');
   if (!panel) return;
 
   panel.classList.remove('show-mobile');
@@ -1517,64 +1517,59 @@ function closeControlPanel() {
     panel.classList.add('hidden');
   }
 
-  if (toggleBtn) toggleBtn.style.zIndex = '1600';
+  // 桌面版按鈕使用 class 控制顯示
+  if (toggleBtn) toggleBtn.classList.remove('panel-open');
 }
 
 function togglePanel() {
-const panel = document.getElementById('controlPanel');
-const toggleBtn = document.querySelector('.toggle-panel');
+  const panel = document.getElementById('controlPanel');
+  const toggleBtn = document.querySelector('.toggle-panel:not(.toggle-panel-mobile)');
 
-if (isMobileDevice()) {
-    // 手機版使用不同的class
+  if (isMobileDevice()) {
+    // 手機版使用 show-mobile class
     panel.classList.toggle('show-mobile');
-    // 面板開啟時讓按鈕位於面板之下或隱藏
-    if (panel.classList.contains('show-mobile')) {
-      toggleBtn.style.zIndex = '1400';
-    } else {
-      toggleBtn.style.zIndex = '1600';
-    }
-} else {
-    // 桌面版使用原有的hidden class
+  } else {
+    // 桌面版使用 hidden class
     panel.classList.toggle('hidden');
-    // 面板開啟(未隱藏)時將按鈕壓到下面
-    if (!panel.classList.contains('hidden')) {
-      toggleBtn.style.zIndex = '1400';
-    } else {
-      toggleBtn.style.zIndex = '1600';
+    // 面板展開時隱藏按鈕，避免重疊
+    if (toggleBtn) {
+      if (!panel.classList.contains('hidden')) {
+        toggleBtn.classList.add('panel-open');
+      } else {
+        toggleBtn.classList.remove('panel-open');
+      }
     }
-}
+  }
 }
 
 // 初始化面板顯示狀態
 function initializePanelState() {
-const panel = document.getElementById('controlPanel');
-const mobileHint = document.getElementById('mobileHint');
-const toggleBtn = document.querySelector('.toggle-panel');
+  const panel = document.getElementById('controlPanel');
+  const mobileHint = document.getElementById('mobileHint');
+  const toggleBtn = document.querySelector('.toggle-panel:not(.toggle-panel-mobile)');
 
-if (isMobileDevice()) {
+  if (isMobileDevice()) {
     // 手機版預設隱藏
     panel.classList.remove('show-mobile');
-    // 確保不使用桌面版的hidden class
+    // 確保不使用桌面版的 hidden class
     panel.classList.remove('hidden');
     // 顯示手機版提示（如果存在）
     if (mobileHint) {
-        mobileHint.style.display = 'block';
+      mobileHint.style.display = 'block';
     }
-    if (toggleBtn) {
-        toggleBtn.style.zIndex = '1600';
-    }
-} else {
+  } else {
     // 桌面版預設顯示
     panel.classList.remove('hidden');
     panel.classList.remove('show-mobile');
+    // 面板預設展開，按鈕需要隱藏
+    if (toggleBtn) {
+      toggleBtn.classList.add('panel-open');
+    }
     // 隱藏手機版提示（如果存在）
     if (mobileHint) {
-        mobileHint.style.display = 'none';
+      mobileHint.style.display = 'none';
     }
-    if (toggleBtn) {
-        toggleBtn.style.zIndex = '1400';
-    }
-}
+  }
 }
 
 // 監聽視窗大小變化

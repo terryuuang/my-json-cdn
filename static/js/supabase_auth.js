@@ -84,19 +84,17 @@ async function initSupabase() {
       }
     });
 
-    // 監聽認證狀態變化
+    // 監聽認證狀態變化（不阻塞 - 非同步處理）
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('[SupabaseAuth] 認證狀態變更:', event);
         
         if (session) {
           currentUser = session.user;
-          await loadUserProfile();
-          startHeartbeat();
-          
-          if (userProfile?.auto_sync_enabled && userProfile?.status === 'approved') {
-            startAutoSync();
-          }
+          // 非阻塞式處理，不使用 await
+          handleAuthenticatedUser().catch(err => {
+            console.error('[SupabaseAuth] 處理登入後邏輯失敗:', err);
+          });
         } else {
           currentUser = null;
           userProfile = null;
@@ -113,12 +111,10 @@ async function initSupabase() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
       currentUser = session.user;
-      await loadUserProfile();
-      startHeartbeat();
-      
-      if (userProfile?.auto_sync_enabled && userProfile?.status === 'approved') {
-        startAutoSync();
-      }
+      // 非阻塞式處理
+      handleAuthenticatedUser().catch(err => {
+        console.error('[SupabaseAuth] 處理現有 session 失敗:', err);
+      });
     }
 
     console.log('[SupabaseAuth] 初始化完成');
@@ -128,6 +124,32 @@ async function initSupabase() {
   } catch (error) {
     console.error('[SupabaseAuth] 初始化失敗:', error);
     throw error;
+  }
+}
+
+// 處理已認證用戶的後續邏輯（非阻塞）
+async function handleAuthenticatedUser() {
+  try {
+    // 載入用戶 profile（帶超時）
+    await Promise.race([
+      loadUserProfile(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Profile 載入超時')), 10000))
+    ]).catch(err => {
+      console.warn('[SupabaseAuth] Profile 載入失敗或超時:', err.message);
+    });
+    
+    // 啟動心跳（不等待）
+    startHeartbeat();
+    
+    // 檢查自動同步
+    if (userProfile?.auto_sync_enabled && userProfile?.status === 'approved') {
+      startAutoSync();
+    }
+    
+    // 更新 UI
+    updateAuthUI();
+  } catch (error) {
+    console.error('[SupabaseAuth] handleAuthenticatedUser 錯誤:', error);
   }
 }
 
@@ -260,8 +282,11 @@ async function updateLastSeen() {
 
 function startHeartbeat() {
   stopHeartbeat();
-  updateLastSeen();
-  heartbeatInterval = setInterval(updateLastSeen, HEARTBEAT_INTERVAL_MS);
+  // 不等待，避免阻塞
+  updateLastSeen().catch(() => {});
+  heartbeatInterval = setInterval(() => {
+    updateLastSeen().catch(() => {});
+  }, HEARTBEAT_INTERVAL_MS);
 }
 
 function stopHeartbeat() {
