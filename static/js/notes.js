@@ -686,6 +686,14 @@ async function showNotesListDialog() {
           匯入
         </button>
         <input type="file" id="importNotesInput" accept=".json" style="display:none" onchange="handleImportNotes(event)">
+        ${window.SupabaseAuth && window.SupabaseAuth.isAuthenticated() ? `
+          <button class="note-btn note-btn-cloud" onclick="quickCloudSync()" title="雲端同步">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+            </svg>
+            雲端
+          </button>
+        ` : ''}
         ${notes.length > 0 ? `
           <button class="note-btn note-btn-danger" onclick="confirmClearAllNotes()">
             清除全部
@@ -1190,5 +1198,20 @@ window.handleImportNotes = handleImportNotes;
 window.openNoteFromPopup = openNoteFromPopup;
 window.showShapeSaveDialog = showShapeSaveDialog;
 window.closeShapeSaveDialog = closeShapeSaveDialog;
+
+// 快速雲端同步（從筆記列表對話框觸發）
+window.quickCloudSync = async function() {
+  if (!window.SupabaseAuth || !window.SupabaseAuth.isAuthenticated()) {
+    showNoteToast('請先登入以使用雲端同步功能', 'warning');
+    return;
+  }
+  
+  closeNotesListDialog();
+  
+  // 開啟設定對話框讓使用者選擇同步方向
+  if (window.showSettingsDialog) {
+    window.showSettingsDialog();
+  }
+};
 window.saveShapeNote = saveShapeNote;
 

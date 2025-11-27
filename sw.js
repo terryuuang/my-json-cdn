@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.0.8';
+const APP_VERSION = '0.1.0';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -68,6 +68,8 @@ const CORE_ASSETS = [
   '/static/js/osm_facilities.js',
   '/static/js/unified_dropdown.js',
   '/static/js/notes.js',
+  '/static/js/supabase_auth.js',
+  '/static/js/chat.js',
   '/static/js/pwa.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
   '/static/assets/APEINTEL ATLAS_512x512.png'
@@ -82,7 +84,8 @@ const CDN_ASSETS = [
   'https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.css',
   'https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js'
+  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
 ];
 
 // ============================================

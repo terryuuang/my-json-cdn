@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2025年11月27日',
+    description: '新增 Google 帳號登入與雲端同步功能，筆記可跨瀏覽器/裝置存取'
+  },
+  {
     date: '2025年11月25日',
     description: '增強筆記功能，支援儲存 URL shape 及 Leaflet.draw 繪製的完整幾何圖形'
   },
@@ -714,6 +718,12 @@ try {
     // 初始化地圖
     initializeMap();
     // 工具已在 initializeMap 內初始化
+    
+    // 初始化認證系統（Supabase Google OAuth）
+    // 先初始化認證系統，讓設定按鈕在筆記按鈕上方
+    if (window.SupabaseAuth && typeof window.SupabaseAuth.init === 'function') {
+      await window.SupabaseAuth.init(map);
+    }
     
     // 初始化筆記系統（IndexedDB）
     if (window.Notes && typeof window.Notes.init === 'function') {

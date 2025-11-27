@@ -123,7 +123,9 @@
   <!-- 手機版固定搜尋列 -->
   <div id="mobileSearchBar" class="mobile-search-bar">
     <div class="mobile-search-container">
-      <button class="mobile-toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">⚙️</button>
+      <button class="mobile-toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">
+        <i class="bi bi-list"></i>
+      </button>
       <div class="mobile-search-input-wrapper">
         <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="搜尋地點..." autocomplete="off" aria-label="搜尋地點">
         <button id="mobileClearBtn" class="mobile-clear-btn" onclick="clearMobileSearch()" aria-label="清除搜尋" style="display: none;">✕</button>
@@ -284,7 +286,9 @@
   </div>
   
   <!-- 隱藏面板按鈕 -->
-  <button class="toggle-panel" onclick="togglePanel()">⚙️</button>
+  <button class="toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">
+    <i class="bi bi-list"></i>
+  </button>
 
   <!-- 更新日誌 Modal -->
   <div id="changelogModal" class="changelog-modal" onclick="closeChangelog()">
@@ -313,6 +317,10 @@
   <script src="static/js/unified_dropdown.js" defer></script>
   <!-- Notes System (IndexedDB) -->
   <script src="static/js/notes.js" defer></script>
+  <!-- Supabase Authentication & Cloud Sync -->
+  <script src="static/js/supabase_auth.js" defer></script>
+  <!-- Chat System -->
+  <script src="static/js/chat.js" defer></script>
   <!-- PWA -->
   <script src="static/js/pwa.js" defer></script>
   <script src="static/js/main.js" defer></script>
