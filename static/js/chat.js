@@ -496,20 +496,36 @@ async function handleSendChatMessage() {
   const btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   
-  const { error } = await sendChatMessage(content);
+  // 先清空輸入框（更好的 UX）
+  input.value = '';
+  input.style.height = 'auto';
+  
+  const { data: messageId, error } = await sendChatMessage(content);
   
   btn.disabled = false;
   
   if (error) {
     showChatToast('發送失敗: ' + error.message, 'error');
+    // 恢復輸入內容
+    input.value = content;
     return;
   }
   
-  input.value = '';
-  input.style.height = 'auto';
+  // 立即在本地添加訊息（更好的 UX，不用等待重載）
+  const currentUser = window.SupabaseAuth?.getCurrentUser();
+  const profile = window.SupabaseAuth?.getUserProfile();
   
-  // 發送成功後重新載入訊息
-  await loadChatMessages();
+  const newMsg = {
+    id: messageId || crypto.randomUUID(),
+    sender_id: currentUser?.id,
+    sender_name: profile?.display_name || '我',
+    sender_avatar: profile?.avatar_url,
+    content: content,
+    is_deleted: false,
+    created_at: new Date().toISOString()
+  };
+  
+  appendChatMessage(newMsg);
 }
 
 async function handleDeleteMessage(messageId) {

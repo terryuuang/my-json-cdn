@@ -4270,7 +4270,7 @@ select.input-field:hover {
 .admin-user-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: #000000;
   margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -4761,9 +4761,10 @@ select.input-field:hover {
 
 .chat-msg-name {
   font-size: 12px;
-  font-weight: 500;
-  color: #64748b;
+  font-weight: 600;
+  color: #1e40af;
   padding-left: 4px;
+  margin-bottom: 2px;
 }
 
 .chat-msg-bubble {
