@@ -22,17 +22,18 @@ let currentChatPartner = null;
 // ============================================
 
 // 取得群聊訊息
-async function getChatMessages(limit = 50, beforeId = null) {
+async function getChatMessages(limit = 50, offset = 0) {
   const client = getSupabaseClient();
   if (!client) return { data: null, error: new Error('未連接') };
   
   try {
     const { data, error } = await client.rpc('get_chat_messages', {
       p_limit: limit,
-      p_before_id: beforeId
+      p_offset: offset
     });
     
     if (error) throw error;
+    // 反轉順序讓最新訊息在底部
     return { data: data?.reverse() || [], error: null };
   } catch (error) {
     console.error('[Chat] 取得訊息失敗:', error);
@@ -167,14 +168,15 @@ async function getPrivateConversations() {
 }
 
 // 取得與特定用戶的私訊
-async function getPrivateMessages(partnerId, limit = 50) {
+async function getPrivateMessages(partnerId, limit = 50, offset = 0) {
   const client = getSupabaseClient();
   if (!client) return { data: null, error: new Error('未連接') };
   
   try {
     const { data, error } = await client.rpc('get_private_messages', {
-      p_partner_id: partnerId,
-      p_limit: limit
+      p_other_user_id: partnerId,
+      p_limit: limit,
+      p_offset: offset
     });
     
     if (error) throw error;
