@@ -439,19 +439,26 @@ async function loadChatMessages() {
 }
 
 function renderChatMessage(msg, isAdmin = false) {
+  // 判斷是否為自己的訊息
+  const currentUserId = window.SupabaseAuth?.getCurrentUser()?.id;
+  const isOwn = msg.sender_id === currentUserId;
+  
   const timeStr = formatMessageTime(msg.created_at);
-  const avatarHtml = msg.avatar_url 
-    ? `<img src="${msg.avatar_url}" class="chat-msg-avatar" alt="">`
-    : `<div class="chat-msg-avatar-placeholder"></div>`;
+  const senderName = msg.sender_name || '未知用戶';
+  const senderAvatar = msg.sender_avatar;
+  
+  const avatarHtml = senderAvatar 
+    ? `<img src="${senderAvatar}" class="chat-msg-avatar" alt="${escapeHtml(senderName)}">`
+    : `<div class="chat-msg-avatar-placeholder">${senderName.charAt(0).toUpperCase()}</div>`;
   
   return `
-    <div class="chat-message ${msg.is_own ? 'own' : ''}" data-msg-id="${msg.id}">
-      ${!msg.is_own ? avatarHtml : ''}
+    <div class="chat-message ${isOwn ? 'own' : ''}" data-msg-id="${msg.id}">
+      ${!isOwn ? avatarHtml : ''}
       <div class="chat-msg-content">
-        ${!msg.is_own ? `<div class="chat-msg-name">${escapeHtml(msg.display_name)}</div>` : ''}
-        <div class="chat-msg-bubble">
+        ${!isOwn ? `<div class="chat-msg-name">${escapeHtml(senderName)}</div>` : ''}
+        <div class="chat-msg-bubble ${msg.is_deleted ? 'deleted' : ''}">
           <div class="chat-msg-text">${escapeHtml(msg.content)}</div>
-          ${isAdmin && !msg.is_own ? `
+          ${isAdmin && !isOwn && !msg.is_deleted ? `
             <button class="chat-msg-delete" onclick="handleDeleteMessage('${msg.id}')" title="刪除訊息">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="3,6 5,6 21,6"/>
@@ -462,7 +469,7 @@ function renderChatMessage(msg, isAdmin = false) {
         </div>
         <div class="chat-msg-time">${timeStr}</div>
       </div>
-      ${msg.is_own ? avatarHtml : ''}
+      ${isOwn ? avatarHtml : ''}
     </div>
   `;
 }
@@ -500,6 +507,9 @@ async function handleSendChatMessage() {
   
   input.value = '';
   input.style.height = 'auto';
+  
+  // 發送成功後重新載入訊息
+  await loadChatMessages();
 }
 
 async function handleDeleteMessage(messageId) {
