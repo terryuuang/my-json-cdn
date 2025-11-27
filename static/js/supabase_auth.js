@@ -887,6 +887,9 @@ async function showSettingsDialog() {
       `;
     }
     
+    // 通知設定區塊
+    const notificationSection = buildNotificationSection();
+    
     // 管理員區塊
     if (isAdmin()) {
       adminSection = `
@@ -938,6 +941,7 @@ async function showSettingsDialog() {
           </div>
           
           ${syncSection}
+          ${notificationSection}
           ${adminSection}
         </div>
         <div class="note-dialog-footer">
@@ -1321,6 +1325,245 @@ async function handleAutoSyncToggle(enabled) {
 }
 
 // ============================================
+// 推播通知設定
+// ============================================
+
+// 檢測通知相關環境
+function getNotificationStatus() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                       window.navigator.standalone === true;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const supportsNotification = 'Notification' in window;
+  const supportsPush = 'PushManager' in window;
+  const hasServiceWorker = 'serviceWorker' in navigator;
+  
+  let permission = 'unsupported';
+  if (supportsNotification) {
+    permission = Notification.permission; // 'granted', 'denied', 'default'
+  }
+  
+  // iOS PWA 需要 iOS 16.4+ 且在 standalone 模式下才支援 Web Push
+  const isIOSPWACapable = isIOS && isStandalone;
+  
+  return {
+    isStandalone,
+    isIOS,
+    supportsNotification,
+    supportsPush,
+    hasServiceWorker,
+    permission,
+    isIOSPWACapable,
+    canRequestPermission: supportsNotification && permission === 'default'
+  };
+}
+
+// 建構通知設定區塊 HTML
+function buildNotificationSection() {
+  const status = getNotificationStatus();
+  const isEnabled = status.permission === 'granted';
+  const isDenied = status.permission === 'denied';
+  const isUnsupported = !status.supportsNotification;
+  const needsIOSInstall = status.isIOS && !status.isStandalone;
+  
+  let hintText = '';
+  let toggleDisabled = false;
+  
+  if (isUnsupported) {
+    hintText = '此瀏覽器不支援推播通知';
+    toggleDisabled = true;
+  } else if (needsIOSInstall) {
+    hintText = 'iOS 需先將網站加入主畫面';
+    toggleDisabled = true;
+  } else if (isDenied) {
+    hintText = '通知已被封鎖，點擊開關查看如何開啟';
+  } else if (isEnabled) {
+    hintText = '收到群聊或私訊時會通知您';
+  } else {
+    hintText = '開啟後可接收即時訊息通知';
+  }
+  
+  return `
+    <div class="auth-section">
+      <h4>推播通知</h4>
+      <p class="auth-section-desc">接收群聊與私訊的即時通知</p>
+      
+      <div class="auth-notification-toggle-row">
+        <label class="auth-toggle ${toggleDisabled ? 'disabled' : ''}">
+          <input type="checkbox" 
+                 id="notification-toggle" 
+                 ${isEnabled ? 'checked' : ''} 
+                 ${toggleDisabled ? 'disabled' : ''}
+                 onchange="handleNotificationToggle(this.checked)">
+          <span class="auth-toggle-slider"></span>
+          <span class="auth-toggle-label">啟用通知</span>
+        </label>
+      </div>
+      <span class="auth-setting-hint">${hintText}</span>
+    </div>
+  `;
+}
+
+// 處理通知開關切換（用戶點擊觸發 - 符合 iOS PWA 政策）
+async function handleNotificationToggle(enabled) {
+  const status = getNotificationStatus();
+  
+  if (!status.supportsNotification) {
+    showAuthToast('此瀏覽器不支援推播通知', 'error');
+    return;
+  }
+  
+  if (enabled) {
+    // 嘗試啟用
+    if (status.permission === 'granted') {
+      localStorage.setItem('push_notifications_enabled', 'true');
+      showAuthToast('推播通知已啟用', 'success');
+    } else if (status.permission === 'denied') {
+      // 已被封鎖，顯示說明
+      showNotificationHelp();
+      // 重設開關狀態
+      const toggle = document.getElementById('notification-toggle');
+      if (toggle) toggle.checked = false;
+    } else {
+      // 請求權限
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          localStorage.setItem('push_notifications_enabled', 'true');
+          showAuthToast('推播通知已啟用', 'success');
+        } else {
+          // 重設開關狀態
+          const toggle = document.getElementById('notification-toggle');
+          if (toggle) toggle.checked = false;
+          if (permission === 'denied') {
+            showAuthToast('通知權限被拒絕', 'error');
+          }
+        }
+      } catch (error) {
+        console.error('[Notification] 請求權限失敗:', error);
+        const toggle = document.getElementById('notification-toggle');
+        if (toggle) toggle.checked = false;
+      }
+    }
+  } else {
+    // 關閉通知
+    localStorage.setItem('push_notifications_enabled', 'false');
+    showAuthToast('推播通知已關閉', 'info');
+  }
+}
+
+// 舊函數保留相容性
+async function handleEnableNotifications() {
+  handleNotificationToggle(true);
+}
+
+// 顯示如何開啟通知的說明
+function showNotificationHelp() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  
+  let steps = '';
+  
+  if (isIOS) {
+    steps = `
+      <li>開啟「設定」App</li>
+      <li>找到「Safari」或此 App 的設定</li>
+      <li>點擊「通知」</li>
+      <li>開啟「允許通知」</li>
+    `;
+  } else if (isAndroid && isChrome) {
+    steps = `
+      <li>點擊網址列左側的鎖頭或 ⓘ 圖示</li>
+      <li>找到「通知」選項</li>
+      <li>將設定改為「允許」</li>
+      <li>重新整理頁面</li>
+    `;
+  } else if (isChrome) {
+    steps = `
+      <li>點擊網址列左側的鎖頭圖示</li>
+      <li>點擊「網站設定」</li>
+      <li>找到「通知」選項</li>
+      <li>將設定改為「允許」</li>
+    `;
+  } else if (isSafari) {
+    steps = `
+      <li>點擊 Safari 選單 > 設定</li>
+      <li>選擇「網站」標籤頁</li>
+      <li>點擊左側的「通知」</li>
+      <li>找到此網站並設為「允許」</li>
+    `;
+  } else {
+    steps = `
+      <li>點擊網址列的設定圖示</li>
+      <li>找到網站權限或通知設定</li>
+      <li>將通知權限改為「允許」</li>
+      <li>重新整理頁面</li>
+    `;
+  }
+  
+  const helpDialog = document.createElement('div');
+  helpDialog.className = 'note-dialog-overlay';
+  helpDialog.id = 'notification-help-dialog';
+  helpDialog.innerHTML = `
+    <div class="auth-dialog" style="max-width: 400px;">
+      <div class="note-dialog-header">
+        <h3>如何開啟通知權限</h3>
+        <button class="note-dialog-close" onclick="closeNotificationHelp()">&times;</button>
+      </div>
+      <div class="note-dialog-body">
+        <div class="notification-help-content">
+          <p style="color: #1f2937; font-weight: 500;">通知權限已被封鎖，請依照以下步驟手動開啟：</p>
+          <ol class="notification-help-steps" style="color: #1f2937;">
+            ${steps}
+          </ol>
+        </div>
+      </div>
+      <div class="note-dialog-footer">
+        <button class="note-btn note-btn-primary" onclick="closeNotificationHelp()">我知道了</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(helpDialog);
+}
+
+// 關閉通知說明對話框
+function closeNotificationHelp() {
+  const dialog = document.getElementById('notification-help-dialog');
+  if (dialog) dialog.remove();
+}
+
+// 從設定顯示 iOS 安裝教學
+function showIOSInstallGuideFromSettings() {
+  closeSettingsDialog();
+  // 使用 pwa.js 中的函數
+  if (typeof showIOSInstallGuide === 'function') {
+    const isIPad = /iPad/.test(navigator.userAgent) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    showIOSInstallGuide(isIPad);
+  }
+}
+
+// 顯示 Auth Toast（如果沒有的話）
+function showAuthToast(message, type = 'success') {
+  // 嘗試使用 PWA 的 toast
+  if (window.PWA?.showToast) {
+    window.PWA.showToast(message);
+    return;
+  }
+  
+  // 或使用 chat 的 toast
+  if (typeof showChatToast === 'function') {
+    showChatToast(message, type);
+    return;
+  }
+  
+  // 備用方案
+  alert(message);
+}
+
+// ============================================
 // 地圖控制按鈕
 // ============================================
 function addAuthControlToMap(map) {
@@ -1462,3 +1705,8 @@ window.handleAdminSetStorage = handleAdminSetStorage;
 window.showOnlineUsers = showOnlineUsers;
 window.closeOnlineUsers = closeOnlineUsers;
 window.refreshOnlineUsers = refreshOnlineUsers;
+window.handleEnableNotifications = handleEnableNotifications;
+window.handleNotificationToggle = handleNotificationToggle;
+window.showNotificationHelp = showNotificationHelp;
+window.closeNotificationHelp = closeNotificationHelp;
+window.showIOSInstallGuideFromSettings = showIOSInstallGuideFromSettings;

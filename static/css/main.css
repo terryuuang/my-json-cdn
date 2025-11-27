@@ -4107,7 +4107,7 @@ select.input-field:hover {
 
 .auth-setting-hint {
   font-size: 12px;
-  color: #9ca3af;
+  color: #374151;
 }
 
 /* 管理員區塊 */
@@ -4464,7 +4464,7 @@ select.input-field:hover {
   }
   
   .admin-user-name {
-    color: #f1f5f9;
+    color: #000000;
   }
   
   .admin-user-avatar-placeholder,
@@ -4591,6 +4591,7 @@ select.input-field:hover {
 .chat-container {
   width: 100%;
   max-width: 500px;
+  height: 85vh;
   max-height: 85vh;
   background: white;
   border-radius: 16px 16px 0 0;
@@ -4606,6 +4607,7 @@ select.input-field:hover {
   }
   
   .chat-container {
+    height: 600px;
     max-height: 600px;
     border-radius: 16px;
     margin: 20px;
@@ -4827,35 +4829,47 @@ select.input-field:hover {
 .chat-input-area {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
   padding: 12px 16px;
   border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  background: #ffffff;
   flex-shrink: 0;
+  min-height: 64px;
 }
 
 .chat-input-area textarea {
   flex: 1;
   min-height: 40px;
-  max-height: 120px;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
+  max-height: 100px;
+  padding: 10px 16px;
+  border: 2px solid #e2e8f0;
   border-radius: 20px;
   font-size: 14px;
   resize: none;
   outline: none;
   font-family: inherit;
   line-height: 1.4;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  background: #f8fafc;
+  overflow-y: auto;
 }
 
 .chat-input-area textarea:focus {
   border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.chat-input-area textarea::placeholder {
+  color: #94a3b8;
 }
 
 .chat-send-btn {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border: none;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
@@ -4870,7 +4884,11 @@ select.input-field:hover {
 
 .chat-send-btn:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.chat-send-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .chat-send-btn:disabled {
@@ -5144,18 +5162,24 @@ select.input-field:hover {
   }
   
   .chat-input-area {
-    background: rgba(30, 41, 59, 0.8);
+    background: #1e293b;
     border-color: rgba(255, 255, 255, 0.1);
   }
   
   .chat-input-area textarea {
     background: #334155;
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: #475569;
     color: #f1f5f9;
   }
   
   .chat-input-area textarea:focus {
     border-color: #3b82f6;
+    background: #3d4f66;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+  
+  .chat-input-area textarea::placeholder {
+    color: #64748b;
   }
   
   .private-user-btn {
@@ -5189,5 +5213,77 @@ select.input-field:hover {
   .dm-back:hover {
     background: #334155;
     color: #f1f5f9;
+  }
+}
+
+/* ============================================
+   推播通知設定區塊
+   ============================================ */
+
+.auth-notification-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.auth-notification-help-link {
+  font-size: 13px;
+  color: #3b82f6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.auth-notification-help-link:hover {
+  text-decoration: underline;
+}
+
+.auth-toggle.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-toggle.disabled input {
+  cursor: not-allowed;
+}
+
+.auth-toggle.disabled .auth-toggle-label {
+  color: #6b7280;
+}
+
+/* 通知說明對話框 */
+.notification-help-content {
+  padding: 8px 0;
+}
+
+.notification-help-content p {
+  margin: 0 0 16px 0;
+  color: #000000;
+  font-size: 14px;
+}
+
+.notification-help-steps {
+  margin: 0;
+  padding-left: 24px;
+  color: #000000;
+}
+
+.notification-help-steps li {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+/* 深色模式 */
+@media (prefers-color-scheme: dark) {
+  .auth-notification-help-link {
+    color: #60a5fa;
+  }
+  
+  .notification-help-content p {
+    color: #e2e8f0;
+  }
+  
+  .notification-help-steps {
+    color: #e2e8f0;
   }
 }

@@ -10,6 +10,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2025年11月27日',
+    description: '新增推播通知功能，支援手機應用'
+  },
+  {
+    date: '2025年11月27日',
     description: '新增 Google 帳號登入與雲端同步功能，筆記可跨瀏覽器/裝置存取'
   },
   {

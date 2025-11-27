@@ -98,6 +98,9 @@ function subscribeToChatMessages(onMessage) {
         .single();
       
       if (data) {
+        const currentUserId = window.SupabaseAuth?.getCurrentUser()?.id;
+        const isOwn = data.user_id === currentUserId;
+        
         const message = {
           id: data.id,
           user_id: data.user_id,
@@ -105,8 +108,18 @@ function subscribeToChatMessages(onMessage) {
           avatar_url: data.user_profiles?.avatar_url,
           content: data.content,
           created_at: data.created_at,
-          is_own: data.user_id === window.SupabaseAuth?.getCurrentUser()?.id
+          is_own: isOwn
         };
+        
+        // 如果不是自己發的訊息，發送通知
+        if (!isOwn) {
+          sendChatNotification(
+            `💬 ${message.display_name}`,
+            message.content,
+            { tag: 'group-chat', type: 'group' }
+          );
+        }
+        
         onMessage(message);
       }
     })
@@ -237,6 +250,77 @@ async function getPendingCount() {
     return data || 0;
   } catch (error) {
     return 0;
+  }
+}
+
+// 訂閱私訊 Realtime（用於接收通知）
+function subscribeToPrivateMessages() {
+  const client = getSupabaseClient();
+  if (!client) return null;
+  
+  const currentUserId = window.SupabaseAuth?.getCurrentUser()?.id;
+  if (!currentUserId) return null;
+  
+  // 取消現有訂閱
+  if (privateSubscription) {
+    privateSubscription.unsubscribe();
+  }
+  
+  privateSubscription = client
+    .channel('private_messages_notifications')
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'private_messages',
+      filter: `recipient_id=eq.${currentUserId}`
+    }, async (payload) => {
+      // 收到發給自己的私訊
+      const { data } = await client
+        .from('private_messages')
+        .select(`
+          id,
+          sender_id,
+          content,
+          created_at,
+          sender:user_profiles!private_messages_sender_id_fkey(display_name, avatar_url)
+        `)
+        .eq('id', payload.new.id)
+        .single();
+      
+      if (data && data.sender_id !== currentUserId) {
+        const senderName = data.sender?.display_name || '某人';
+        
+        // 發送通知
+        sendChatNotification(
+          `🔒 ${senderName} 的私訊`,
+          data.content,
+          { 
+            tag: `private-${data.sender_id}`, 
+            type: 'private',
+            partnerId: data.sender_id,
+            partnerName: senderName
+          }
+        );
+        
+        // 更新未讀徽章
+        updateUnreadBadge();
+        
+        // 如果當前正在查看這個對話，重新載入訊息
+        if (currentChatPartner === data.sender_id) {
+          loadDMMessages(data.sender_id);
+        }
+      }
+    })
+    .subscribe();
+  
+  return privateSubscription;
+}
+
+// 取消私訊訂閱
+function unsubscribeFromPrivateMessages() {
+  if (privateSubscription) {
+    privateSubscription.unsubscribe();
+    privateSubscription = null;
   }
 }
 
@@ -496,9 +580,8 @@ async function handleSendChatMessage() {
   const btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   
-  // 先清空輸入框（更好的 UX）
-  input.value = '';
-  input.style.height = 'auto';
+  // 清空輸入框並重設高度
+  resetTextareaHeight(input);
   
   const { data: messageId, error } = await sendChatMessage(content);
   
@@ -682,8 +765,7 @@ async function handleSendPrivateMessage() {
     return;
   }
   
-  input.value = '';
-  input.style.height = 'auto';
+  resetTextareaHeight(input);
   
   // 重新載入訊息
   await loadDMMessages(currentChatPartner);
@@ -725,10 +807,81 @@ async function updatePendingBadge() {
 // 工具函數
 // ============================================
 
+// 發送瀏覽器通知（群聊或私訊）
+function sendChatNotification(title, body, options = {}) {
+  // 檢查通知權限
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    return;
+  }
+  
+  // 檢查用戶是否啟用了通知
+  if (localStorage.getItem('push_notifications_enabled') !== 'true') {
+    return;
+  }
+  
+  // 如果頁面在焦點上且聊天面板已開啟，不發送通知
+  if (document.hasFocus() && document.getElementById('chat-panel')) {
+    return;
+  }
+  
+  try {
+    const notification = new Notification(title, {
+      body: body.length > 100 ? body.substring(0, 100) + '...' : body,
+      icon: '/static/assets/APEINTEL ATLAS_192x192.png',
+      badge: '/static/assets/APEINTEL ATLAS_192x192.png',
+      tag: options.tag || 'chat-message',
+      renotify: true,
+      requireInteraction: false,
+      silent: false,
+      ...options
+    });
+    
+    // 點擊通知時開啟聊天面板
+    notification.onclick = function() {
+      window.focus();
+      notification.close();
+      
+      if (options.type === 'private' && options.partnerId) {
+        // 開啟私訊
+        showChatPanel();
+        setTimeout(() => {
+          switchChatTab('private');
+          if (options.partnerName) {
+            startPrivateChat(options.partnerId, options.partnerName);
+          }
+        }, 300);
+      } else {
+        // 開啟群聊
+        showChatPanel();
+      }
+    };
+    
+    // 5 秒後自動關閉
+    setTimeout(() => notification.close(), 5000);
+    
+  } catch (error) {
+    console.error('[Chat] 發送通知失敗:', error);
+  }
+}
+
+// 自動調整輸入框高度（平滑無跳動）
 function autoResizeTextarea(e) {
   const textarea = e.target;
-  textarea.style.height = 'auto';
-  textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+  // 只在有內容時調整，避免跳動
+  if (textarea.value.trim()) {
+    textarea.style.height = 'auto';
+    const newHeight = Math.min(textarea.scrollHeight, 100);
+    textarea.style.height = newHeight + 'px';
+  } else {
+    // 無內容時重設為最小高度
+    textarea.style.height = '';
+  }
+}
+
+// 重設輸入框到初始狀態
+function resetTextareaHeight(textarea) {
+  textarea.style.height = '';
+  textarea.value = '';
 }
 
 function showChatToast(message, type = 'success') {
@@ -799,9 +952,17 @@ async function initChat(map, supabaseClient) {
   setSupabaseClient(supabaseClient);
   addChatControlToMap(map);
   
-  // 如果已登入且已批准，更新徽章
+  // 如果已登入且已批准，啟動相關功能
   if (window.SupabaseAuth?.isApproved()) {
     await updateUnreadBadge();
+    
+    // 訂閱私訊通知（即使聊天面板未開啟也能收到通知）
+    subscribeToPrivateMessages();
+    
+    // 如果通知已啟用，儲存狀態
+    if ('Notification' in window && Notification.permission === 'granted') {
+      localStorage.setItem('push_notifications_enabled', 'true');
+    }
   }
   
   // 如果是管理員，更新待審核徽章
