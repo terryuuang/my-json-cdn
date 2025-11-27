@@ -246,7 +246,7 @@ class EquipmentParser {
       return result;
       
     } catch (error) {
-      console.error(`查詢維基百科時發生錯誤: ${nameForApi}`, error);
+      console.error('[Equipment] 查詢維基百科失敗:', nameForApi, error);
       return null;
     }
   }
@@ -286,7 +286,7 @@ class EquipmentParser {
           }
         });
       } catch (error) {
-        console.error('批次處理裝備資訊時發生錯誤:', error);
+        console.error('[Equipment] 批次處理裝備資訊失敗:', error);
         // 繼續處理下一批次
       }
       

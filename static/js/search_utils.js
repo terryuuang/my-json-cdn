@@ -9,7 +9,7 @@
   // 初始化 OpenCC 轉換器
   function initOpenCC() {
     if (typeof OpenCC === 'undefined') {
-      console.warn('OpenCC.js not loaded, falling back to basic conversion');
+      console.warn('[Search] OpenCC.js 未載入，使用基本轉換');
       return false;
     }
 
@@ -18,10 +18,9 @@
       t2sConverter = OpenCC.Converter({ from: 'tw', to: 'cn' });
       // 簡體（中國大陸）→ 繁體（台灣）
       s2tConverter = OpenCC.Converter({ from: 'cn', to: 'tw' });
-      console.log('✅ OpenCC.js initialized successfully');
       return true;
     } catch (error) {
-      console.error('Failed to initialize OpenCC:', error);
+      console.error('[Search] OpenCC 初始化失敗:', error);
       return false;
     }
   }
@@ -35,7 +34,7 @@
       try {
         return t2sConverter(text);
       } catch (error) {
-        console.error('OpenCC conversion error:', error);
+        console.error('[Search] OpenCC 轉換錯誤:', error);
       }
     }
 
@@ -51,7 +50,7 @@
       try {
         return s2tConverter(text);
       } catch (error) {
-        console.error('OpenCC conversion error:', error);
+        console.error('[Search] OpenCC 轉換錯誤:', error);
       }
     }
 
@@ -83,7 +82,6 @@
       const cached = NOMINATIM_CONFIG.cache.get(cacheKey);
 
       if (cached && Date.now() - cached.timestamp < NOMINATIM_CONFIG.cacheMaxAge) {
-        console.log('📦 Nominatim cache hit:', query);
         resolve(cached.data);
         return;
       }
@@ -132,11 +130,10 @@
         timestamp: Date.now()
       });
 
-      console.log(`🌍 Nominatim found ${data.length} results for:`, query);
       resolve(data);
 
     } catch (error) {
-      console.error('Nominatim request failed:', error);
+      console.error('[Search] Nominatim 請求失敗:', error);
       reject(error);
     } finally {
       // 等待 rate limit 時間後處理下一個請求
@@ -162,10 +159,7 @@
 
       // 並行搜尋所有變體（但會被 rate limit 序列化）
       const results = await Promise.all(
-        queries.map(q => nominatimRequest(q).catch(err => {
-          console.warn(`Nominatim search failed for "${q}":`, err);
-          return [];
-        }))
+        queries.map(q => nominatimRequest(q).catch(() => []))
       );
 
       // 合併並去重結果
@@ -192,7 +186,7 @@
       return uniqueResults;
 
     } catch (error) {
-      console.error('Nominatim search error:', error);
+      console.error('[Search] Nominatim 搜尋錯誤:', error);
       return [];
     }
   }
@@ -315,7 +309,7 @@
         return combined.slice(0, maxResults);
 
       } catch (error) {
-        console.error('Nominatim search error:', error);
+        console.error('[Search] Nominatim 搜尋錯誤:', error);
         return localResults;
       }
     }

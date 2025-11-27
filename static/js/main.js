@@ -167,7 +167,7 @@ try {
     }
 } catch (error) {
     clearTimeout(loadingTimer);
-    console.error('處理裝備資訊時發生錯誤:', error);
+    console.error('[Map] 處理裝備資訊失敗:', error);
 }
 }
 
@@ -837,7 +837,7 @@ try {
     
 } catch (error) {
     hideLoading();
-    console.error('載入地圖資料時發生錯誤:', error);
+    console.error('[Map] 載入地圖資料失敗:', error);
     updateInfoPanel(`錯誤：${error.message}`);
     
     // 即使載入失敗也要初始化基本地圖
@@ -1432,7 +1432,7 @@ function setupMapTools() {
       }, 0);
     }
   } catch (err) {
-    console.warn('Map tools setup skipped:', err);
+    console.warn('[Map] Map tools 設定略過:', err);
   }
 }
 
@@ -1630,7 +1630,7 @@ return features.filter(feature => {
 // 分層篩選功能（已棄用，由 unified_dropdown.js 處理）
 function filterByLayer() {
   // 此函數已被 unified_dropdown.js 的多選系統取代
-  console.warn('filterByLayer() is deprecated. Use unified_dropdown.js system instead.');
+  console.warn('[Map] filterByLayer() 已棄用，請使用 unified_dropdown.js');
 }
 
 // 搜尋位置功能
@@ -1717,7 +1717,7 @@ function clearDrawings() {
   try {
     if (drawnItems) drawnItems.clearLayers();
   } catch (e) {
-    console.warn('clearDrawings failed', e);
+    console.warn('[Map] clearDrawings 失敗:', e);
   }
 }
 
@@ -1997,7 +1997,7 @@ function showTopNotice() {
     }, DISPLAY_MS);
   } catch (e) {
     // 靜默失敗，不影響主流程
-    console.warn('top notice failed', e);
+    console.warn('[Map] top notice 失敗:', e);
   }
 }
 
@@ -2021,7 +2021,7 @@ async function performSearch() {
 
   // 檢查 searchUtils 是否已載入
   if (!window.searchUtils) {
-    console.error('Search utils not loaded');
+    console.error('[Map] Search utils 未載入');
     searchResults.innerHTML = '<div class="search-no-results">搜尋功能載入中，請稍後再試...</div>';
     searchResults.style.display = 'block';
     return;
@@ -2046,11 +2046,9 @@ async function performSearch() {
     // 只有當這個請求仍然是最新的時候才顯示結果
     if (currentRequestId === desktopSearchRequestId) {
       displaySearchResults(results, query);
-    } else {
-      console.log('Ignoring outdated desktop search result');
     }
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('[Map] 搜尋錯誤:', error);
     // 只有當這個請求仍然是最新的時候才顯示錯誤
     if (currentRequestId === desktopSearchRequestId) {
       searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
@@ -2193,7 +2191,7 @@ async function performMobileSearch() {
 
   // 檢查 searchUtils 是否已載入
   if (!window.searchUtils) {
-    console.error('Search utils not loaded');
+    console.error('[Map] Search utils 未載入');
     searchResults.innerHTML = '<div class="search-no-results">搜尋功能載入中，請稍後再試...</div>';
     searchResults.style.display = 'block';
     return;
@@ -2218,11 +2216,9 @@ async function performMobileSearch() {
     // 只有當這個請求仍然是最新的時候才顯示結果
     if (currentRequestId === mobileSearchRequestId) {
       displayMobileSearchResults(results, query);
-    } else {
-      console.log('Ignoring outdated mobile search result');
     }
   } catch (error) {
-    console.error('Search error:', error);
+    console.error('[Map] 搜尋錯誤:', error);
     // 只有當這個請求仍然是最新的時候才顯示錯誤
     if (currentRequestId === mobileSearchRequestId) {
       searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';

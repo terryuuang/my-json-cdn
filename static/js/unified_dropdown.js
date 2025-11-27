@@ -182,9 +182,6 @@ function applyLayerFilter() {
     }
   }
 
-  // 調試信息
-  console.log('[分層篩選] 座標:', urlCoords, '半徑:', radius, 'km', '圖層數:', selectedLayers.size);
-
   // 檢查是否所有軍事圖層都被勾選
   const isAllMilitaryLayersSelected = ALL_MILITARY_LAYERS.every(layer => selectedLayers.has(layer));
 

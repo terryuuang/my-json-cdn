@@ -20,10 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 初始化 PWA 功能
 function initPWA() {
   // 檢查瀏覽器是否支援 Service Worker
-  if (!('serviceWorker' in navigator)) {
-    console.log('[PWA] 此瀏覽器不支援 Service Worker');
-    return;
-  }
+  if (!('serviceWorker' in navigator)) return;
 
   registerServiceWorker();
   setupInstallPrompt();
@@ -39,13 +36,10 @@ async function registerServiceWorker() {
     swRegistration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/'
     });
-    
-    console.log('[PWA] Service Worker 註冊成功');
 
     // 檢查更新
     swRegistration.addEventListener('updatefound', () => {
       const newWorker = swRegistration.installing;
-      console.log('[PWA] 發現新版本，正在安裝...');
 
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
@@ -74,7 +68,6 @@ function handleSWMessage(event) {
 
   switch (type) {
     case 'SW_ACTIVATED':
-      console.log(`[PWA] Service Worker 已啟動，版本: ${version}`);
       currentAppVersion = version;
       // 新版本啟動後重新載入頁面
       if (sessionStorage.getItem('pwa_update_pending')) {
@@ -94,15 +87,13 @@ function setupInstallPrompt() {
     // 阻止預設的安裝提示
     event.preventDefault();
     deferredPrompt = event;
-    console.log('[PWA] 安裝提示已準備就緒');
     
     // 顯示自訂安裝按鈕
     showInstallBanner();
   });
 
-  // 監聽安裝完成事件
+  // 監聯安裝完成事件
   window.addEventListener('appinstalled', () => {
-    console.log('[PWA] 應用程式已安裝');
     deferredPrompt = null;
     hideInstallBanner();
     showToast('✅ 應用程式已成功安裝到主畫面！');
@@ -148,7 +139,6 @@ function showInstallBanner() {
 // 隱藏安裝橫幅（保留函式相容性，改為 confirm 後不再需要實體移除）
 function hideInstallBanner() {
   // 改用 confirm 對話框後，無需移除 DOM 元素
-  console.log('[PWA] 安裝提示已關閉');
 }
 
 // 拒絕安裝
@@ -159,17 +149,13 @@ function dismissInstallBanner() {
 
 // 觸發安裝
 async function installPWA() {
-  if (!deferredPrompt) {
-    console.log('[PWA] 安裝提示不可用');
-    return;
-  }
+  if (!deferredPrompt) return;
 
   // 顯示安裝提示
   deferredPrompt.prompt();
 
   // 等待使用者回應
   const { outcome } = await deferredPrompt.userChoice;
-  console.log(`[PWA] 使用者選擇: ${outcome}`);
 
   if (outcome === 'accepted') {
     hideInstallBanner();
@@ -356,10 +342,7 @@ function dismissUpdate() {
 // 通知權限
 // ============================================
 async function requestNotificationPermission() {
-  if (!('Notification' in window)) {
-    console.log('[PWA] 此瀏覽器不支援通知');
-    return false;
-  }
+  if (!('Notification' in window)) return false;
 
   // 如果已經允許
   if (Notification.permission === 'granted') {

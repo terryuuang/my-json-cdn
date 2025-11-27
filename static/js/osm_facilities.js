@@ -476,7 +476,6 @@ async function loadLayer(type, map) {
       center = { lat: mapCenter.lat, lng: mapCenter.lng };
     }
 
-    console.log(`[OSM] 載入 ${FACILITY_TYPES[type].name}，中心: (${center.lat.toFixed(4)}, ${center.lng.toFixed(4)})，半徑: ${radius}km`);
 
     const bounds = calculateBounds(center, radius);
     const query = buildOverpassQuery(type, bounds);
@@ -487,7 +486,7 @@ async function loadLayer(type, map) {
     layers.groups[type].addTo(map);
     return geoJSON;
   } catch (error) {
-    console.error(`載入 ${type} 失敗:`, error);
+    console.error('[OSM] 載入失敗:', type, error);
     throw error;
   } finally {
     layers.activeQueries.delete(type);
@@ -650,7 +649,6 @@ function initOSM() {
     if (window.map && typeof window.map.getBounds === 'function') {
       clearInterval(check);
       initLayers(window.map);
-      console.log('✅ OSM 功能已啟用');
     }
   }, 200);
   

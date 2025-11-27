@@ -114,7 +114,7 @@ function subscribeToChatMessages(onMessage) {
         // 如果不是自己發的訊息，發送通知
         if (!isOwn) {
           sendChatNotification(
-            `💬 ${message.display_name}`,
+            message.display_name + ' 在群聊中發言',
             message.content,
             { tag: 'group-chat', type: 'group' }
           );
@@ -275,7 +275,7 @@ function subscribeToPrivateMessages() {
       filter: `recipient_id=eq.${currentUserId}`
     }, async (payload) => {
       // 收到發給自己的私訊
-      const { data } = await client
+      const { data, error } = await client
         .from('private_messages')
         .select(`
           id,
@@ -287,12 +287,17 @@ function subscribeToPrivateMessages() {
         .eq('id', payload.new.id)
         .single();
       
+      if (error) {
+        console.error('[Chat] 取得私訊詳情失敗:', error);
+        return;
+      }
+      
       if (data && data.sender_id !== currentUserId) {
         const senderName = data.sender?.display_name || '某人';
         
         // 發送通知
         sendChatNotification(
-          `🔒 ${senderName} 的私訊`,
+          senderName + ' 傳送了私訊',
           data.content,
           { 
             tag: `private-${data.sender_id}`, 
@@ -810,19 +815,16 @@ async function updatePendingBadge() {
 // 發送瀏覽器通知（群聊或私訊）
 function sendChatNotification(title, body, options = {}) {
   // 檢查通知權限
-  if (!('Notification' in window) || Notification.permission !== 'granted') {
-    return;
-  }
+  if (!('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
   
-  // 檢查用戶是否啟用了通知
-  if (localStorage.getItem('push_notifications_enabled') !== 'true') {
-    return;
-  }
+  // 檢查用戶是否啟用了通知（如果權限已允許，預設啟用）
+  const notifEnabled = localStorage.getItem('push_notifications_enabled');
+  if (notifEnabled === 'false') return;
   
   // 如果頁面在焦點上且聊天面板已開啟，不發送通知
-  if (document.hasFocus() && document.getElementById('chat-panel')) {
-    return;
-  }
+  const chatPanelOpen = document.getElementById('chat-panel');
+  if (document.hasFocus() && chatPanelOpen) return;
   
   try {
     const notification = new Notification(title, {
@@ -959,9 +961,13 @@ async function initChat(map, supabaseClient) {
     // 訂閱私訊通知（即使聊天面板未開啟也能收到通知）
     subscribeToPrivateMessages();
     
-    // 如果通知已啟用，儲存狀態
+    // 檢查通知權限狀態
     if ('Notification' in window && Notification.permission === 'granted') {
-      localStorage.setItem('push_notifications_enabled', 'true');
+      // 權限已允許，確保啟用
+      const currentSetting = localStorage.getItem('push_notifications_enabled');
+      if (currentSetting !== 'false') {
+        localStorage.setItem('push_notifications_enabled', 'true');
+      }
     }
   }
   
@@ -969,8 +975,6 @@ async function initChat(map, supabaseClient) {
   if (window.SupabaseAuth?.isAdmin()) {
     await updatePendingBadge();
   }
-  
-  console.log('[Chat] 聊天模組初始化完成');
 }
 
 // ============================================

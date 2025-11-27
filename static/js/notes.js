@@ -27,7 +27,6 @@ async function initNotesDB() {
 
     request.onsuccess = () => {
       notesDB = request.result;
-      console.log('[Notes] IndexedDB 連線成功');
       resolve(notesDB);
     };
 
@@ -43,7 +42,6 @@ async function initNotesDB() {
         store.createIndex('featureId', 'featureId', { unique: false });
         store.createIndex('createdAt', 'createdAt', { unique: false });
         store.createIndex('coords', ['lat', 'lng'], { unique: false });
-        console.log('[Notes] 資料結構建立完成');
       }
     };
   });
@@ -85,7 +83,6 @@ async function createNote(noteData) {
     const request = store.add(note);
 
     request.onsuccess = () => {
-      console.log('[Notes] 筆記建立成功:', note.id);
       refreshNotesLayer();
       resolve(note);
     };
@@ -166,7 +163,6 @@ async function updateNote(id, updates) {
     const request = store.put(updatedNote);
 
     request.onsuccess = () => {
-      console.log('[Notes] 筆記更新成功:', id);
       refreshNotesLayer();
       resolve(updatedNote);
     };
@@ -186,7 +182,6 @@ async function deleteNote(id) {
     const request = store.delete(id);
 
     request.onsuccess = () => {
-      console.log('[Notes] 筆記刪除成功:', id);
       refreshNotesLayer();
       resolve(true);
     };
@@ -206,7 +201,6 @@ async function clearAllNotes() {
     const request = store.clear();
 
     request.onsuccess = () => {
-      console.log('[Notes] 所有筆記已清除');
       refreshNotesLayer();
       resolve(true);
     };
@@ -980,7 +974,6 @@ async function initNotes(map) {
     await initNotesDB();
     initNotesLayer(map);
     addNotesControlToMap(map);
-    console.log('[Notes] 筆記功能初始化完成');
   } catch (error) {
     console.error('[Notes] 初始化失敗:', error);
   }

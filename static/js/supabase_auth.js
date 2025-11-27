@@ -57,11 +57,10 @@ async function loadSupabaseSDK() {
     script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
     script.async = true;
     script.onload = () => {
-      console.log('[SupabaseAuth] SDK 載入成功');
       resolve(window.supabase);
     };
     script.onerror = () => {
-      console.error('[SupabaseAuth] SDK 載入失敗');
+      console.error('[Auth] SDK 載入失敗');
       reject(new Error('無法載入 Supabase SDK'));
     };
     document.head.appendChild(script);
@@ -87,13 +86,11 @@ async function initSupabase() {
     // 監聽認證狀態變化（不阻塞 - 非同步處理）
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
       (event, session) => {
-        console.log('[SupabaseAuth] 認證狀態變更:', event);
-        
         if (session) {
           currentUser = session.user;
           // 非阻塞式處理，不使用 await
           handleAuthenticatedUser().catch(err => {
-            console.error('[SupabaseAuth] 處理登入後邏輯失敗:', err);
+            console.error('[Auth] 處理登入後邏輯失敗:', err);
           });
         } else {
           currentUser = null;
@@ -113,16 +110,15 @@ async function initSupabase() {
       currentUser = session.user;
       // 非阻塞式處理
       handleAuthenticatedUser().catch(err => {
-        console.error('[SupabaseAuth] 處理現有 session 失敗:', err);
+        console.error('[Auth] 處理現有 session 失敗:', err);
       });
     }
 
-    console.log('[SupabaseAuth] 初始化完成');
     updateAuthUI();
     
     return supabaseClient;
   } catch (error) {
-    console.error('[SupabaseAuth] 初始化失敗:', error);
+    console.error('[Auth] 初始化失敗:', error);
     throw error;
   }
 }
@@ -135,7 +131,7 @@ async function handleAuthenticatedUser() {
       loadUserProfile(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Profile 載入超時')), 10000))
     ]).catch(err => {
-      console.warn('[SupabaseAuth] Profile 載入失敗或超時:', err.message);
+      console.warn('[Auth] Profile 載入失敗或超時:', err.message);
     });
     
     // 啟動心跳（不等待）
@@ -149,7 +145,7 @@ async function handleAuthenticatedUser() {
     // 更新 UI
     updateAuthUI();
   } catch (error) {
-    console.error('[SupabaseAuth] handleAuthenticatedUser 錯誤:', error);
+    console.error('[Auth] handleAuthenticatedUser 錯誤:', error);
   }
 }
 
@@ -163,19 +159,18 @@ async function loadUserProfile() {
     const { data, error } = await supabaseClient.rpc('get_my_profile');
     
     if (error) {
-      console.error('[SupabaseAuth] 載入 Profile 失敗:', error);
+      console.error('[Auth] 載入 Profile 失敗:', error);
       return null;
     }
     
     if (data && data.length > 0) {
       userProfile = data[0];
-      console.log('[SupabaseAuth] Profile 載入成功:', userProfile.status, userProfile.is_admin ? '(管理員)' : '');
       return userProfile;
     }
     
     return null;
   } catch (error) {
-    console.error('[SupabaseAuth] 載入 Profile 例外:', error);
+    console.error('[Auth] 載入 Profile 例外:', error);
     return null;
   }
 }
@@ -220,14 +215,14 @@ async function signInWithGoogle() {
     });
 
     if (error) {
-      console.error('[SupabaseAuth] Google 登入失敗:', error);
+      console.error('[Auth] Google 登入失敗:', error);
       showAuthToast('登入失敗：' + error.message, 'error');
       return { error };
     }
 
     return { data };
   } catch (error) {
-    console.error('[SupabaseAuth] Google 登入例外:', error);
+    console.error('[Auth] Google 登入例外:', error);
     showAuthToast('登入時發生錯誤', 'error');
     return { error };
   }
@@ -245,7 +240,7 @@ async function signOut() {
     const { error } = await supabaseClient.auth.signOut();
     
     if (error) {
-      console.error('[SupabaseAuth] 登出失敗:', error);
+      console.error('[Auth] 登出失敗:', error);
       showAuthToast('登出失敗', 'error');
       return { error };
     }
@@ -254,7 +249,7 @@ async function signOut() {
     showAuthToast('已成功登出');
     return { error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 登出例外:', error);
+    console.error('[Auth] 登出例外:', error);
     return { error };
   }
 }
@@ -276,7 +271,7 @@ async function updateLastSeen() {
   try {
     await supabaseClient.rpc('update_last_seen');
   } catch (error) {
-    console.error('[SupabaseAuth] 更新 last_seen 失敗:', error);
+    console.error('[Auth] 更新 last_seen 失敗:', error);
   }
 }
 
@@ -302,16 +297,11 @@ function stopHeartbeat() {
 function startAutoSync() {
   stopAutoSync();
   
-  if (!isApproved()) {
-    console.log('[SupabaseAuth] 自動同步未啟動：用戶未獲批准');
-    return;
-  }
+  if (!isApproved()) return;
   
   const interval = (userProfile?.auto_sync_interval_minutes || 5) * 60 * 1000;
-  console.log('[SupabaseAuth] 啟動自動同步，間隔:', interval / 1000, '秒');
   
   autoSyncInterval = setInterval(async () => {
-    console.log('[SupabaseAuth] 執行自動同步...');
     await syncToCloud(true); // 靜默模式
   }, interval);
 }
@@ -320,7 +310,6 @@ function stopAutoSync() {
   if (autoSyncInterval) {
     clearInterval(autoSyncInterval);
     autoSyncInterval = null;
-    console.log('[SupabaseAuth] 自動同步已停止');
   }
 }
 
@@ -348,7 +337,7 @@ async function updateAutoSyncSetting(enabled, intervalMinutes = null) {
     
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 更新自動同步設定失敗:', error);
+    console.error('[Auth] 更新自動同步設定失敗:', error);
     return { error };
   }
 }
@@ -400,14 +389,13 @@ async function uploadNotesToCloud(notes) {
       });
 
     if (error) {
-      console.error('[SupabaseAuth] 上傳筆記失敗:', error);
+      console.error('[Auth] 上傳筆記失敗:', error);
       return { error };
     }
 
-    console.log('[SupabaseAuth] 筆記已上傳至雲端');
     return { data, error: null, size: blob.size };
   } catch (error) {
-    console.error('[SupabaseAuth] 上傳筆記例外:', error);
+    console.error('[Auth] 上傳筆記例外:', error);
     return { error };
   }
 }
@@ -433,17 +421,16 @@ async function downloadNotesFromCloud() {
       if (error.message.includes('not found') || error.message.includes('Object not found')) {
         return { data: null, error: null, isEmpty: true };
       }
-      console.error('[SupabaseAuth] 下載筆記失敗:', error);
+      console.error('[Auth] 下載筆記失敗:', error);
       return { data: null, error };
     }
 
     const text = await data.text();
     const notesData = JSON.parse(text);
 
-    console.log('[SupabaseAuth] 從雲端下載 ' + notesData.notesCount + ' 則筆記');
     return { data: notesData, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 下載筆記例外:', error);
+    console.error('[Auth] 下載筆記例外:', error);
     return { data: null, error };
   }
 }
@@ -477,7 +464,7 @@ async function syncToCloud(silent = false) {
     }
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 同步到雲端失敗:', error);
+    console.error('[Auth] 同步到雲端失敗:', error);
     if (!silent) showAuthToast('同步失敗', 'error');
     return { error };
   }
@@ -541,7 +528,7 @@ async function syncFromCloud(mode = 'merge') {
 
     return { data: { importedCount }, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 從雲端同步失敗:', error);
+    console.error('[Auth] 從雲端同步失敗:', error);
     showAuthToast('同步失敗', 'error');
     return { error };
   }
@@ -560,7 +547,7 @@ async function adminGetPendingUsers() {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 取得待審核用戶失敗:', error);
+    console.error('[Auth] 取得待審核用戶失敗:', error);
     return { data: null, error };
   }
 }
@@ -575,7 +562,7 @@ async function adminGetAllUsers() {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 取得所有用戶失敗:', error);
+    console.error('[Auth] 取得所有用戶失敗:', error);
     return { data: null, error };
   }
 }
@@ -593,7 +580,7 @@ async function adminApproveUser(userId) {
     showAuthToast('已批准該用戶');
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 批准用戶失敗:', error);
+    console.error('[Auth] 批准用戶失敗:', error);
     showAuthToast('批准失敗：' + error.message, 'error');
     return { error };
   }
@@ -613,7 +600,7 @@ async function adminRejectUser(userId, reason = null) {
     showAuthToast('已拒絕該用戶');
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 拒絕用戶失敗:', error);
+    console.error('[Auth] 拒絕用戶失敗:', error);
     showAuthToast('拒絕失敗：' + error.message, 'error');
     return { error };
   }
@@ -633,7 +620,7 @@ async function adminBanUser(userId, reason = null) {
     showAuthToast('已禁用該用戶');
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 禁用用戶失敗:', error);
+    console.error('[Auth] 禁用用戶失敗:', error);
     showAuthToast('禁用失敗：' + error.message, 'error');
     return { error };
   }
@@ -653,7 +640,7 @@ async function adminSetUserStorageLimit(userId, limitBytes) {
     showAuthToast('已更新儲存限制');
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 設定儲存限制失敗:', error);
+    console.error('[Auth] 設定儲存限制失敗:', error);
     return { error };
   }
 }
@@ -671,7 +658,7 @@ async function getOnlineUsers() {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('[SupabaseAuth] 取得線上用戶失敗:', error);
+    console.error('[Auth] 取得線上用戶失敗:', error);
     return { data: null, error };
   }
 }
@@ -1440,7 +1427,7 @@ async function handleNotificationToggle(enabled) {
           }
         }
       } catch (error) {
-        console.error('[Notification] 請求權限失敗:', error);
+        console.error('[Auth] 請求通知權限失敗:', error);
         const toggle = document.getElementById('notification-toggle');
         if (toggle) toggle.checked = false;
       }
@@ -1622,7 +1609,7 @@ async function updatePendingBadge() {
       }
     }
   } catch (e) {
-    console.error('[SupabaseAuth] 更新待審核徽章失敗:', e);
+    console.error('[Auth] 更新待審核徽章失敗:', e);
   }
 }
 
@@ -1648,10 +1635,8 @@ async function initAuth(map) {
     if (window.Chat && typeof window.Chat.init === 'function') {
       await window.Chat.init(map, supabaseClient);
     }
-    
-    console.log('[SupabaseAuth] 認證系統初始化完成');
   } catch (error) {
-    console.error('[SupabaseAuth] 認證系統初始化失敗:', error);
+    console.error('[Auth] 認證系統初始化失敗:', error);
   }
 }
 
