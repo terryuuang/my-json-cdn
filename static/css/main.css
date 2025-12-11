@@ -5287,3 +5287,78 @@ select.input-field:hover {
     color: #e2e8f0;
   }
 }
+
+/* ========================================
+   圖層切換按鈕樣式
+   ======================================== */
+
+.layer-toggle-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.layer-toggle-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.layer-toggle-btn:hover {
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.layer-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.layer-toggle-btn.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.layer-toggle-btn.active:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* 手機版優化 */
+@media (max-width: 768px) {
+  .layer-toggle-btn {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+}
+
+/* 深色模式 */
+@media (prefers-color-scheme: dark) {
+  .layer-toggle-btn {
+    background: linear-gradient(135deg, #2d3748, #1a202c);
+    color: #e2e8f0;
+    border-color: #4a5568;
+  }
+
+  .layer-toggle-btn:hover {
+    background: linear-gradient(135deg, #1a202c, #0f1419);
+    border-color: #718096;
+  }
+
+  .layer-toggle-btn.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-color: #2563eb;
+  }
+}

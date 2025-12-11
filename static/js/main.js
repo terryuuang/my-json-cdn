@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2025年12月11日',
+    description: '新增圖層切換功能，支援 Google Maps 和 ArcGIS Online 圖層之間切換'
+  },
+  {
     date: '2025年11月27日',
     description: '新增推播通知功能，支援手機應用'
   },
@@ -488,19 +492,75 @@ if (isMobileDevice()) {
 L.control.zoom({ position: 'topright' }).addTo(map);
 }
 
-// 使用高解析度衛星圖層
-const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '&copy; Esri & contributors',
-    maxZoom: 22 // 支援高縮放級別
-}).addTo(map);
+// 定義可切換的底圖圖層
+const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=zh-TW', {
+    attribution: '&copy; Google Maps',
+    maxZoom: 22,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] // Google Maps 的多個伺服器
+});
 
-// 添加地名標籤疊加層
-const labelLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+const arcgisSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri & contributors',
+    maxZoom: 22
+});
+
+const arcgisLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; CARTO',
     maxZoom: 22,
     subdomains: 'abcd',
     pane: 'overlayPane'
-}).addTo(map);
+});
+
+// 預設使用 Google 高清衛星圖層（含標籤）
+let currentBaseLayer = 'google';
+googleSatellite.addTo(map);
+
+// 全域圖層切換函數
+window.switchBaseLayer = function(layerName) {
+  if (layerName === currentBaseLayer) return;
+
+  // 移除當前圖層
+  if (currentBaseLayer === 'google') {
+    map.removeLayer(googleSatellite);
+  } else if (currentBaseLayer === 'arcgis') {
+    map.removeLayer(arcgisSatellite);
+    map.removeLayer(arcgisLabels); // 同時移除標籤層
+  }
+
+  // 添加新圖層
+  if (layerName === 'google') {
+    googleSatellite.addTo(map);
+    document.getElementById('arcgisLabelToggle').style.display = 'none';
+  } else if (layerName === 'arcgis') {
+    arcgisSatellite.addTo(map);
+    document.getElementById('arcgisLabelToggle').style.display = 'block';
+    // 檢查是否需要顯示標籤層
+    if (document.getElementById('labelLayerCheckbox').checked) {
+      arcgisLabels.addTo(map);
+    }
+  }
+
+  // 更新按鈕狀態
+  document.querySelectorAll('.layer-toggle-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.layer === layerName) {
+      btn.classList.add('active');
+    }
+  });
+
+  currentBaseLayer = layerName;
+};
+
+// 標籤層切換函數
+window.toggleLabelLayer = function(show) {
+  if (currentBaseLayer !== 'arcgis') return;
+
+  if (show) {
+    arcgisLabels.addTo(map);
+  } else {
+    map.removeLayer(arcgisLabels);
+  }
+};
 
   // 防止面板互動事件冒泡到地圖導致誤關閉（Leaflet 觸控環境尤為明顯）
   try {

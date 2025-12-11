@@ -279,7 +279,26 @@
     <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
     <button class="btn btn-secondary" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()">隱藏單位</button>
     <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
-    
+
+    <!-- 底圖圖層選擇 -->
+    <div class="input-group" style="margin-top: 16px;">
+      <label class="input-label">底圖圖層</label>
+      <div class="layer-toggle-group">
+        <button type="button" class="layer-toggle-btn active" data-layer="google" onclick="switchBaseLayer('google')">
+          Google 高清
+        </button>
+        <button type="button" class="layer-toggle-btn" data-layer="arcgis" onclick="switchBaseLayer('arcgis')">
+          ArcGIS
+        </button>
+      </div>
+      <div class="input-group" id="arcgisLabelToggle" style="display: none; margin-top: 8px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="labelLayerCheckbox" onchange="toggleLabelLayer(this.checked)">
+          <span style="font-size: 13px;">顯示地名標籤</span>
+        </label>
+      </div>
+    </div>
+
     <div id="infoPanel" class="info-panel" style="display: none;">
       <div id="infoText"></div>
     </div>
