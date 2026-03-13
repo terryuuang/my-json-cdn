@@ -3,6 +3,7 @@
 ## Project Structure & Module Organization
 - `index.html`: Entry point for the Leaflet-based map UI.
 - `static/js/main.js`: Core map logic, URL param handling, data fetch/render.
+- Map tiles: Google 海域 (satellite hybrid, default) and Google 空域 (road map).
 - `static/js/equipment_parser.js`: Parses equipment text; fetches Wikipedia summaries.
 - `static/js/shape_utils.js`: Shared helpers for shape parsing and geodesic calculations.
 - `static/css/main.css`: UI styles for map, popups, controls, and mobile.

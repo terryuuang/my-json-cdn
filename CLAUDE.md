@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Leaflet-based interactive map application (溫SINT地圖) that visualizes Chinese military and defense-related facilities from GeoJSON data. The application supports advanced geospatial search, custom shape overlays (no-fly zones), and equipment information lookup via Wikipedia.
+This is a Leaflet-based interactive map application (溫SINT地圖) that visualizes Chinese military and defense-related facilities from GeoJSON data. The application supports advanced geospatial search, custom shape overlays (no-fly zones), equipment information lookup via Wikipedia, and local notes stored in IndexedDB.
 
 ## Development Commands
 
@@ -32,10 +32,24 @@ jq . joseph_w.geojson
 
 ### Data Flow
 1. **Data Source**: GeoJSON files (`joseph_w.geojson` is primary, with dated snapshots like `joseph_w-20250806.geojson`)
-2. **Loading**: `main.js` fetches GeoJSON via relative path (configurable via `DATA_BASE_URL`)
+2. **Loading**: `main.js` fetches GeoJSON via `fetchGeoJSON()` (configurable via `DATA_BASE_URL`)
 3. **Rendering**: Features filtered by radius/layer, rendered as Leaflet markers
 4. **Equipment Enrichment**: `equipment_parser.js` extracts equipment names from feature properties, queries Wikipedia API for summaries
 5. **Shape Overlays**: `shape_utils.js` parses URL parameters to render circles, polygons, lines, sectors, or multi-shape overlays
+
+### Initialization Flow
+1. Map and base layer initialized (`googleSea` default)
+2. **Parallel load**: `Notes.init(map)` and `fetchGeoJSON(url)` run via `Promise.all()`
+3. GeoJSON data populates `allFeatures` and `layerIndex`
+4. Shape mode or standard radius mode renders markers
+5. `setupMapTools()` deferred via `requestAnimationFrame` (after map data displays)
+6. Init timing logged to console
+
+### Tile Layers
+- **googleSea** (海域): `https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=zh-TW` — 衛星混合圖（satellite hybrid）
+- **googleAir** (空域): `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=zh-TW` — 標準道路圖（standard road map）
+- HTML 按鈕：「Google（海域）」與「Google（空域）」
+- `switchBaseLayer('sea')` / `switchBaseLayer('air')` 切換底圖
 
 ### Module Responsibilities
 
@@ -69,9 +83,14 @@ jq . joseph_w.geojson
 - Unit conversion: nautical miles (`nm`), kilometers (`km`), meters (`m`)
 - Distance calculations: point-to-line, point-in-polygon, bearing/sector checks
 
+**`static/js/notes.js`** (Notes System)
+- IndexedDB-only storage (no cloud backup)
+- CRUD operations, map markers, export/import
+- Supports Point, LineString, Polygon, Circle, Sector, Rectangle geometries
+
 **`index.html`**
 - Loads Leaflet 1.9.4, Leaflet.draw, PolylineMeasure plugins
-- Control panel for manual coordinate input and layer filtering
+- Control panel for manual coordinate input, layer filtering, and base layer toggle (海域/空域)
 - Mobile-responsive with tap-to-close panel behavior
 
 **`download_googlemap.js`** (Bookmarklet)
@@ -154,6 +173,17 @@ Equipment parsing is **asynchronous and lazy**:
 3. Wikipedia queries run in parallel with 500ms/1s loading delay
 4. Results are cached (30min) and injected into popup HTML
 5. Uses `layer._equipmentParsingStarted` flag to prevent duplicate processing
+
+### Performance Optimizations
+- `Notes.init()` and GeoJSON fetch run in parallel via `Promise.all()`
+- `setupMapTools()` deferred to after map data renders (via `requestAnimationFrame`)
+- GeoJSON cache strategy: `staleWhileRevalidate` in Service Worker (was `networkFirst`)
+- `fetchGeoJSON()` helper extracted from init for clearer separation
+- Init timing logged to console
+
+### Service Worker (v0.2.0)
+- CORE_ASSETS: `main.js`, `notes.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc.
+- GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Coding Conventions
 

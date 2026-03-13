@@ -9,16 +9,12 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年03月13日',
+    description: '移除 Supabase 雲端功能，改為純瀏覽器離線儲存；底圖改為 Google 海域/空域雙圖層；優化地圖初始化速度'
+  },
+  {
     date: '2025年12月11日',
-    description: '新增圖層切換功能，支援 Google Maps 和 ArcGIS Online 圖層之間切換'
-  },
-  {
-    date: '2025年11月27日',
-    description: '新增推播通知功能，支援手機應用'
-  },
-  {
-    date: '2025年11月27日',
-    description: '新增 Google 帳號登入與雲端同步功能，筆記可跨瀏覽器/裝置存取'
+    description: '新增圖層切換功能，支援 Google Maps 底圖'
   },
   {
     date: '2025年11月25日',
@@ -493,51 +489,38 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 }
 
 // 定義可切換的底圖圖層
-const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=zh-TW', {
+const googleSea = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=zh-TW', {
     attribution: '&copy; Google Maps',
     maxZoom: 22,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] // Google Maps 的多個伺服器
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
 });
 
-const arcgisSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '&copy; Esri & contributors',
-    maxZoom: 22
-});
-
-const arcgisLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; CARTO',
+const googleAir = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=zh-TW', {
+    attribution: '&copy; Google Maps',
     maxZoom: 22,
-    subdomains: 'abcd',
-    pane: 'overlayPane'
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
 });
 
-// 預設使用 Google 高清衛星圖層（含標籤）
-let currentBaseLayer = 'google';
-googleSatellite.addTo(map);
+// 預設使用 Google 海域圖層（衛星混合）
+let currentBaseLayer = 'sea';
+googleSea.addTo(map);
 
 // 全域圖層切換函數
 window.switchBaseLayer = function(layerName) {
   if (layerName === currentBaseLayer) return;
 
   // 移除當前圖層
-  if (currentBaseLayer === 'google') {
-    map.removeLayer(googleSatellite);
-  } else if (currentBaseLayer === 'arcgis') {
-    map.removeLayer(arcgisSatellite);
-    map.removeLayer(arcgisLabels); // 同時移除標籤層
+  if (currentBaseLayer === 'sea') {
+    map.removeLayer(googleSea);
+  } else if (currentBaseLayer === 'air') {
+    map.removeLayer(googleAir);
   }
 
   // 添加新圖層
-  if (layerName === 'google') {
-    googleSatellite.addTo(map);
-    document.getElementById('arcgisLabelToggle').style.display = 'none';
-  } else if (layerName === 'arcgis') {
-    arcgisSatellite.addTo(map);
-    document.getElementById('arcgisLabelToggle').style.display = 'block';
-    // 檢查是否需要顯示標籤層
-    if (document.getElementById('labelLayerCheckbox').checked) {
-      arcgisLabels.addTo(map);
-    }
+  if (layerName === 'sea') {
+    googleSea.addTo(map);
+  } else if (layerName === 'air') {
+    googleAir.addTo(map);
   }
 
   // 更新按鈕狀態
@@ -549,17 +532,6 @@ window.switchBaseLayer = function(layerName) {
   });
 
   currentBaseLayer = layerName;
-};
-
-// 標籤層切換函數
-window.toggleLabelLayer = function(show) {
-  if (currentBaseLayer !== 'arcgis') return;
-
-  if (show) {
-    arcgisLabels.addTo(map);
-  } else {
-    map.removeLayer(arcgisLabels);
-  }
 };
 
   // 防止面板互動事件冒泡到地圖導致誤關閉（Leaflet 觸控環境尤為明顯）
@@ -597,9 +569,7 @@ window.toggleLabelLayer = function(show) {
     closeControlPanel();
   });
 
-  // 初始化繪圖/測距工具（依裝置調整位置與可用性）
-  setupMapTools();
-  // 初始化禁航區圖層
+  // 初始化禁航區圖層（繪圖工具延後至地圖資料載入後初始化，加速首次渲染）
   try { nfzLayerGroup.addTo(map); } catch (_) {}
 }
 
@@ -783,117 +753,63 @@ try {
     initializeMap();
     // 工具已在 initializeMap 內初始化
     
-    // 初始化認證系統（Supabase Google OAuth）
-    // 先初始化認證系統，讓設定按鈕在筆記按鈕上方
-    if (window.SupabaseAuth && typeof window.SupabaseAuth.init === 'function') {
-      await window.SupabaseAuth.init(map);
-    }
-    
-    // 初始化筆記系統（IndexedDB）
-    if (window.Notes && typeof window.Notes.init === 'function') {
-      await window.Notes.init(map);
-    }
-    
     // 初始化面板狀態（手機版預設隱藏）
     initializePanelState();
     
     // 監聽視窗大小變化
     window.addEventListener('resize', handleResize);
     
-    // 解析URL參數
+    // 解析URL參數（同步，不佔時間）
     const urlCoords = parseUrlCoordinates();
     const urlParams = new URLSearchParams(window.location.search);
     
-    // 如果有URL座標參數，使用50KM，否則使用100KM
     const radius = parseFloat(urlParams.get('radius')) || (urlCoords ? 50 : 100);
     const selectedLayer = urlParams.get('layer') || '';
     
-    // 如果有URL參數，填入控制面板，否則使用預設位置
     if (urlCoords) {
     document.getElementById('latInput').value = urlCoords.lat;
     document.getElementById('lngInput').value = urlCoords.lng;
     } else {
-    // 沒有URL參數時，使用預設位置並顯示100KM範圍
     document.getElementById('latInput').value = 25.5100;
     document.getElementById('lngInput').value = 119.7910;
     }
     document.getElementById('radiusInput').value = radius;
-    // layerFilter 已改為多選下拉選單，由 unified_dropdown.js 處理
     
-    // 載入地圖資料 - 優化版本，支援進度顯示
+    // 並行載入：筆記系統 + GeoJSON 資料同時初始化
     const geojsonURL = DATA_BASE_URL + GEOJSON_FILENAME;
-    
-    // 更新載入狀態顯示進度
     document.querySelector('#loading div:last-child').textContent = '載入地圖資料中...';
     
-    const response = await fetch(geojsonURL);
+    const notesPromise = (window.Notes && typeof window.Notes.init === 'function')
+      ? window.Notes.init(map).catch(e => console.warn('[Notes] 初始化失敗:', e))
+      : Promise.resolve();
     
-    if (!response.ok) {
-    throw new Error(`載入資料失敗: ${response.status}`);
-    }
+    const geojsonPromise = fetchGeoJSON(geojsonURL);
     
-    // 檢查資料大小並顯示進度
-    const contentLength = response.headers.get('content-length');
-    // 若可取得 content-length 且支援串流，顯示進度條（避免超過 100%）
-    if (contentLength && response.body) {
-    const total = Math.max(parseInt(contentLength, 10) || 0, 0);
-    let loaded = 0;
+    const [, geojsonData] = await Promise.all([notesPromise, geojsonPromise]);
     
-    const reader = response.body.getReader();
-    const chunks = [];
-    
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        chunks.push(value);
-        loaded += value.length;
-        
-        // 一律限制為 0–99%，完成後再顯示 100%
-        const ratio = total > 0 ? loaded / total : 0;
-        const progress = Math.max(0, Math.min(99, Math.floor(ratio * 100)));
-        document.querySelector('#loading div:last-child').textContent = `載入地圖資料中... ${progress}%`;
-    }
-    
-    // 組合所有片段
-    const allChunks = new Uint8Array(loaded);
-    let position = 0;
-    for (const chunk of chunks) {
-        allChunks.set(chunk, position);
-        position += chunk.length;
-    }
-    
-    const text = new TextDecoder().decode(allChunks);
-    const data = JSON.parse(text);
-    allFeatures = data.features;
+    allFeatures = geojsonData.features;
     layerIndex = buildLayerIndex(allFeatures);
-    // 完成後明確設為 100%
-    document.querySelector('#loading div:last-child').textContent = '載入地圖資料中... 100%';
-    } else {
-    // 如果沒有 content-length，使用原來的方式
-    const data = await response.json();
-    allFeatures = data.features;
-    layerIndex = buildLayerIndex(allFeatures);
-    }
     
     // 支援 shape 模式（禁航區繪制 + 附近點位）
     const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
     if (shapeParam) {
-      // shape 模式預設不顯示單位（點位）
       unitsVisible = false;
       const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
       renderShapeMode(shapeSpec, selectedLayer);
     } else {
-      // 根據URL參數渲染地圖，如果沒有URL座標，使用預設位置
       const targetCoords = urlCoords || { lat: 25.5100, lng: 119.7910 };
       renderMap(targetCoords, radius, selectedLayer);
     }
     
-    // 效能統計
+    // 完成後隱藏載入指示器
+    hideLoading();
+    
+    // 延後初始化繪圖工具（不影響地圖資料顯示）
+    requestAnimationFrame(() => setupMapTools());
+    
     const endTime = performance.now();
     const loadTime = ((endTime - startTime) / 1000).toFixed(2);
-    // 完成後隱藏載入指示器（避免長時間遮擋畫面）
-    hideLoading();
+    console.log(`[Map] 初始化完成，耗時 ${loadTime}s`);
     
 } catch (error) {
     hideLoading();
@@ -941,6 +857,46 @@ return features.filter(feature => {
     const distance = calculateDistance(centerLat, centerLng, coords[1], coords[0]);
     return distance <= radiusKm;
 });
+}
+
+// 取得 GeoJSON 資料（含進度顯示）
+async function fetchGeoJSON(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`載入資料失敗: ${response.status}`);
+  }
+
+  const contentLength = response.headers.get('content-length');
+  const loadingEl = document.querySelector('#loading div:last-child');
+
+  if (contentLength && response.body) {
+    const total = Math.max(parseInt(contentLength, 10) || 0, 0);
+    let loaded = 0;
+    const reader = response.body.getReader();
+    const chunks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if (loadingEl) {
+        const pct = total > 0 ? Math.min(99, Math.floor(loaded / total * 100)) : 0;
+        loadingEl.textContent = `載入地圖資料中... ${pct}%`;
+      }
+    }
+
+    const allChunks = new Uint8Array(loaded);
+    let pos = 0;
+    for (const chunk of chunks) {
+      allChunks.set(chunk, pos);
+      pos += chunk.length;
+    }
+    if (loadingEl) loadingEl.textContent = '載入地圖資料中... 100%';
+    return JSON.parse(new TextDecoder().decode(allChunks));
+  }
+
+  return response.json();
 }
 
 // 將特徵批次加入為標記（共用於搜尋/shape 模式）
