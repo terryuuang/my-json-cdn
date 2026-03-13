@@ -266,11 +266,16 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
   // - Sector: { type: 'Sector', center: [lng, lat], radiusKm: number, startDeg: number, endDeg: number }
   // - Rectangle: { type: 'Rectangle', bounds: { west, south, east, north } }
   const buildShapePopup = (type, text, center, shapeInfo = {}, geometry = null) => {
-    const baseText = text || '區域標記';
+    const rawText = text || '區域標記';
     const shapeTypeLabels = { 'point': '標記點', 'circle': '圓形區域', 'line': '線段', 'polygon': '多邊形', 'bbox': '矩形區域', 'sector': '扇形區域' };
     const typeLabel = shapeTypeLabels[type] || '圖形';
+
+    // 用正則將 "AI判斷：" 之後的內容拆分為獨立區塊
+    const aiMatch = rawText.match(/(.+?)(?:[，,\s]*)(AI判斷[：:]\s*)([\s\S]+)/);
+    const mainText = aiMatch ? aiMatch[1].trim() : rawText;
+    const aiAnalysis = aiMatch ? aiMatch[3].trim() : '';
     
-    let popupHtml = `<h3 class="popup-title" style="margin-bottom:10px">${baseText}</h3>`;
+    let popupHtml = `<div class="popup-title" style="margin-bottom:10px">${mainText}</div>`;
     popupHtml += `<div class="popup-field"><strong>類型:</strong><span class="popup-field-value">${typeLabel}</span></div>`;
     
     // 添加形狀資訊
@@ -278,6 +283,11 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     if (shapeInfo.area) popupHtml += `<div class="popup-field"><strong>面積:</strong><span class="popup-field-value">${shapeInfo.area}</span></div>`;
     if (shapeInfo.length) popupHtml += `<div class="popup-field"><strong>長度:</strong><span class="popup-field-value">${shapeInfo.length}</span></div>`;
     if (shapeInfo.angle) popupHtml += `<div class="popup-field"><strong>角度:</strong><span class="popup-field-value">${shapeInfo.angle}</span></div>`;
+
+    // AI 判斷折疊區塊（置於形狀資訊下方）
+    if (aiAnalysis) {
+      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷</summary><div class="shape-ai-content">${aiAnalysis}</div></details>`;
+    }
     
     // 添加儲存筆記按鈕（傳遞完整幾何資料）
     if (window.Notes && typeof window.Notes.getShapeNoteButtonHtml === 'function') {
@@ -285,7 +295,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
         shapeType: type,
         lat: center.lat,
         lng: center.lng,
-        text: baseText,
+        text: mainText,
         shapeInfo: shapeInfo,
         geometry: geometry
       })}</div>`;

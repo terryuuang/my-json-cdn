@@ -242,6 +242,62 @@ input, textarea, [contenteditable="true"] {
     gap: 8px;
 }
 
+/* Shape popup AI 判斷折疊區塊 */
+.shape-ai-block {
+    margin: 10px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.shape-ai-summary {
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #0f172a;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.shape-ai-summary::before {
+    content: '▶';
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.shape-ai-block[open] .shape-ai-summary::before {
+    transform: rotate(90deg);
+}
+
+.shape-ai-summary::-webkit-details-marker {
+    display: none;
+}
+
+.shape-ai-content {
+    padding: 0 12px 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #0f172a;
+    border-top: 1px solid #e2e8f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .shape-ai-block {
+    border-color: #44403c;
+  }
+  .shape-ai-summary {
+    color: #cbd5e1;
+  }
+  .shape-ai-content {
+    color: #e2e8f0;
+    border-top-color: #44403c;
+  }
+}
+
 /* 裝備資訊樣式 */
 .equipment-info {
     margin: 15px 0;
