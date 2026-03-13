@@ -285,18 +285,6 @@ input, textarea, [contenteditable="true"] {
     border-top: 1px solid #e2e8f0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .shape-ai-block {
-    border-color: #44403c;
-  }
-  .shape-ai-summary {
-    color: #cbd5e1;
-  }
-  .shape-ai-content {
-    color: #e2e8f0;
-    border-top-color: #44403c;
-  }
-}
 
 /* 裝備資訊樣式 */
 .equipment-info {
