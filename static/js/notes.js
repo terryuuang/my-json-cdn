@@ -984,14 +984,15 @@ async function initNotes(map) {
 // - Sector: { type: 'Sector', center: [lng, lat], radiusKm: number, startDeg: number, endDeg: number }
 // - Rectangle: { type: 'Rectangle', bounds: { west, south, east, north } }
 function getShapeNoteButtonHtml(shapeData) {
-  const { shapeType, lat, lng, text, shapeInfo, geometry } = shapeData;
+  const { shapeType, lat, lng, title, text, shapeInfo, geometry } = shapeData;
   const dataAttrs = `
     data-shape-type="${shapeType}"
     data-lat="${lat}"
     data-lng="${lng}"
-    data-text="${escapeHtml(text || '')}"
-    data-shape-info='${JSON.stringify(shapeInfo || {})}'
-    data-geometry='${JSON.stringify(geometry || null)}'
+    data-title="${encodeURIComponent(title || '')}"
+    data-text="${encodeURIComponent(text || '')}"
+    data-shape-info="${encodeURIComponent(JSON.stringify(shapeInfo || {}))}"
+    data-geometry="${encodeURIComponent(JSON.stringify(geometry || null))}"
   `;
   
   return `<button class="link-btn shape-save-btn" onclick="showShapeSaveDialog(this)" ${dataAttrs}>儲存此圖形</button>`;
@@ -1002,9 +1003,10 @@ function showShapeSaveDialog(btn) {
   const shapeType = btn.dataset.shapeType;
   const lat = parseFloat(btn.dataset.lat);
   const lng = parseFloat(btn.dataset.lng);
-  const text = btn.dataset.text || '';
-  const shapeInfo = JSON.parse(btn.dataset.shapeInfo || '{}');
-  const geometry = JSON.parse(btn.dataset.geometry || 'null');
+  const title = decodeURIComponent(btn.dataset.title || '');
+  const text = decodeURIComponent(btn.dataset.text || '');
+  const shapeInfo = JSON.parse(decodeURIComponent(btn.dataset.shapeInfo || '%7B%7D'));
+  const geometry = JSON.parse(decodeURIComponent(btn.dataset.geometry || 'null'));
 
   const shapeTypeLabels = {
     'point': '標記點',
@@ -1038,6 +1040,7 @@ function showShapeSaveDialog(btn) {
       <div class="note-dialog-body">
         <div class="note-dialog-feature" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left-color: #ef4444; color: #991b1b;">
           ${typeLabel}
+          ${title ? `<br><small>${escapeHtml(title)}</small>` : ''}
           ${shapeInfo.radius ? `<br><small>半徑: ${shapeInfo.radius}</small>` : ''}
           ${shapeInfo.area ? `<br><small>面積: ${shapeInfo.area}</small>` : ''}
           ${shapeInfo.length ? `<br><small>長度: ${shapeInfo.length}</small>` : ''}
@@ -1164,7 +1167,8 @@ window.Notes = {
   showList: showNotesListDialog,
   showDialog: showNoteDialog,
   getNoteButtonHtml,
-  getShapeNoteButtonHtml
+  getShapeNoteButtonHtml,
+  showToast: showNoteToast
 };
 
 // 暴露到全域供 onclick 使用
@@ -1185,4 +1189,3 @@ window.showShapeSaveDialog = showShapeSaveDialog;
 window.closeShapeSaveDialog = closeShapeSaveDialog;
 
 window.saveShapeNote = saveShapeNote;
-

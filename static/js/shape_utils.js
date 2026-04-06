@@ -1,5 +1,10 @@
 // 純工具函式：shape 解析與幾何計算（與 Leaflet 無相依）
 (function () {
+  function normalizeTextValue(value) {
+    if (typeof value !== 'string') return '';
+    return value.replace(/\s+/g, ' ').trim();
+  }
+
   function unitToKm(unit) {
     const u = (unit || 'nm').toLowerCase();
     if (u === 'km') return 1;
@@ -89,6 +94,186 @@
       latlngs.push([φ2 * 180 / Math.PI, ((λ2 * 180 / Math.PI + 540) % 360) - 180]);
     }
     return latlngs;
+  }
+
+  function parseShapeDisplayText(rawText, typeLabel = '圖形') {
+    const fallback = normalizeTextValue(rawText) || typeLabel;
+    const aiMatch = fallback.match(/([\s\S]*?)(?:[，,\s]*)(AI判斷[：:]\s*)([\s\S]+)/);
+    const mainText = normalizeTextValue(aiMatch ? aiMatch[1] : fallback) || typeLabel;
+    const aiAnalysis = normalizeTextValue(aiMatch ? aiMatch[3] : '');
+    const segments = mainText.split(/\s+-\s+/).map(normalizeTextValue).filter(Boolean);
+
+    let title = mainText;
+    let subtitle = '';
+    let description = '';
+
+    if (segments.length >= 3) {
+      title = segments[0];
+      subtitle = segments[1];
+      description = segments.slice(2).join(' - ');
+    } else if (segments.length === 2) {
+      title = segments[0];
+      description = segments[1];
+    } else if (segments.length === 1) {
+      title = segments[0];
+    }
+
+    const noteText = [subtitle, description].filter(Boolean).join('\n') || title;
+
+    return {
+      rawText: fallback,
+      mainText,
+      title,
+      subtitle,
+      description,
+      noteText,
+      aiAnalysis
+    };
+  }
+
+  function escapeXml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  function ensureClosedCoordinates(coords) {
+    if (!Array.isArray(coords) || coords.length === 0) return [];
+    const closed = coords.map(coord => coord.slice(0, 2));
+    const first = closed[0];
+    const last = closed[closed.length - 1];
+    if (!first || !last || first[0] !== last[0] || first[1] !== last[1]) {
+      closed.push(first.slice());
+    }
+    return closed;
+  }
+
+  function formatKmlCoordinates(coords) {
+    return coords
+      .map(coord => `${coord[0]},${coord[1]},0`)
+      .join(' ');
+  }
+
+  function destinationPoint(center, distanceKm, bearingDegValue) {
+    const radiusM = distanceKm * 1000;
+    const bearing = bearingDegValue * Math.PI / 180;
+    const earthRadius = 6371000;
+    const lat1 = center[1] * Math.PI / 180;
+    const lng1 = center[0] * Math.PI / 180;
+    const lat2 = Math.asin(
+      Math.sin(lat1) * Math.cos(radiusM / earthRadius) +
+      Math.cos(lat1) * Math.sin(radiusM / earthRadius) * Math.cos(bearing)
+    );
+    const lng2 = lng1 + Math.atan2(
+      Math.sin(bearing) * Math.sin(radiusM / earthRadius) * Math.cos(lat1),
+      Math.cos(radiusM / earthRadius) - Math.sin(lat1) * Math.sin(lat2)
+    );
+    return [((lng2 * 180 / Math.PI + 540) % 360) - 180, lat2 * 180 / Math.PI];
+  }
+
+  function buildCircleCoordinates(center, radiusKm, steps = 72) {
+    const coords = [];
+    for (let i = 0; i < steps; i++) {
+      coords.push(destinationPoint(center, radiusKm, i * (360 / steps)));
+    }
+    return ensureClosedCoordinates(coords);
+  }
+
+  function buildSectorCoordinates(center, radiusKm, startDeg, endDeg, stepDeg = 2) {
+    const latlngs = buildSectorLatLngs(
+      { lat: center[1], lng: center[0] },
+      radiusKm,
+      startDeg,
+      endDeg,
+      stepDeg
+    );
+    return ensureClosedCoordinates(latlngs.map(([lat, lng]) => [lng, lat]));
+  }
+
+  function geometryToKml(geometry) {
+    if (!geometry || !geometry.type) return '';
+
+    if (geometry.type === 'Point' && Array.isArray(geometry.coordinates)) {
+      return `<Point><coordinates>${formatKmlCoordinates([geometry.coordinates])}</coordinates></Point>`;
+    }
+
+    if (geometry.type === 'LineString' && Array.isArray(geometry.coordinates) && geometry.coordinates.length >= 2) {
+      return `<LineString><tessellate>1</tessellate><coordinates>${formatKmlCoordinates(geometry.coordinates)}</coordinates></LineString>`;
+    }
+
+    if (geometry.type === 'Polygon' && Array.isArray(geometry.coordinates) && geometry.coordinates.length >= 3) {
+      const ring = ensureClosedCoordinates(geometry.coordinates);
+      return `<Polygon><tessellate>1</tessellate><outerBoundaryIs><LinearRing><coordinates>${formatKmlCoordinates(ring)}</coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+    }
+
+    if (geometry.type === 'Rectangle' && geometry.bounds) {
+      const { west, south, east, north } = geometry.bounds;
+      const ring = ensureClosedCoordinates([
+        [west, south],
+        [east, south],
+        [east, north],
+        [west, north]
+      ]);
+      return `<Polygon><tessellate>1</tessellate><outerBoundaryIs><LinearRing><coordinates>${formatKmlCoordinates(ring)}</coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+    }
+
+    if (geometry.type === 'Circle' && Array.isArray(geometry.center) && Number.isFinite(geometry.radiusKm)) {
+      const ring = buildCircleCoordinates(geometry.center, geometry.radiusKm);
+      return `<Polygon><tessellate>1</tessellate><outerBoundaryIs><LinearRing><coordinates>${formatKmlCoordinates(ring)}</coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+    }
+
+    if (
+      geometry.type === 'Sector' &&
+      Array.isArray(geometry.center) &&
+      Number.isFinite(geometry.radiusKm) &&
+      Number.isFinite(geometry.startDeg) &&
+      Number.isFinite(geometry.endDeg)
+    ) {
+      const ring = buildSectorCoordinates(geometry.center, geometry.radiusKm, geometry.startDeg, geometry.endDeg);
+      return `<Polygon><tessellate>1</tessellate><outerBoundaryIs><LinearRing><coordinates>${formatKmlCoordinates(ring)}</coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+    }
+
+    return '';
+  }
+
+  function buildShapeKml(options = {}) {
+    const {
+      name = 'APEINTEL Shape',
+      description = '',
+      geometry = null
+    } = options;
+
+    const geometryMarkup = geometryToKml(geometry);
+    if (!geometryMarkup) return '';
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${escapeXml(name)}</name>
+    <Style id="shapeStyle">
+      <LineStyle>
+        <color>ff4444ef</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>334444ef</color>
+      </PolyStyle>
+      <IconStyle>
+        <color>ff4444ef</color>
+        <scale>1.1</scale>
+      </IconStyle>
+    </Style>
+    <Placemark>
+      <name>${escapeXml(name)}</name>
+      <description>${escapeXml(description)}</description>
+      <styleUrl>#shapeStyle</styleUrl>
+      ${geometryMarkup}
+    </Placemark>
+  </Document>
+</kml>`;
   }
 
   function parseShapeParams(urlParams) {
@@ -271,6 +456,8 @@
     bearingDeg,
     angleInRangeCW,
     buildSectorLatLngs,
+    parseShapeDisplayText,
+    buildShapeKml,
     parseShapeParams
   };
 })();

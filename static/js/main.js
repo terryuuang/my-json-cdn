@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年04月06日',
+    description: '優化 shape popup 版面，分離標題與內文；新增單一圖形 KML 匯出按鈕，支援下載至 Google Earth；新增網址複製按鈕，方便分享'
+  },
+  {
     date: '2026年03月13日',
     description: '移除 Supabase 雲端功能，改為純瀏覽器離線儲存；底圖改為 Google 海域/空域雙圖層；優化地圖初始化速度'
   },
@@ -257,6 +261,30 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     } catch (_) {}
   };
 
+  const encodeDataAttr = (value) => encodeURIComponent(
+    typeof value === 'string' ? value : JSON.stringify(value ?? null)
+  );
+
+  const escapeHtml = (value) => {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  };
+
+  const buildShapeKmlButton = (shapeData) => {
+    const dataAttrs = `
+      data-shape-type="${shapeData.shapeType}"
+      data-title="${encodeDataAttr(shapeData.title || '')}"
+      data-description="${encodeDataAttr(shapeData.description || '')}"
+      data-geometry="${encodeDataAttr(shapeData.geometry || null)}"
+    `;
+    return `<button class="link-btn shape-export-btn" onclick="exportShapeAsKml(this)" ${dataAttrs}>匯出成 KML</button>`;
+  };
+
+  const buildCopyUrlButton = () => {
+    return `<button class="link-btn shape-copy-url-btn" onclick="copyCurrentUrl(this)">複製網址</button>`;
+  };
+
   // 輔助函數：建立含筆記功能的 popup 內容（跟軍事設施彈窗樣式一致）
   // geometry 格式依類型：
   // - Point: { type: 'Point', coordinates: [lng, lat] }
@@ -269,13 +297,18 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     const rawText = text || '區域標記';
     const shapeTypeLabels = { 'point': '標記點', 'circle': '圓形區域', 'line': '線段', 'polygon': '多邊形', 'bbox': '矩形區域', 'sector': '扇形區域' };
     const typeLabel = shapeTypeLabels[type] || '圖形';
+    const parsedText = window.shapeUtils.parseShapeDisplayText(rawText, typeLabel);
 
-    // 用正則將 "AI判斷：" 之後的內容拆分為獨立區塊
-    const aiMatch = rawText.match(/(.+?)(?:[，,\s]*)(AI判斷[：:]\s*)([\s\S]+)/);
-    const mainText = aiMatch ? aiMatch[1].trim() : rawText;
-    const aiAnalysis = aiMatch ? aiMatch[3].trim() : '';
-    
-    let popupHtml = `<div class="popup-title" style="margin-bottom:10px">${mainText}</div>`;
+    let popupHtml = `<div class="shape-popup-header">`;
+    popupHtml += `<div class="shape-popup-kicker">${typeLabel}</div>`;
+    popupHtml += `<h3 class="popup-title">${escapeHtml(parsedText.title)}</h3>`;
+    if (parsedText.subtitle) {
+      popupHtml += `<div class="shape-popup-subtitle">${escapeHtml(parsedText.subtitle)}</div>`;
+    }
+    popupHtml += `</div>`;
+    if (parsedText.description) {
+      popupHtml += `<div class="shape-popup-description">${escapeHtml(parsedText.description)}</div>`;
+    }
     popupHtml += `<div class="popup-field"><strong>類型:</strong><span class="popup-field-value">${typeLabel}</span></div>`;
     
     // 添加形狀資訊
@@ -285,21 +318,44 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     if (shapeInfo.angle) popupHtml += `<div class="popup-field"><strong>角度:</strong><span class="popup-field-value">${shapeInfo.angle}</span></div>`;
 
     // AI 判斷折疊區塊（置於形狀資訊下方）
-    if (aiAnalysis) {
-      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷</summary><div class="shape-ai-content">${aiAnalysis}</div></details>`;
+    if (parsedText.aiAnalysis) {
+      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷</summary><div class="shape-ai-content">${escapeHtml(parsedText.aiAnalysis)}</div></details>`;
     }
-    
+
+    const exportDescription = [
+      parsedText.subtitle,
+      parsedText.description,
+      shapeInfo.radius ? `半徑: ${shapeInfo.radius}` : '',
+      shapeInfo.area ? `面積: ${shapeInfo.area}` : '',
+      shapeInfo.length ? `長度: ${shapeInfo.length}` : '',
+      shapeInfo.angle ? `角度: ${shapeInfo.angle}` : '',
+      parsedText.aiAnalysis ? `AI 判斷: ${parsedText.aiAnalysis}` : ''
+    ].filter(Boolean).join('\n');
+
+    const actionButtons = [
+      buildCopyUrlButton(),
+      buildShapeKmlButton({
+        shapeType: type,
+        title: parsedText.title,
+        description: exportDescription || parsedText.mainText,
+        geometry
+      })
+    ];
+
     // 添加儲存筆記按鈕（傳遞完整幾何資料）
     if (window.Notes && typeof window.Notes.getShapeNoteButtonHtml === 'function') {
-      popupHtml += `<div class="popup-actions">${window.Notes.getShapeNoteButtonHtml({
+      actionButtons.unshift(window.Notes.getShapeNoteButtonHtml({
         shapeType: type,
         lat: center.lat,
         lng: center.lng,
-        text: mainText,
+        title: parsedText.title,
+        text: parsedText.noteText,
         shapeInfo: shapeInfo,
         geometry: geometry
-      })}</div>`;
+      }));
     }
+
+    popupHtml += `<div class="popup-actions">${actionButtons.join('')}</div>`;
     
     return popupHtml;
   };
@@ -1532,6 +1588,92 @@ return text.toString()
     .replace(/&#39;/g, "'")           // 替換 &#39; 為 '
     .replace(/\s+/g, ' ')             // 多個空格替換為單個空格
     .trim();                          // 移除首尾空格
+}
+
+function downloadTextFile(content, filename, mimeType = 'text/plain;charset=utf-8') {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
+function slugifyFilename(value, fallback = 'shape') {
+  const cleaned = cleanText(value)
+    .toLowerCase()
+    .replace(/[<>:"/\\|?*\u0000-\u001f]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 50);
+  return cleaned || fallback;
+}
+
+function exportShapeAsKml(btn) {
+  try {
+    const title = decodeURIComponent(btn.dataset.title || '');
+    const description = decodeURIComponent(btn.dataset.description || '');
+    const geometry = JSON.parse(decodeURIComponent(btn.dataset.geometry || 'null'));
+    const kml = window.shapeUtils.buildShapeKml({
+      name: title || 'APEINTEL Shape',
+      description,
+      geometry
+    });
+
+    if (!kml) {
+      throw new Error('無法建立 KML');
+    }
+
+    const filename = `${slugifyFilename(title || btn.dataset.shapeType || 'shape')}.kml`;
+    downloadTextFile(kml, filename, 'application/vnd.google-earth.kml+xml;charset=utf-8');
+    if (window.Notes && typeof window.Notes.showToast === 'function') {
+      window.Notes.showToast('KML 已匯出');
+    }
+  } catch (error) {
+    console.error('[Map] 匯出 KML 失敗:', error);
+    if (window.Notes && typeof window.Notes.showToast === 'function') {
+      window.Notes.showToast('KML 匯出失敗', 'error');
+    }
+  }
+}
+
+async function copyCurrentUrl() {
+  const url = (() => {
+    try {
+      return decodeURI(window.location.href);
+    } catch (_) {
+      return window.location.href;
+    }
+  })();
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+
+    if (window.Notes && typeof window.Notes.showToast === 'function') {
+      window.Notes.showToast('網址已複製');
+    }
+  } catch (error) {
+    console.error('[Map] 複製網址失敗:', error);
+    if (window.Notes && typeof window.Notes.showToast === 'function') {
+      window.Notes.showToast('複製網址失敗', 'error');
+    }
+  }
 }
 
 // 隱藏/顯示控制面板

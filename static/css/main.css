@@ -193,6 +193,38 @@ input, textarea, [contenteditable="true"] {
     margin: 0;
 }
 
+.shape-popup-header {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.shape-popup-kicker {
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #dc2626;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.shape-popup-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.shape-popup-description {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    color: #7c2d12;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
 .popup-field {
     margin-bottom: 8px;
     padding: 6px 0;
@@ -283,6 +315,7 @@ input, textarea, [contenteditable="true"] {
     line-height: 1.6;
     color: #0f172a;
     border-top: 1px solid #e2e8f0;
+    white-space: pre-line;
 }
 
 
@@ -3420,6 +3453,14 @@ select.input-field:hover {
 
 /* Shape 儲存按鈕 - 繼承 link-btn 樣式 */
 .shape-save-btn {
+  margin-top: 0 !important;
+}
+
+.shape-export-btn {
+  margin-top: 0 !important;
+}
+
+.shape-copy-url-btn {
   margin-top: 0 !important;
 }
 
