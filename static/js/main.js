@@ -10,7 +10,7 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年04月06日',
-    description: '優化 shape popup 版面，分離標題與內文；新增單一圖形 KML 匯出按鈕，支援下載至 Google Earth；新增網址複製按鈕，方便分享'
+    description: '優化 shape popup 版面；保留禁航區 popup 的 KML 與網址複製功能；調整 OSM 載入體驗，新增勾選項狀態回饋、查詢中提示與 Overpass 重試/備援節點'
   },
   {
     date: '2026年03月13日',
@@ -261,15 +261,15 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     } catch (_) {}
   };
 
-  const encodeDataAttr = (value) => encodeURIComponent(
-    typeof value === 'string' ? value : JSON.stringify(value ?? null)
-  );
-
   const escapeHtml = (value) => {
     const div = document.createElement('div');
     div.textContent = value ?? '';
     return div.innerHTML;
   };
+
+  const encodeDataAttr = (value) => encodeURIComponent(
+    typeof value === 'string' ? value : JSON.stringify(value ?? null)
+  );
 
   const buildShapeKmlButton = (shapeData) => {
     const dataAttrs = `
@@ -282,7 +282,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
   };
 
   const buildCopyUrlButton = () => {
-    return `<button class="link-btn shape-copy-url-btn" onclick="copyCurrentUrl(this)">複製網址</button>`;
+    return `<button class="link-btn shape-copy-url-btn" onclick="copyCurrentUrl()">複製網址</button>`;
   };
 
   // 輔助函數：建立含筆記功能的 popup 內容（跟軍事設施彈窗樣式一致）

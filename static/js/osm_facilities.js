@@ -125,6 +125,11 @@ const ICON_CLASSES = {
 
 const overpassCache = new Map();
 const CACHE_TIME = 30 * 60 * 1000; // 30 分鐘
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter'
+];
 
 function buildOverpassQuery(facilityType, bounds) {
   const def = FACILITY_TYPES[facilityType];
@@ -156,20 +161,106 @@ async function queryOverpass(query, useCache = true) {
     overpassCache.delete(cacheKey);
   }
 
-  const response = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: query,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+  let lastError = null;
+  const requestBody = new URLSearchParams({ data: query }).toString();
 
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  
-  const data = await response.json();
-  if (useCache) {
-    overpassCache.set(cacheKey, { data, time: Date.now() });
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: requestBody,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const error = new Error(`HTTP ${response.status}`);
+          error.status = response.status;
+          error.endpoint = endpoint;
+          lastError = error;
+          showStatus(`查詢 ${endpoint.replace(/^https?:\/\//, '')} 失敗，正在重試`, 'loading');
+          if ([429, 502, 503, 504].includes(response.status)) {
+            await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+            continue;
+          }
+          throw error;
+        }
+
+        const data = await response.json();
+        if (useCache) {
+          overpassCache.set(cacheKey, { data, time: Date.now() });
+        }
+        return data;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        lastError = error;
+        const retriable = error?.name === 'AbortError' || [429, 502, 503, 504].includes(error?.status);
+        if (retriable) {
+          showStatus(`查詢逾時或服務忙碌，正在切換備援節點`, 'loading');
+        }
+        if (!retriable || attempt === 1) break;
+        await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+      }
+    }
   }
-  
-  return data;
+
+  if (lastError?.endpoint) {
+    throw new Error(`${lastError.message} (${lastError.endpoint})`);
+  }
+  if (lastError?.name === 'AbortError') {
+    throw new Error('查詢逾時');
+  }
+  if (lastError) throw lastError;
+  throw new Error('Overpass 查詢失敗');
+}
+
+function getCurrentSearchContext(map) {
+  let center = null;
+  let radius = 50;
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlRadius = parseFloat(urlParams.get('radius'));
+
+  const shapeType = urlParams.get('shape');
+  if (shapeType) {
+    center = calculateShapeCenter(urlParams);
+    radius = !isNaN(urlRadius) ? urlRadius : 50;
+  }
+
+  if (!center) {
+    const lat = parseFloat(urlParams.get('lat'));
+    const lng = parseFloat(urlParams.get('lng'));
+    if (!isNaN(lat) && !isNaN(lng)) {
+      center = { lat, lng };
+      if (!isNaN(urlRadius)) radius = urlRadius;
+    }
+  }
+
+  if (!center) {
+    const latInput = document.getElementById('latInput');
+    const lngInput = document.getElementById('lngInput');
+    const radiusInput = document.getElementById('radiusInput');
+    const inputLat = parseFloat(latInput?.value);
+    const inputLng = parseFloat(lngInput?.value);
+    const inputRadius = parseFloat(radiusInput?.value);
+
+    if (!isNaN(inputLat) && !isNaN(inputLng)) {
+      center = { lat: inputLat, lng: inputLng };
+      if (!isNaN(inputRadius)) radius = inputRadius;
+    }
+  }
+
+  if (!center) {
+    const mapCenter = map.getCenter();
+    center = { lat: mapCenter.lat, lng: mapCenter.lng };
+  }
+
+  return { center, radius };
 }
 
 function toGeoJSON(overpassData, facilityType) {
@@ -290,7 +381,7 @@ function createPopup(feature, type) {
     });
   }
 
-  return `<div style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}${noteButtonHtml}</div>`;
+  return `<div class="osm-popup" style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}${noteButtonHtml ? `<div class="popup-actions">${noteButtonHtml}</div>` : ''}</div>`;
 }
 
 // 渲染圖層到地圖
@@ -350,6 +441,22 @@ function calculateBounds(center, radiusKm) {
 function calculateShapeCenter(urlParams) {
   const shapeType = urlParams.get('shape');
 
+  const averagePoints = (points) => {
+    const validPoints = (points || []).filter(p => Number.isFinite(p?.lat) && Number.isFinite(p?.lng));
+    if (validPoints.length === 0) return null;
+    return {
+      lat: validPoints.reduce((sum, p) => sum + p.lat, 0) / validPoints.length,
+      lng: validPoints.reduce((sum, p) => sum + p.lng, 0) / validPoints.length
+    };
+  };
+
+  const parsePointList = (value) => {
+    return (value || '').split(';').map(p => {
+      const [lng, lat] = p.split(',').map(Number);
+      return { lat, lng };
+    }).filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lng));
+  };
+
   if (shapeType === 'circle') {
     const lat = parseFloat(urlParams.get('lat'));
     const lng = parseFloat(urlParams.get('lng'));
@@ -357,33 +464,9 @@ function calculateShapeCenter(urlParams) {
       return { lat, lng };
     }
   } else if (shapeType === 'line') {
-    const line = urlParams.get('line');
-    if (line) {
-      const points = line.split(';').map(p => {
-        const [lng, lat] = p.split(',').map(Number);
-        return { lat, lng };
-      }).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
-
-      if (points.length > 0) {
-        const avgLat = points.reduce((sum, p) => sum + p.lat, 0) / points.length;
-        const avgLng = points.reduce((sum, p) => sum + p.lng, 0) / points.length;
-        return { lat: avgLat, lng: avgLng };
-      }
-    }
+    return averagePoints(parsePointList(urlParams.get('line')));
   } else if (shapeType === 'polygon') {
-    const polygon = urlParams.get('polygon');
-    if (polygon) {
-      const points = polygon.split(';').map(p => {
-        const [lng, lat] = p.split(',').map(Number);
-        return { lat, lng };
-      }).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
-
-      if (points.length > 0) {
-        const avgLat = points.reduce((sum, p) => sum + p.lat, 0) / points.length;
-        const avgLng = points.reduce((sum, p) => sum + p.lng, 0) / points.length;
-        return { lat: avgLat, lng: avgLng };
-      }
-    }
+    return averagePoints(parsePointList(urlParams.get('poly') || urlParams.get('polygon')));
   } else if (shapeType === 'sector') {
     const sectorStr = urlParams.get('sector');
     if (sectorStr) {
@@ -401,7 +484,36 @@ function calculateShapeCenter(urlParams) {
       }
     }
   } else if (shapeType === 'multi') {
-    // 對於 multi 模式，優先使用 circle 的中心
+    if (window.shapeUtils && typeof window.shapeUtils.parseShapeParams === 'function') {
+      const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
+      const centers = [];
+      (shapeSpec.shapes || []).forEach(shape => {
+        if (shape.center && Number.isFinite(shape.center.lat) && Number.isFinite(shape.center.lng)) {
+          centers.push(shape.center);
+          return;
+        }
+        if (Array.isArray(shape.coords)) {
+          centers.push(...shape.coords);
+          return;
+        }
+        if (shape.bounds) {
+          centers.push({
+            lat: (shape.bounds.south + shape.bounds.north) / 2,
+            lng: (shape.bounds.west + shape.bounds.east) / 2
+          });
+        }
+      });
+      const averaged = averagePoints(centers);
+      if (averaged) return averaged;
+    }
+
+    const allPolyPoints = urlParams.getAll('poly').flatMap(raw => {
+      const [value] = String(raw || '').split('|');
+      return parsePointList(value);
+    });
+    const averagedPolys = averagePoints(allPolyPoints);
+    if (averagedPolys) return averagedPolys;
+
     const circleStr = urlParams.get('circle');
     if (circleStr) {
       const [lng, lat] = circleStr.split(',').map(Number);
@@ -409,7 +521,7 @@ function calculateShapeCenter(urlParams) {
         return { lat, lng };
       }
     }
-    // 其次使用 sector 的中心
+
     const sectorStr = urlParams.get('sector');
     if (sectorStr) {
       const [lng, lat] = sectorStr.split(',').map(Number);
@@ -428,55 +540,7 @@ async function loadLayer(type, map) {
   layers.activeQueries.add(type);
 
   try {
-    // 嘗試從 URL 或輸入框獲取搜尋中心和半徑
-    let center = null;
-    let radius = 50; // 預設 50KM
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlRadius = parseFloat(urlParams.get('radius'));
-
-    // 1. 檢查是否為 SHAPE 模式
-    const shapeType = urlParams.get('shape');
-    if (shapeType) {
-      center = calculateShapeCenter(urlParams);
-      // SHAPE 模式預設使用 50KM，除非 URL 有指定 radius
-      radius = !isNaN(urlRadius) ? urlRadius : 50;
-    }
-
-    // 2. 如果不是 SHAPE 模式或無法計算 SHAPE 中心，嘗試從 lat/lng 參數獲取
-    if (!center) {
-      const lat = parseFloat(urlParams.get('lat'));
-      const lng = parseFloat(urlParams.get('lng'));
-
-      if (!isNaN(lat) && !isNaN(lng)) {
-        center = { lat, lng };
-        if (!isNaN(urlRadius)) radius = urlRadius;
-      }
-    }
-
-    // 3. 從輸入框獲取
-    if (!center) {
-      const latInput = document.getElementById('latInput');
-      const lngInput = document.getElementById('lngInput');
-      const radiusInput = document.getElementById('radiusInput');
-
-      const inputLat = parseFloat(latInput?.value);
-      const inputLng = parseFloat(lngInput?.value);
-      const inputRadius = parseFloat(radiusInput?.value);
-
-      if (!isNaN(inputLat) && !isNaN(inputLng)) {
-        center = { lat: inputLat, lng: inputLng };
-        if (!isNaN(inputRadius)) radius = inputRadius;
-      }
-    }
-
-    // 4. 使用地圖中心作為後備
-    if (!center) {
-      const mapCenter = map.getCenter();
-      center = { lat: mapCenter.lat, lng: mapCenter.lng };
-    }
-
-
+    const { center, radius } = getCurrentSearchContext(map);
     const bounds = calculateBounds(center, radius);
     const query = buildOverpassQuery(type, bounds);
     const data = await queryOverpass(query);
@@ -520,6 +584,33 @@ function clearAll(map) {
 
 let selectedFacilities = new Set();
 
+function syncFacilitiesToUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (selectedFacilities.size > 0) {
+    urlParams.set('osm', Array.from(selectedFacilities).join(','));
+  } else {
+    urlParams.delete('osm');
+  }
+  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+  window.history.pushState({}, '', newUrl);
+}
+
+function setFacilityVisualState(type, state = 'idle', detail = '') {
+  const checkbox = document.querySelector(`#osmDropdownMenu input[value="${type}"]`);
+  const option = checkbox?.closest('.dropdown-option');
+  if (!checkbox || !option) return;
+
+  option.classList.remove('is-loading', 'is-success', 'is-error');
+  delete option.dataset.state;
+  delete option.dataset.detail;
+
+  if (state !== 'idle') {
+    option.classList.add(`is-${state}`);
+    option.dataset.state = state;
+    if (detail) option.dataset.detail = detail;
+  }
+}
+
 // toggleDropdown function is now provided by unified_dropdown.js
 
 async function handleFacilityChange(checkbox) {
@@ -534,14 +625,13 @@ async function handleFacilityChange(checkbox) {
   
   if (checkbox.checked) {
     selectedFacilities.add(type);
-    const label = checkbox.closest('label');
-    if (label) label.style.opacity = '0.6';
-    
-    const loadingNotice = showStatus(`載入 ${FACILITY_TYPES[type].name}...`, 'loading');
+    setFacilityVisualState(type, 'loading', '正在查詢');
+    const loadingNotice = showStatus(`正在查詢 ${FACILITY_TYPES[type].name}`, 'loading');
     
     try {
       const data = await loadLayer(type, map);
-      if (label) label.style.opacity = '1';
+      setFacilityVisualState(type, 'success', data?.features?.length > 0 ? `已載入 ${data.features.length} 筆` : '查無資料');
+      setTimeout(() => setFacilityVisualState(type, checkbox.checked ? 'idle' : 'idle'), 1600);
       
       // 移除 loading 提示
       if (loadingNotice) {
@@ -556,9 +646,9 @@ async function handleFacilityChange(checkbox) {
         showStatus(`公開資料中當前範圍內查無 ${FACILITY_TYPES[type].name}`, 'warning');
       }
     } catch (error) {
-      if (label) label.style.opacity = '1';
       checkbox.checked = false;
       selectedFacilities.delete(type);
+      setFacilityVisualState(type, 'error', '查詢失敗');
       
       // 移除 loading 提示
       if (loadingNotice) {
@@ -572,8 +662,10 @@ async function handleFacilityChange(checkbox) {
   } else {
     selectedFacilities.delete(type);
     toggleLayer(type, map, false);
+    setFacilityVisualState(type, 'idle');
   }
-  
+
+  syncFacilitiesToUrl();
   updateCount();
 }
 
@@ -596,6 +688,8 @@ function clearSelections() {
   document.querySelectorAll('.osm-facility-option input').forEach(cb => cb.checked = false);
   if (window.map) clearAll(window.map);
   selectedFacilities.clear();
+  Object.keys(FACILITY_TYPES).forEach(type => setFacilityVisualState(type, 'idle'));
+  syncFacilitiesToUrl();
   updateCount();
   showStatus('已清除所有圖層', 'success');
 }
@@ -609,17 +703,26 @@ function showStatus(msg, type = 'success') {
   
   const notice = document.createElement('div');
   notice.className = 'osm-notice';
+  notice.classList.toggle('osm-notice-loading', type === 'loading');
   notice.textContent = msg;
   
   // 根據類型設定顏色
   if (type === 'loading') {
-    notice.style.background = 'rgba(59, 130, 246, 0.95)';
+    notice.style.background = 'rgba(255, 255, 255, 0.96)';
+    notice.style.color = '#111827';
+    notice.style.borderColor = '#cbd5e1';
   } else if (type === 'error') {
-    notice.style.background = 'rgba(239, 68, 68, 0.95)';
+    notice.style.background = 'rgba(255, 255, 255, 0.96)';
+    notice.style.color = '#991b1b';
+    notice.style.borderColor = '#fecaca';
   } else if (type === 'warning') {
-    notice.style.background = 'rgba(245, 158, 11, 0.95)'; // 橙色警告
+    notice.style.background = 'rgba(255, 255, 255, 0.96)';
+    notice.style.color = '#92400e';
+    notice.style.borderColor = '#fcd34d';
   } else {
-    notice.style.background = 'rgba(34, 197, 94, 0.95)';
+    notice.style.background = 'rgba(255, 255, 255, 0.96)';
+    notice.style.color = '#065f46';
+    notice.style.borderColor = '#a7f3d0';
   }
   
   document.body.appendChild(notice);
@@ -649,6 +752,23 @@ function initOSM() {
     if (window.map && typeof window.map.getBounds === 'function') {
       clearInterval(check);
       initLayers(window.map);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFacilities = (urlParams.get('osm') || '')
+        .split(',')
+        .map(v => v.trim())
+        .filter(v => FACILITY_TYPES[v]);
+
+      initialFacilities.forEach(type => {
+        selectedFacilities.add(type);
+        const checkbox = document.querySelector(`#osmDropdownMenu input[value="${type}"]`);
+        if (checkbox && !checkbox.checked) {
+          checkbox.checked = true;
+          handleFacilityChange(checkbox);
+        }
+      });
+
+      updateCount();
     }
   }, 200);
   
@@ -667,5 +787,3 @@ if (document.readyState === 'loading') {
 window.handleOSMFacilityChange = handleFacilityChange;
 window.clearAllOSMSelections = clearSelections;
 window.OSM_FACILITY_TYPES = FACILITY_TYPES;
-
-

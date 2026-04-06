@@ -1714,6 +1714,68 @@ select.input-field:hover {
   color: #374151;
 }
 
+.dropdown-option.is-loading label,
+.dropdown-option.is-success label,
+.dropdown-option.is-error label {
+  position: relative;
+  overflow: hidden;
+}
+
+.dropdown-option.is-loading label {
+  background: linear-gradient(90deg, #eff6ff, #dbeafe);
+  border: 1px solid #93c5fd;
+}
+
+.dropdown-option.is-loading label::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: translateX(-100%);
+  animation: osm-option-sweep 1.2s ease-in-out infinite;
+}
+
+.dropdown-option.is-success label {
+  background: linear-gradient(90deg, #ecfdf5, #d1fae5);
+  border: 1px solid #6ee7b7;
+}
+
+.dropdown-option.is-error label {
+  background: linear-gradient(90deg, #fef2f2, #fee2e2);
+  border: 1px solid #fca5a5;
+}
+
+.dropdown-option[data-detail] label {
+  padding-bottom: 24px;
+}
+
+.dropdown-option[data-detail] label::before {
+  content: attr(data-detail);
+  position: absolute;
+  left: 36px;
+  bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.dropdown-option.is-loading label::before {
+  color: #1d4ed8;
+}
+
+.dropdown-option.is-success label::before {
+  color: #047857;
+}
+
+.dropdown-option.is-error label::before {
+  color: #b91c1c;
+}
+
+@keyframes osm-option-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
 .dropdown-actions {
   border-top: 1px solid #e5e7eb;
   padding: 8px 12px;
@@ -1772,23 +1834,42 @@ select.input-field:hover {
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   left: 50%;
   transform: translate(-50%, -20px);
-  background: rgba(34, 197, 94, 0.95);
-  color: #ffffff;
-  display: inline-block;
-  text-align: center;
-  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 10px 14px;
   font-size: 14px;
   line-height: 1.35;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid #d1d5db;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
   max-width: min(420px, 90vw);
   z-index: 3000;
   opacity: 0;
   transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   pointer-events: none;
+}
+
+.osm-notice::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 16px;
+  border-radius: 999px;
+  border: 2px solid #d1d5db;
+  border-top-color: #111827;
+  animation: osm-notice-spin 0.9s linear infinite;
+}
+
+.osm-notice:not(.osm-notice-loading)::before {
+  display: none;
 }
 
 .osm-notice.show {
@@ -1808,6 +1889,11 @@ select.input-field:hover {
     border-radius: 10px;
     max-width: min(360px, 88vw);
   }
+}
+
+@keyframes osm-notice-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* OSM Marker 自定義樣式 */
