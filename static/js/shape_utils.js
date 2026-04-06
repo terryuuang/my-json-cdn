@@ -276,6 +276,104 @@
 </kml>`;
   }
 
+  function shapeToExportData(shape, fallbackText = '') {
+    if (!shape || !shape.type) return null;
+
+    const shapeTypeLabels = {
+      point: '標記點',
+      circle: '圓形區域',
+      line: '線段',
+      polygon: '多邊形',
+      bbox: '矩形區域',
+      sector: '扇形區域'
+    };
+
+    const typeLabel = shapeTypeLabels[shape.type] || '圖形';
+    const parsedText = parseShapeDisplayText(shape.text || fallbackText || typeLabel, typeLabel);
+    let geometry = null;
+    let detailText = '';
+
+    if (shape.type === 'point' && shape.center) {
+      geometry = { type: 'Point', coordinates: [shape.center.lng, shape.center.lat] };
+    } else if (shape.type === 'line' && Array.isArray(shape.coords)) {
+      geometry = { type: 'LineString', coordinates: shape.coords.map(p => [p.lng, p.lat]) };
+    } else if (shape.type === 'polygon' && Array.isArray(shape.coords)) {
+      geometry = { type: 'Polygon', coordinates: shape.coords.map(p => [p.lng, p.lat]) };
+    } else if (shape.type === 'bbox' && shape.bounds) {
+      geometry = { type: 'Rectangle', bounds: { ...shape.bounds } };
+    } else if (shape.type === 'circle' && shape.center && Number.isFinite(shape.radiusKm)) {
+      geometry = { type: 'Circle', center: [shape.center.lng, shape.center.lat], radiusKm: shape.radiusKm };
+      detailText = `半徑: ${shape.radiusKm.toFixed(2)} 公里`;
+    } else if (shape.type === 'sector' && shape.center && Number.isFinite(shape.radiusKm)) {
+      geometry = {
+        type: 'Sector',
+        center: [shape.center.lng, shape.center.lat],
+        radiusKm: shape.radiusKm,
+        startDeg: shape.startDeg,
+        endDeg: shape.endDeg
+      };
+      detailText = `半徑: ${shape.radiusKm.toFixed(2)} 公里\n角度: ${shape.startDeg}° - ${shape.endDeg}°`;
+    }
+
+    if (!geometry) return null;
+
+    const description = [
+      parsedText.subtitle,
+      parsedText.description,
+      detailText,
+      parsedText.aiAnalysis ? `AI 判斷: ${parsedText.aiAnalysis}` : ''
+    ].filter(Boolean).join('\n');
+
+    return {
+      name: parsedText.title,
+      description: description || parsedText.mainText,
+      geometry
+    };
+  }
+
+  function buildShapesKml(options = {}) {
+    const {
+      name = 'APEINTEL Shapes',
+      placemarks = []
+    } = options;
+
+    const items = placemarks
+      .map(item => {
+        const geometryMarkup = geometryToKml(item.geometry);
+        if (!geometryMarkup) return '';
+        return `    <Placemark>
+      <name>${escapeXml(item.name || name)}</name>
+      <description>${escapeXml(item.description || '')}</description>
+      <styleUrl>#shapeStyle</styleUrl>
+      ${geometryMarkup}
+    </Placemark>`;
+      })
+      .filter(Boolean);
+
+    if (items.length === 0) return '';
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${escapeXml(name)}</name>
+    <Style id="shapeStyle">
+      <LineStyle>
+        <color>ff4444ef</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>334444ef</color>
+      </PolyStyle>
+      <IconStyle>
+        <color>ff4444ef</color>
+        <scale>1.1</scale>
+      </IconStyle>
+    </Style>
+${items.join('\n')}
+  </Document>
+</kml>`;
+  }
+
   function parseShapeParams(urlParams) {
     const shape = (urlParams.get('shape') || '').trim().toLowerCase();
     const unit = (urlParams.get('unit') || 'nm').toLowerCase();
@@ -458,6 +556,8 @@
     buildSectorLatLngs,
     parseShapeDisplayText,
     buildShapeKml,
+    buildShapesKml,
+    shapeToExportData,
     parseShapeParams
   };
 })();

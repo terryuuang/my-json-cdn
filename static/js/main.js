@@ -1618,11 +1618,30 @@ function exportShapeAsKml(btn) {
     const title = decodeURIComponent(btn.dataset.title || '');
     const description = decodeURIComponent(btn.dataset.description || '');
     const geometry = JSON.parse(decodeURIComponent(btn.dataset.geometry || 'null'));
-    const kml = window.shapeUtils.buildShapeKml({
-      name: title || 'APEINTEL Shape',
-      description,
-      geometry
-    });
+    const urlParams = new URLSearchParams(window.location.search);
+    const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
+    const isMultiShapeExport = shapeSpec.shape === 'multi' && Array.isArray(shapeSpec.shapes) && shapeSpec.shapes.length > 1;
+
+    let exportName = title || 'APEINTEL Shape';
+    let kml = '';
+
+    if (isMultiShapeExport) {
+      const groupText = window.shapeUtils.parseShapeDisplayText(shapeSpec.text || title || 'APEINTEL Shapes', '圖形');
+      const placemarks = shapeSpec.shapes
+        .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text || title))
+        .filter(Boolean);
+      exportName = groupText.title || exportName;
+      kml = window.shapeUtils.buildShapesKml({
+        name: exportName,
+        placemarks
+      });
+    } else {
+      kml = window.shapeUtils.buildShapeKml({
+        name: exportName,
+        description,
+        geometry
+      });
+    }
 
     if (!kml) {
       throw new Error('無法建立 KML');
