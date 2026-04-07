@@ -787,3 +787,13 @@ if (document.readyState === 'loading') {
 window.handleOSMFacilityChange = handleFacilityChange;
 window.clearAllOSMSelections = clearSelections;
 window.OSM_FACILITY_TYPES = FACILITY_TYPES;
+
+// 海底電纜 checkbox handler（資料來自本地 GeoJSON，非 OSM）
+window.handleSubmarineCableChange = function(checkbox) {
+  if (!window.SubmarineCable) return;
+  if (checkbox.checked) {
+    window.SubmarineCable.show();
+  } else {
+    window.SubmarineCable.hide();
+  }
+};

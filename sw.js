@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.2.5';
+const APP_VERSION = '0.2.6';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -68,6 +68,9 @@ const CORE_ASSETS = [
   '/static/js/osm_facilities.js',
   '/static/js/unified_dropdown.js',
   '/static/js/notes.js',
+  '/static/js/pla_theater.js',
+  '/static/js/adiz.js',
+  '/static/js/submarine_cable.js',
   '/static/js/pwa.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
   '/static/assets/APEINTEL ATLAS_512x512.png'

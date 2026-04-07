@@ -537,11 +537,12 @@ select.input-field:hover {
 }
 
 /* --- Leaflet.draw / 測距 外觀微調（紅色主題）--- */
-/* 新繪圖形的預設紅色（JS 亦會設定；此為保險） */
-.leaflet-overlay-pane svg path.leaflet-interactive {
+/* 新繪圖形的預設紅色（JS 亦會設定；此為保險）
+   注意：adiz-layer / theater-layer 使用 className 覆蓋此規則 */
+.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path) {
   stroke: #ef4444;
 }
-.leaflet-overlay-pane svg path.leaflet-interactive + path {
+.leaflet-overlay-pane svg path.leaflet-interactive + path:not(.adiz-path):not(.theater-path):not(.submarine-cable-path) {
   stroke: #ef4444;
 }
 /* 編輯控制點顏色（若外掛使用此類名） */
@@ -3727,6 +3728,32 @@ select.input-field:hover {
     padding: 8px 6px;
     font-size: 11px;
   }
+}
+
+/* 操作按鈕自適應 2 欄排列 */
+.action-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-btn-grid .btn {
+  margin: 0;
+  width: 100%;
+}
+
+/* btn-secondary active 狀態（圖層切換按鈕啟用） */
+.btn-secondary.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+}
+
+.btn-secondary.active:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.45);
 }
 
 /* 深色模式 */

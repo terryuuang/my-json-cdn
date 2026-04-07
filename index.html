@@ -268,6 +268,9 @@
             <div class="dropdown-option">
               <label><input type="checkbox" value="power_station" onchange="handleOSMFacilityChange(this)"><span>發電廠</span></label>
             </div>
+            <div class="dropdown-option">
+              <label><input type="checkbox" value="submarine_cable" onchange="handleSubmarineCableChange(this)"><span>海底電纜</span></label>
+            </div>
           </div>
           <div class="dropdown-actions">
             <button type="button" class="btn-dropdown-action" onclick="clearAllOSMSelections()">清除全部</button>
@@ -276,9 +279,14 @@
       </div>
     </div>
     
-    <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
-    <button class="btn btn-secondary" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()">隱藏單位</button>
-    <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
+    <!-- 操作按鈕群組（自適應 2 欄排列） -->
+    <div class="action-btn-grid">
+      <button class="btn btn-primary" onclick="searchLocation()">搜尋位置</button>
+      <button class="btn btn-secondary" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()">隱藏單位</button>
+      <button class="btn btn-secondary" onclick="clearDrawings()">清除繪圖</button>
+      <button type="button" class="btn btn-secondary" id="theaterToggleBtn" title="顯示共軍戰區">五大戰區</button>
+      <button type="button" class="btn btn-secondary" id="adizToggleBtn" title="顯示防空識別區">防空識別區</button>
+    </div>
 
     <!-- 底圖圖層選擇 -->
     <div class="input-group" style="margin-top: 16px;">
@@ -330,6 +338,12 @@
   <script src="static/js/unified_dropdown.js" defer></script>
   <!-- Notes System (IndexedDB) -->
   <script src="static/js/notes.js" defer></script>
+  <!-- PLA Theater Commands Layer -->
+  <script src="static/js/pla_theater.js" defer></script>
+  <!-- ADIZ Layer -->
+  <script src="static/js/adiz.js" defer></script>
+  <!-- Submarine Cable Layer -->
+  <script src="static/js/submarine_cable.js" defer></script>
   <!-- PWA -->
   <script src="static/js/pwa.js" defer></script>
   <script src="static/js/main.js" defer></script>

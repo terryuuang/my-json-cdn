@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年04月07日',
+    description: '新增海底電纜圖層（可於公共設施選單開啟）；新增共軍五大戰區與 ADIZ 圖層；操作按鈕改為自適應雙欄排列'
+  },
+  {
     date: '2026年04月06日',
     description: '優化 shape popup 版面；保留禁航區 popup 的 KML 與網址複製功能；調整 OSM 載入體驗，新增勾選項狀態回饋、查詢中提示與 Overpass 重試/備援節點'
   },
@@ -871,7 +875,12 @@ try {
     hideLoading();
     
     // 延後初始化繪圖工具（不影響地圖資料顯示）
-    requestAnimationFrame(() => setupMapTools());
+    requestAnimationFrame(() => {
+      setupMapTools();
+      if (window.PLATheater) window.PLATheater.init(map);
+      if (window.ADIZ) window.ADIZ.init(map);
+      if (window.SubmarineCable) window.SubmarineCable.init(map);
+    });
     
     const endTime = performance.now();
     const loadTime = ((endTime - startTime) / 1000).toFixed(2);
