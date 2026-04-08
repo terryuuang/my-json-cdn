@@ -3756,6 +3756,27 @@ select.input-field:hover {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.45);
 }
 
+/* 移除 Leaflet 形狀點擊時的瀏覽器預設 focus 邊框 */
+.leaflet-interactive:focus {
+  outline: none;
+}
+
+/* 形狀 hover tooltip */
+.shape-hover-tooltip {
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: 6px;
+  color: #f1f5f9;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+.shape-hover-tooltip::before {
+  border-top-color: rgba(239, 68, 68, 0.6) !important;
+}
+
 /* 深色模式 */
 @media (prefers-color-scheme: dark) {
   .layer-toggle-btn {
