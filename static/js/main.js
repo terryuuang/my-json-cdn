@@ -10,6 +10,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年04月08日',
+    description: '增強筆記系統，新增筆記圖層顯示/隱藏與單筆可見性控制；多圖形 URL shape 支援整組儲存；優化筆記對話框與列表介面，並加入 Cloudflare Web Analytics'
+  },
+  {
+    date: '2026年04月08日',
     description: '新增禁航區面積、邊界長度計算功能'
   },
   {
@@ -446,6 +450,34 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     return `<button class="link-btn shape-copy-url-btn" onclick="copyCurrentUrl()">複製網址</button>`;
   };
 
+  const multiShapeNoteConfig = (() => {
+    if (shapeSpec.shape !== 'multi' || !Array.isArray(shapeSpec.shapes) || shapeSpec.shapes.length <= 1) {
+      return null;
+    }
+    const groupItems = shapeSpec.shapes
+      .map(shape => {
+        const exportData = window.shapeUtils.shapeToExportData(shape, shapeSpec.text);
+        if (!exportData || !exportData.geometry) return null;
+        return {
+          name: exportData.name,
+          geometry: exportData.geometry
+        };
+      })
+      .filter(Boolean);
+    if (groupItems.length <= 1) return null;
+
+    const groupText = window.shapeUtils.parseShapeDisplayText(shapeSpec.text || 'APEINTEL Shapes', '圖形');
+    return {
+      groupGeometry: {
+        type: 'GeometryCollection',
+        geometries: groupItems.map(item => item.geometry)
+      },
+      groupShapeCount: groupItems.length,
+      groupTitle: groupText.title || shapeSpec.text || '整組圖形',
+      groupItems
+    };
+  })();
+
   // 輔助函數：建立含筆記功能的 popup 內容（跟軍事設施彈窗樣式一致）
   // geometry 格式依類型：
   // - Point: { type: 'Point', coordinates: [lng, lat] }
@@ -514,7 +546,11 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
         title: parsedText.title,
         text: parsedText.noteText,
         shapeInfo: shapeInfo,
-        geometry: geometry
+        geometry: geometry,
+        groupGeometry: multiShapeNoteConfig?.groupGeometry || null,
+        groupShapeCount: multiShapeNoteConfig?.groupShapeCount || 0,
+        groupTitle: multiShapeNoteConfig?.groupTitle || parsedText.title,
+        groupItems: multiShapeNoteConfig?.groupItems || []
       }));
     }
 

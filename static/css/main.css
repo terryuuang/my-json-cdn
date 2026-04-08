@@ -2899,6 +2899,12 @@ select.input-field:hover {
   box-shadow: none !important;
 }
 
+.notes-control-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .notes-control-btn {
   display: flex !important;
   align-items: center;
@@ -2912,6 +2918,11 @@ select.input-field:hover {
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
   transition: all 0.2s ease !important;
+}
+
+.notes-control-btn.is-off {
+  color: #64748b !important;
+  background: rgba(255, 255, 255, 0.95) !important;
 }
 
 .notes-control-btn svg {
@@ -2964,7 +2975,7 @@ select.input-field:hover {
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
-  max-width: 420px;
+  max-width: 560px;
   max-height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
@@ -2991,24 +3002,25 @@ select.input-field:hover {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
 }
 
 .note-dialog-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: #0f172a;
 }
 
 .note-dialog-close {
   width: 32px;
   height: 32px;
-  border: none;
-  background: #f3f4f6;
+  border: 1px solid #dbe2ea;
+  background: #f8fafc;
   border-radius: 50%;
   font-size: 20px;
-  color: #6b7280;
+  color: #475569;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3017,16 +3029,17 @@ select.input-field:hover {
 }
 
 .note-dialog-close:hover {
-  background: #e5e7eb;
-  color: #1e293b;
+  background: #eef2f7;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
 .note-dialog-toolbar {
   display: flex;
   gap: 8px;
   padding: 12px 20px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
   flex-wrap: wrap;
 }
 
@@ -3034,16 +3047,23 @@ select.input-field:hover {
   padding: 20px;
   overflow-y: auto;
   flex: 1;
+  background: #ffffff;
 }
 
 .note-dialog-feature {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  padding: 10px 14px;
-  border-radius: 8px;
+  background: #f8fafc;
+  padding: 12px 14px;
+  border-radius: 12px;
   margin-bottom: 16px;
   font-size: 14px;
-  color: #92400e;
-  border-left: 4px solid #f59e0b;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.note-dialog-feature-shape {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #9a3412;
 }
 
 .note-input-group {
@@ -3054,36 +3074,36 @@ select.input-field:hover {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: #334155;
   margin-bottom: 6px;
 }
 
 .note-input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   font-size: 15px;
-  color: #1e293b;
-  background: white;
+  color: #0f172a;
+  background: #ffffff;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .note-input:focus {
   outline: none;
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .note-textarea {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   font-size: 15px;
-  color: #1e293b;
-  background: white;
+  color: #0f172a;
+  background: #ffffff;
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
@@ -3093,31 +3113,32 @@ select.input-field:hover {
 
 .note-textarea:focus {
   outline: none;
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .note-dialog-info {
   font-size: 12px;
-  color: #9ca3af;
+  color: #64748b;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .note-dialog-footer {
   display: flex;
   gap: 10px;
   padding: 16px 20px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
   border-radius: 0 0 16px 16px;
 }
 
 /* 筆記按鈕 */
 .note-btn {
   padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -3134,28 +3155,38 @@ select.input-field:hover {
 }
 
 .note-btn-primary {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
   flex: 1;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  box-shadow: none;
 }
 
 .note-btn-primary:hover {
-  background: linear-gradient(135deg, #d97706, #b45309);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.note-btn-primary-shape {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.note-btn-primary-shape:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .note-btn-secondary {
-  background: white;
-  color: #475569;
-  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
   flex: 1;
 }
 
 .note-btn-secondary:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .note-btn-secondary:disabled {
@@ -3164,28 +3195,27 @@ select.input-field:hover {
 }
 
 .note-btn-danger {
-  background: #fef2f2;
-  color: #dc2626;
+  background: #ffffff;
+  color: #b91c1c;
   border: 1px solid #fecaca;
 }
 
 .note-btn-danger:hover {
-  background: #fee2e2;
+  background: #fef2f2;
   border-color: #fca5a5;
 }
 
 /* 雲端同步按鈕 */
 .note-btn-cloud {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border: none;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: none;
 }
 
 .note-btn-cloud:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 /* 筆記列表 */
@@ -3214,16 +3244,16 @@ select.input-field:hover {
   align-items: flex-start;
   gap: 12px;
   padding: 14px;
-  background: #f9fafb;
-  border-radius: 10px;
+  background: #ffffff;
+  border-radius: 12px;
   margin-bottom: 10px;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
+  border: 1px solid #e2e8f0;
 }
 
 .notes-list-item:hover {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 .notes-list-item:last-child {
@@ -3238,9 +3268,10 @@ select.input-field:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e5e7eb;
-  color: #374151;
-  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
 }
 
 .notes-list-item-content {
@@ -3250,7 +3281,7 @@ select.input-field:hover {
 
 .notes-list-item-title {
   font-weight: 600;
-  color: #1e293b;
+  color: #0f172a;
   font-size: 14px;
   margin-bottom: 4px;
   white-space: nowrap;
@@ -3260,7 +3291,7 @@ select.input-field:hover {
 
 .notes-list-item-preview {
   font-size: 13px;
-  color: #64748b;
+  color: #475569;
   margin-bottom: 6px;
   line-height: 1.4;
   display: -webkit-box;
@@ -3273,8 +3304,27 @@ select.input-field:hover {
   display: flex;
   gap: 10px;
   font-size: 11px;
-  color: #9ca3af;
+  color: #64748b;
   flex-wrap: wrap;
+}
+
+.notes-list-item-visibility {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.notes-list-item-visibility.is-visible {
+  background: #ecfeff;
+  color: #0f766e;
+}
+
+.notes-list-item-visibility.is-hidden {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .notes-list-item-actions {
@@ -3282,6 +3332,127 @@ select.input-field:hover {
   gap: 6px;
   flex-shrink: 0;
   align-items: center;
+}
+
+.note-dialog-info-block {
+  margin-bottom: 14px;
+}
+
+.note-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.note-choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.note-choice-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.note-choice-card:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.note-choice-card.is-selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.note-choice-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.note-choice-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.note-geometry-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.note-geometry-summary {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.note-geometry-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.note-geometry-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.note-geometry-item.is-selected {
+  border-color: #0891b2;
+  background: #ecfeff;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.14);
+}
+
+.note-geometry-checkbox {
+  margin-top: 2px;
+  accent-color: #0891b2;
+}
+
+.note-geometry-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.note-geometry-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.note-geometry-item-type {
+  font-size: 12px;
+  color: #475569;
+}
+
+.note-choice-card.is-selected .note-choice-title {
+  color: #1d4ed8;
+}
+
+.note-choice-card.is-selected .note-choice-desc {
+  color: #1e40af;
 }
 
 /* 筆記列表圖標按鈕 */
@@ -3292,18 +3463,18 @@ select.input-field:hover {
   width: 28px;
   height: 28px;
   padding: 0;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border: 1px solid #dbe2ea;
   border-radius: 6px;
-  color: #64748b;
+  color: #475569;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .note-icon-btn:hover {
-  background: #e5e7eb;
-  color: #374151;
-  border-color: #d1d5db;
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
 }
 
 .note-icon-btn:active {
@@ -3321,26 +3492,198 @@ select.input-field:hover {
 }
 
 @media (prefers-color-scheme: dark) {
+  .note-dialog-header {
+    background: #ffffff;
+    border-bottom-color: #e2e8f0;
+  }
+
+  .note-dialog-header h3 {
+    color: #0f172a;
+  }
+
+  .note-dialog-toolbar,
+  .note-dialog-footer {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+
+  .note-dialog-body {
+    background: #ffffff;
+  }
+
+  .note-dialog-feature {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+  }
+
+  .note-dialog-feature-shape {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #9a3412;
+  }
+
+  .note-input,
+  .note-textarea {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  .note-input:focus,
+  .note-textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .note-input-group label,
+  .note-dialog-info {
+    color: #64748b;
+  }
+
+  .note-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
+  .note-btn-primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+
+  .note-btn-secondary {
+    background: #ffffff;
+    color: #334155;
+    border-color: #cbd5e1;
+  }
+
+  .note-btn-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  .note-btn-danger {
+    background: #ffffff;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+
+  .note-btn-danger:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+  }
+
+  .notes-list-item {
+    background: #ffffff;
+    border-color: #e2e8f0;
+  }
+
+  .notes-list-item:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .notes-list-item-type {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+  }
+
+  .notes-list-item-title {
+    color: #0f172a;
+  }
+
+  .notes-list-item-preview,
+  .notes-list-item-meta {
+    color: #64748b;
+  }
+
   .note-icon-btn {
-    background: #374151;
-    border-color: #4b5563;
-    color: #9ca3af;
+    background: #ffffff;
+    border-color: #dbe2ea;
+    color: #475569;
   }
   
   .note-icon-btn:hover {
-    background: #4b5563;
-    color: #e5e7eb;
-    border-color: #6b7280;
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #94a3b8;
   }
   
   .note-icon-btn-danger {
-    color: #f87171;
+    color: #ef4444;
   }
   
   .note-icon-btn-danger:hover {
-    background: #450a0a;
-    border-color: #7f1d1d;
-    color: #fca5a5;
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+  }
+
+  .notes-list-item-visibility.is-visible {
+    background: rgba(8, 145, 178, 0.2);
+    color: #67e8f9;
+  }
+
+  .notes-list-item-visibility.is-hidden {
+    background: rgba(100, 116, 139, 0.3);
+    color: #cbd5e1;
+  }
+
+  .note-choice-card {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .note-choice-card:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  .note-choice-card.is-selected {
+    background: #eff6ff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .note-choice-title {
+    color: #0f172a;
+  }
+
+  .note-choice-desc {
+    color: #475569;
+  }
+
+  .note-choice-card.is-selected .note-choice-title {
+    color: #1d4ed8;
+  }
+
+  .note-choice-card.is-selected .note-choice-desc {
+    color: #1e40af;
+  }
+
+  .note-geometry-summary {
+    color: #64748b;
+  }
+
+  .note-geometry-item {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .note-geometry-item.is-selected {
+    background: #ecfeff;
+    border-color: #0891b2;
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.14);
+  }
+
+  .note-geometry-item-title {
+    color: #0f172a;
+  }
+
+  .note-geometry-item-type {
+    color: #475569;
   }
 }
 
@@ -3359,7 +3702,7 @@ select.input-field:hover {
 
 /* 筆記 Popup 樣式 */
 .note-popup .leaflet-popup-content-wrapper {
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid #2563eb;
 }
 
 .note-popup-content {
@@ -3372,16 +3715,17 @@ select.input-field:hover {
   justify-content: space-between;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .note-type-badge {
   font-size: 12px;
-  color: #92400e;
-  background: #fef3c7;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: 999px;
+  font-weight: 600;
 }
 
 .note-popup-actions {
@@ -3392,13 +3736,14 @@ select.input-field:hover {
 .note-popup-actions .note-btn {
   padding: 4px 8px;
   font-size: 12px;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  color: #475569;
+  background: #ffffff;
+  border: 1px solid #dbe2ea;
+  color: #334155;
 }
 
 .note-popup-actions .note-btn:hover {
-  background: #e5e7eb;
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .note-popup-actions .note-btn-delete:hover {
@@ -3411,21 +3756,22 @@ select.input-field:hover {
   margin: 0 0 8px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: #0f172a;
 }
 
 .note-feature-name {
   font-size: 12px;
-  color: #64748b;
+  color: #475569;
   margin-bottom: 10px;
   padding: 6px 10px;
-  background: #f1f5f9;
-  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
 .note-popup-body {
   font-size: 14px;
-  color: #475569;
+  color: #334155;
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
@@ -3437,9 +3783,9 @@ select.input-field:hover {
   flex-wrap: wrap;
   gap: 10px;
   font-size: 11px;
-  color: #9ca3af;
+  color: #64748b;
   padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #e2e8f0;
 }
 
 /* 筆記 Toast */
@@ -3527,6 +3873,14 @@ select.input-field:hover {
   .note-icon-btn {
     width: 32px;
     height: 32px;
+  }
+
+  .note-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .note-geometry-list {
+    grid-template-columns: 1fr;
   }
 
   .note-toast {

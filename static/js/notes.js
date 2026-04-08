@@ -10,8 +10,12 @@
 const DB_NAME = 'ApeintelAtlasNotes';
 const DB_VERSION = 1;
 const STORE_NAME = 'notes';
+const NOTES_LAYER_VISIBILITY_KEY = 'apeintel_notes_layer_visible';
 
 let notesDB = null;
+let notesLayerGroup = null;
+let notesLayerVisible = true;
+let notesVisibilityControlBtn = null;
 
 // ============================================
 // 初始化 IndexedDB
@@ -70,8 +74,9 @@ async function createNote(noteData) {
     content: noteData.content || '',
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    isVisible: noteData.isVisible !== false,
     // 幾何資料（用於繪製圖形）
-    // 支援: Point, LineString, Polygon, Circle, Sector, Rectangle
+    // 支援: Point, LineString, Polygon, Circle, Sector, Rectangle, GeometryCollection
     geometry: noteData.geometry || null,
     // 額外資料（用於繪圖資訊等）
     metadata: noteData.metadata || {}
@@ -209,11 +214,6 @@ async function clearAllNotes() {
   });
 }
 
-// ============================================
-// 地圖圖層管理
-// ============================================
-let notesLayerGroup = null;
-
 // 建立筆記圖標
 function createNoteIcon() {
   return L.divIcon({
@@ -242,10 +242,12 @@ async function refreshNotesLayer() {
   if (!notesLayerGroup) return;
   
   notesLayerGroup.clearLayers();
+  if (!notesLayerVisible) return;
+
   const notes = await getAllNotes();
   
   notes.forEach(note => {
-    if (note.lat && note.lng) {
+    if (Number.isFinite(note.lat) && Number.isFinite(note.lng) && note.isVisible !== false) {
       // 根據幾何類型繪製不同圖形
       const layers = createNoteGeometryLayers(note);
       
@@ -261,111 +263,132 @@ async function refreshNotesLayer() {
   });
 }
 
-// 根據筆記的幾何資料建立圖層
-function createNoteGeometryLayers(note) {
+function buildGeometryLayers(geometry, note, options = {}) {
+  const { includeMarker = true } = options;
   const layers = [];
-  const geometry = note.geometry;
-  
-  // 筆記圖形樣式（藍綠色系，與 shape 模式的紅色區分）
+  if (!geometry || !geometry.type) return layers;
+
   const noteStyle = {
-    color: '#0891b2',      // cyan-600
+    color: '#0891b2',
     weight: 3,
-    fillColor: '#06b6d4',  // cyan-500
+    fillColor: '#06b6d4',
     fillOpacity: 0.15,
-    dashArray: '5, 5'      // 虛線表示是筆記
+    dashArray: '5, 5'
   };
-  
-  // 如果有幾何資料，根據類型繪製
-  if (geometry && geometry.type) {
-    switch (geometry.type) {
-      case 'Point':
-        // 單點：使用筆記圖標
+
+  switch (geometry.type) {
+    case 'Point':
+      if (includeMarker) {
         layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
-        break;
-        
-      case 'LineString':
-        // 線段
-        if (geometry.coordinates && geometry.coordinates.length >= 2) {
-          const latlngs = geometry.coordinates.map(c => [c[1], c[0]]); // [lng, lat] -> [lat, lng]
-          const polyline = L.polyline(latlngs, { ...noteStyle, fillOpacity: 0 });
-          layers.push(polyline);
-          // 在中心點加上筆記圖標
-          const center = polyline.getBounds().getCenter();
-          layers.push(L.marker(center, { icon: createNoteIcon() }));
+      } else if (Array.isArray(geometry.coordinates) && geometry.coordinates.length >= 2) {
+        layers.push(L.circleMarker([geometry.coordinates[1], geometry.coordinates[0]], {
+          color: noteStyle.color,
+          weight: 2,
+          radius: 5,
+          fillColor: noteStyle.fillColor,
+          fillOpacity: 0.8
+        }));
+      }
+      break;
+
+    case 'LineString':
+      if (geometry.coordinates && geometry.coordinates.length >= 2) {
+        const latlngs = geometry.coordinates.map(c => [c[1], c[0]]);
+        const polyline = L.polyline(latlngs, { ...noteStyle, fillOpacity: 0 });
+        layers.push(polyline);
+        if (includeMarker) {
+          layers.push(L.marker(polyline.getBounds().getCenter(), { icon: createNoteIcon() }));
         }
-        break;
-        
-      case 'Polygon':
-        // 多邊形
-        if (geometry.coordinates && geometry.coordinates.length >= 3) {
-          const latlngs = geometry.coordinates.map(c => [c[1], c[0]]);
-          const polygon = L.polygon(latlngs, noteStyle);
-          layers.push(polygon);
-          // 在中心點加上筆記圖標
-          const center = polygon.getBounds().getCenter();
-          layers.push(L.marker(center, { icon: createNoteIcon() }));
+      }
+      break;
+
+    case 'Polygon':
+      if (geometry.coordinates && geometry.coordinates.length >= 3) {
+        const latlngs = geometry.coordinates.map(c => [c[1], c[0]]);
+        const polygon = L.polygon(latlngs, noteStyle);
+        layers.push(polygon);
+        if (includeMarker) {
+          layers.push(L.marker(polygon.getBounds().getCenter(), { icon: createNoteIcon() }));
         }
-        break;
-        
-      case 'Circle':
-        // 圓形
-        if (geometry.center && Number.isFinite(geometry.radiusKm)) {
-          const circle = L.circle(
-            [geometry.center[1], geometry.center[0]], 
-            { ...noteStyle, radius: geometry.radiusKm * 1000 }
-          );
-          layers.push(circle);
-          // 在中心點加上筆記圖標
+      }
+      break;
+
+    case 'Circle':
+      if (geometry.center && Number.isFinite(geometry.radiusKm)) {
+        const circle = L.circle(
+          [geometry.center[1], geometry.center[0]],
+          { ...noteStyle, radius: geometry.radiusKm * 1000 }
+        );
+        layers.push(circle);
+        if (includeMarker) {
           layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
         }
-        break;
-        
-      case 'Sector':
-        // 扇形
-        if (geometry.center && Number.isFinite(geometry.radiusKm) && 
-            Number.isFinite(geometry.startDeg) && Number.isFinite(geometry.endDeg)) {
-          // 使用 shapeUtils 建立扇形座標
-          if (window.shapeUtils && window.shapeUtils.buildSectorLatLngs) {
-            const centerObj = { lat: geometry.center[1], lng: geometry.center[0] };
-            const sectorLatLngs = window.shapeUtils.buildSectorLatLngs(
-              centerObj, geometry.radiusKm, geometry.startDeg, geometry.endDeg
-            );
-            const sector = L.polygon(sectorLatLngs, noteStyle);
-            layers.push(sector);
-            // 在中心點加上筆記圖標
-            layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
-          }
+      }
+      break;
+
+    case 'Sector':
+      if (geometry.center && Number.isFinite(geometry.radiusKm) &&
+          Number.isFinite(geometry.startDeg) && Number.isFinite(geometry.endDeg) &&
+          window.shapeUtils && window.shapeUtils.buildSectorLatLngs) {
+        const centerObj = { lat: geometry.center[1], lng: geometry.center[0] };
+        const sectorLatLngs = window.shapeUtils.buildSectorLatLngs(
+          centerObj, geometry.radiusKm, geometry.startDeg, geometry.endDeg
+        );
+        const sector = L.polygon(sectorLatLngs, noteStyle);
+        layers.push(sector);
+        if (includeMarker) {
+          layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
         }
-        break;
-        
-      case 'Rectangle':
-        // 矩形 (BBox)
-        if (geometry.bounds) {
-          const { west, south, east, north } = geometry.bounds;
-          const rectLatLngs = [
-            [south, west],
-            [south, east],
-            [north, east],
-            [north, west]
-          ];
-          const rectangle = L.polygon(rectLatLngs, noteStyle);
-          layers.push(rectangle);
-          // 在中心點加上筆記圖標
-          const center = rectangle.getBounds().getCenter();
-          layers.push(L.marker(center, { icon: createNoteIcon() }));
+      }
+      break;
+
+    case 'Rectangle':
+      if (geometry.bounds) {
+        const { west, south, east, north } = geometry.bounds;
+        const rectLatLngs = [
+          [south, west],
+          [south, east],
+          [north, east],
+          [north, west]
+        ];
+        const rectangle = L.polygon(rectLatLngs, noteStyle);
+        layers.push(rectangle);
+        if (includeMarker) {
+          layers.push(L.marker(rectangle.getBounds().getCenter(), { icon: createNoteIcon() }));
         }
-        break;
-        
-      default:
-        // 未知類型，fallback 到單點
+      }
+      break;
+
+    case 'GeometryCollection':
+      if (Array.isArray(geometry.geometries)) {
+        const visibleIndexes = Array.isArray(note.metadata?.visibleGeometryIndexes)
+          ? new Set(note.metadata.visibleGeometryIndexes)
+          : null;
+        geometry.geometries.forEach((item, index) => {
+          if (visibleIndexes && !visibleIndexes.has(index)) return;
+          layers.push(...buildGeometryLayers(item, note, { includeMarker: false }));
+        });
+        if (includeMarker) {
+          layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+        }
+      }
+      break;
+
+    default:
+      if (includeMarker) {
         layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
-    }
-  } else {
-    // 沒有幾何資料，使用預設的單點標記
-    layers.push(L.marker([note.lat, note.lng], { icon: createNoteIcon() }));
+      }
   }
-  
+
   return layers;
+}
+
+// 根據筆記的幾何資料建立圖層
+function createNoteGeometryLayers(note) {
+  const geometry = note.geometry;
+  return (geometry && geometry.type)
+    ? buildGeometryLayers(geometry, note)
+    : [L.marker([note.lat, note.lng], { icon: createNoteIcon() })];
 }
 
 // 建立筆記 Popup 內容
@@ -392,6 +415,7 @@ function createNotePopupContent(note) {
       <div class="note-popup-body">${escapeHtml(note.content) || '（無內容）'}</div>
       <div class="note-popup-meta">
         <span>${date}</span>
+        <span>${note.isVisible === false ? '已隱藏' : '顯示中'}</span>
         <span>${note.lat.toFixed(5)}, ${note.lng.toFixed(5)}</span>
       </div>
     </div>
@@ -404,6 +428,64 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function buildGeometryTypeLabel(type) {
+  return {
+    Point: '點標記',
+    LineString: '線段',
+    Polygon: '多邊形',
+    Circle: '圓形',
+    Sector: '扇形',
+    Rectangle: '矩形',
+    GeometryCollection: '群組圖形'
+  }[type] || type || '圖形';
+}
+
+function getGeometryVisibilityState(geometry, metadata = {}) {
+  if (!geometry || geometry.type !== 'GeometryCollection' || !Array.isArray(geometry.geometries)) {
+    return null;
+  }
+
+  const items = Array.isArray(metadata.groupItems) ? metadata.groupItems : [];
+  const selected = Array.isArray(metadata.visibleGeometryIndexes)
+    ? metadata.visibleGeometryIndexes.filter(index => Number.isInteger(index) && index >= 0 && index < geometry.geometries.length)
+    : geometry.geometries.map((_, index) => index);
+
+  return geometry.geometries.map((item, index) => ({
+    index,
+    checked: selected.includes(index),
+    label: items[index]?.name || `${buildGeometryTypeLabel(item.type)} ${index + 1}`,
+    typeLabel: buildGeometryTypeLabel(item.type)
+  }));
+}
+
+function buildGeometryVisibilityEditor(geometry, metadata = {}) {
+  const states = getGeometryVisibilityState(geometry, metadata);
+  if (!states) return '';
+
+  const selectedCount = states.filter(item => item.checked).length;
+  const itemsHtml = states.map(item => `
+    <label class="note-geometry-item ${item.checked ? 'is-selected' : ''}">
+      <input type="checkbox" class="note-geometry-checkbox" value="${item.index}" ${item.checked ? 'checked' : ''} onchange="handleGeometryVisibilityChange()">
+      <span class="note-geometry-item-main">
+        <span class="note-geometry-item-title">${escapeHtml(item.label)}</span>
+        <span class="note-geometry-item-type">${escapeHtml(item.typeLabel)}</span>
+      </span>
+    </label>
+  `).join('');
+
+  return `
+    <div class="note-input-group">
+      <label>顯示哪些圖形</label>
+      <div class="note-geometry-toolbar">
+        <button type="button" class="note-btn note-btn-secondary note-btn-sm" onclick="setAllGeometryVisibility(true)">全部顯示</button>
+        <button type="button" class="note-btn note-btn-secondary note-btn-sm" onclick="setAllGeometryVisibility(false)">全部隱藏</button>
+        <span class="note-geometry-summary" id="noteGeometrySummary">${selectedCount} / ${states.length} 已顯示</span>
+      </div>
+      <div class="note-geometry-list">${itemsHtml}</div>
+    </div>
+  `;
 }
 
 // ============================================
@@ -442,16 +524,9 @@ async function showNoteDialog(options = {}) {
   const finalGeometry = existingNote?.geometry || geometry;
   let geometryInfoHtml = '';
   if (finalGeometry && finalGeometry.type) {
-    const typeLabels = {
-      'Point': '點標記',
-      'LineString': '線段',
-      'Polygon': '多邊形',
-      'Circle': '圓形',
-      'Sector': '扇形',
-      'Rectangle': '矩形'
-    };
-    geometryInfoHtml = `<span style="color:#0891b2;margin-left:8px;">📐 ${typeLabels[finalGeometry.type] || finalGeometry.type}</span>`;
+    geometryInfoHtml = `<span style="color:#0891b2;margin-left:8px;">幾何: ${buildGeometryTypeLabel(finalGeometry.type)}</span>`;
   }
+  const geometryVisibilityHtml = buildGeometryVisibilityEditor(finalGeometry, existingNote?.metadata || metadata);
 
   // 建立對話框
   const dialog = document.createElement('div');
@@ -473,8 +548,9 @@ async function showNoteDialog(options = {}) {
           <label for="noteContent">內容</label>
           <textarea id="noteContent" class="note-textarea" placeholder="輸入筆記內容..." rows="6" maxlength="2000">${escapeHtml(content)}</textarea>
         </div>
+        ${geometryVisibilityHtml}
         <div class="note-dialog-info">
-          ${lat && lng ? `<span>座標：${lat.toFixed(5)}, ${lng.toFixed(5)}</span>` : ''}
+          ${Number.isFinite(lat) && Number.isFinite(lng) ? `<span>座標：${lat.toFixed(5)}, ${lng.toFixed(5)}</span>` : ''}
         </div>
       </div>
       <div class="note-dialog-footer">
@@ -527,10 +603,17 @@ async function saveNoteFromDialog() {
 
   const mode = dialog.dataset.mode;
   const noteId = dialog.dataset.noteId;
+  const metadata = JSON.parse(dialog.dataset.metadata || '{}');
+  const geometry = JSON.parse(dialog.dataset.geometry || 'null');
+  if (geometry?.type === 'GeometryCollection' && Array.isArray(geometry.geometries)) {
+    metadata.visibleGeometryIndexes = Array.from(document.querySelectorAll('.note-geometry-checkbox:checked'))
+      .map(input => parseInt(input.value, 10))
+      .filter(Number.isInteger);
+  }
 
   try {
     if (mode === 'edit' && noteId) {
-      await updateNote(noteId, { title, content });
+      await updateNote(noteId, { title, content, metadata });
       showNoteToast('筆記已更新');
     } else {
       const lat = parseFloat(dialog.dataset.lat);
@@ -551,8 +634,8 @@ async function saveNoteFromDialog() {
         title,
         content,
         // 儲存完整的幾何資料
-        geometry: JSON.parse(dialog.dataset.geometry || 'null'),
-        metadata: JSON.parse(dialog.dataset.metadata || '{}')
+        geometry,
+        metadata
       });
       showNoteToast('筆記已儲存');
     }
@@ -611,6 +694,7 @@ function confirmDeleteNote(noteId) {
 
 // 顯示所有筆記列表
 async function showNotesListDialog() {
+  closeNotesListDialog();
   const notes = await getAllNotes();
   
   // 依更新時間排序（最新在前）
@@ -629,6 +713,11 @@ async function showNotesListDialog() {
           'drawing': '繪圖',
           'custom': '筆記'
         }[note.type] || '筆記';
+        const visibilityLabel = note.isVisible === false ? '隱藏' : '顯示';
+        const visibilityTitle = note.isVisible === false ? '顯示筆記圖層' : '隱藏筆記圖層';
+        const visibilityIcon = note.isVisible === false
+          ? `<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>`
+          : `<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>`;
         
         return `
           <div class="notes-list-item" data-note-id="${note.id}">
@@ -638,10 +727,16 @@ async function showNotesListDialog() {
               <div class="notes-list-item-preview">${escapeHtml(note.content?.substring(0, 50)) || '（無內容）'}${note.content?.length > 50 ? '...' : ''}</div>
               <div class="notes-list-item-meta">
                 ${note.featureName ? `<span>${escapeHtml(note.featureName)}</span>` : ''}
+                <span class="notes-list-item-visibility ${note.isVisible === false ? 'is-hidden' : 'is-visible'}">${visibilityLabel}</span>
                 <span>${date}</span>
               </div>
             </div>
             <div class="notes-list-item-actions">
+              <button class="note-icon-btn" onclick="toggleNoteVisibility('${note.id}')" title="${visibilityTitle}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  ${visibilityIcon}
+                </svg>
+              </button>
               <button class="note-icon-btn" onclick="flyToNote('${note.id}')" title="前往位置">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -673,6 +768,12 @@ async function showNotesListDialog() {
         <button class="note-dialog-close" onclick="closeNotesListDialog()">&times;</button>
       </div>
       <div class="note-dialog-toolbar">
+        <button class="note-btn note-btn-secondary" onclick="toggleAllNotesVisibility(true)" ${notes.length === 0 ? 'disabled' : ''}>
+          顯示全部
+        </button>
+        <button class="note-btn note-btn-secondary" onclick="toggleAllNotesVisibility(false)" ${notes.length === 0 ? 'disabled' : ''}>
+          全部隱藏
+        </button>
         <button class="note-btn note-btn-secondary" onclick="exportNotes()" ${notes.length === 0 ? 'disabled' : ''}>
           匯出
         </button>
@@ -705,8 +806,16 @@ function closeNotesListDialog() {
 
 // 飛到筆記位置
 async function flyToNote(noteId) {
-  const note = await getNote(noteId);
+  let note = await getNote(noteId);
   if (!note || !window.map) return;
+
+  if (note.isVisible === false) {
+    await updateNote(noteId, { isVisible: true });
+    note = await getNote(noteId);
+  }
+  if (!notesLayerVisible) {
+    setNotesLayerVisibility(true, { silent: true });
+  }
 
   closeNotesListDialog();
   
@@ -724,6 +833,28 @@ async function flyToNote(noteId) {
       });
     }
   }, 1200);
+}
+
+async function toggleNoteVisibility(noteId) {
+  const note = await getNote(noteId);
+  if (!note) return;
+  await updateNote(noteId, { isVisible: note.isVisible === false });
+  const listDialog = document.getElementById('notes-list-dialog');
+  if (listDialog) {
+    closeNotesListDialog();
+    showNotesListDialog();
+  }
+}
+
+async function toggleAllNotesVisibility(isVisible) {
+  const notes = await getAllNotes();
+  await Promise.all(notes.map(note => updateNote(note.id, { isVisible })));
+  const listDialog = document.getElementById('notes-list-dialog');
+  if (listDialog) {
+    closeNotesListDialog();
+    showNotesListDialog();
+  }
+  showNoteToast(isVisible ? '已顯示所有筆記' : '已隱藏所有筆記');
 }
 
 // 確認清除所有筆記
@@ -929,27 +1060,38 @@ function addNotesControlToMap(map) {
     },
     
     onAdd: function() {
-      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control notes-control');
+      const container = L.DomUtil.create('div', 'leaflet-control notes-control');
+      const stack = L.DomUtil.create('div', 'notes-control-stack', container);
       
-      const btn = L.DomUtil.create('a', 'notes-control-btn', container);
-      btn.href = '#';
-      btn.title = '筆記列表';
-      // 使用 SVG ICON 而非 EMOJI
-      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      const listBtn = L.DomUtil.create('a', 'notes-control-btn', stack);
+      listBtn.href = '#';
+      listBtn.title = '筆記列表';
+      listBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
         <polyline points="14,2 14,8 20,8"/>
         <line x1="16" y1="13" x2="8" y2="13"/>
         <line x1="16" y1="17" x2="8" y2="17"/>
         <line x1="10" y1="9" x2="8" y2="9"/>
       </svg>`;
-      btn.setAttribute('role', 'button');
-      btn.setAttribute('aria-label', '開啟筆記列表');
+      listBtn.setAttribute('role', 'button');
+      listBtn.setAttribute('aria-label', '開啟筆記列表');
+
+      notesVisibilityControlBtn = L.DomUtil.create('a', 'notes-control-btn notes-visibility-btn', stack);
+      notesVisibilityControlBtn.href = '#';
+      notesVisibilityControlBtn.setAttribute('role', 'button');
       
-      L.DomEvent.disableClickPropagation(btn);
-      L.DomEvent.on(btn, 'click', function(e) {
+      L.DomEvent.disableClickPropagation(listBtn);
+      L.DomEvent.disableClickPropagation(notesVisibilityControlBtn);
+      L.DomEvent.on(listBtn, 'click', function(e) {
         L.DomEvent.preventDefault(e);
         showNotesListDialog();
       });
+      L.DomEvent.on(notesVisibilityControlBtn, 'click', function(e) {
+        L.DomEvent.preventDefault(e);
+        setNotesLayerVisibility(!notesLayerVisible);
+      });
+
+      updateNotesVisibilityControl();
       
       return container;
     }
@@ -964,6 +1106,7 @@ function addNotesControlToMap(map) {
 async function initNotes(map) {
   try {
     await initNotesDB();
+    notesLayerVisible = localStorage.getItem(NOTES_LAYER_VISIBILITY_KEY) !== '0';
     initNotesLayer(map);
     addNotesControlToMap(map);
   } catch (error) {
@@ -984,7 +1127,19 @@ async function initNotes(map) {
 // - Sector: { type: 'Sector', center: [lng, lat], radiusKm: number, startDeg: number, endDeg: number }
 // - Rectangle: { type: 'Rectangle', bounds: { west, south, east, north } }
 function getShapeNoteButtonHtml(shapeData) {
-  const { shapeType, lat, lng, title, text, shapeInfo, geometry } = shapeData;
+  const {
+    shapeType,
+    lat,
+    lng,
+    title,
+    text,
+    shapeInfo,
+    geometry,
+    groupGeometry = null,
+    groupShapeCount = 0,
+    groupTitle = '',
+    groupItems = []
+  } = shapeData;
   const dataAttrs = `
     data-shape-type="${shapeType}"
     data-lat="${lat}"
@@ -993,6 +1148,10 @@ function getShapeNoteButtonHtml(shapeData) {
     data-text="${encodeURIComponent(text || '')}"
     data-shape-info="${encodeURIComponent(JSON.stringify(shapeInfo || {}))}"
     data-geometry="${encodeURIComponent(JSON.stringify(geometry || null))}"
+    data-group-geometry="${encodeURIComponent(JSON.stringify(groupGeometry || null))}"
+    data-group-shape-count="${groupShapeCount || 0}"
+    data-group-title="${encodeURIComponent(groupTitle || '')}"
+    data-group-items="${encodeURIComponent(JSON.stringify(groupItems || []))}"
   `;
   
   return `<button class="link-btn shape-save-btn" onclick="showShapeSaveDialog(this)" ${dataAttrs}>儲存此圖形</button>`;
@@ -1000,6 +1159,8 @@ function getShapeNoteButtonHtml(shapeData) {
 
 // 顯示 Shape 儲存對話框
 function showShapeSaveDialog(btn) {
+  closeShapeSaveDialog();
+
   const shapeType = btn.dataset.shapeType;
   const lat = parseFloat(btn.dataset.lat);
   const lng = parseFloat(btn.dataset.lng);
@@ -1007,6 +1168,11 @@ function showShapeSaveDialog(btn) {
   const text = decodeURIComponent(btn.dataset.text || '');
   const shapeInfo = JSON.parse(decodeURIComponent(btn.dataset.shapeInfo || '%7B%7D'));
   const geometry = JSON.parse(decodeURIComponent(btn.dataset.geometry || 'null'));
+  const groupGeometry = JSON.parse(decodeURIComponent(btn.dataset.groupGeometry || 'null'));
+  const groupShapeCount = parseInt(btn.dataset.groupShapeCount || '0', 10);
+  const groupTitle = decodeURIComponent(btn.dataset.groupTitle || '');
+  const groupItems = JSON.parse(decodeURIComponent(btn.dataset.groupItems || '[]'));
+  const hasGroupOption = groupGeometry && groupShapeCount > 1;
 
   const shapeTypeLabels = {
     'point': '標記點',
@@ -1028,6 +1194,28 @@ function showShapeSaveDialog(btn) {
     }
   }
 
+  const saveScopeHtml = hasGroupOption ? `
+    <div class="note-input-group">
+      <label>儲存範圍</label>
+      <div class="note-choice-grid">
+        <label class="note-choice-card is-selected">
+          <input type="radio" name="shapeSaveScope" value="group" checked onchange="handleShapeSaveScopeChange(this)">
+          <span class="note-choice-title">整組圖形</span>
+          <span class="note-choice-desc">一次儲存這組圖形的 ${groupShapeCount} 個區塊</span>
+        </label>
+        <label class="note-choice-card">
+          <input type="radio" name="shapeSaveScope" value="single" onchange="handleShapeSaveScopeChange(this)">
+          <span class="note-choice-title">單一圖形</span>
+          <span class="note-choice-desc">只儲存目前點到的這一個 ${typeLabel}</span>
+        </label>
+      </div>
+    </div>
+  ` : '';
+
+  const scopeHintHtml = hasGroupOption
+    ? `<div class="note-dialog-info note-dialog-info-block"><span>此連結包含 ${groupShapeCount} 個圖形，可選擇單存或整組儲存。</span></div>`
+    : '';
+
   const dialog = document.createElement('div');
   dialog.id = 'shape-save-dialog';
   dialog.className = 'note-dialog-overlay';
@@ -1038,7 +1226,7 @@ function showShapeSaveDialog(btn) {
         <button class="note-dialog-close" onclick="closeShapeSaveDialog()">&times;</button>
       </div>
       <div class="note-dialog-body">
-        <div class="note-dialog-feature" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left-color: #ef4444; color: #991b1b;">
+        <div class="note-dialog-feature note-dialog-feature-shape">
           ${typeLabel}
           ${title ? `<br><small>${escapeHtml(title)}</small>` : ''}
           ${shapeInfo.radius ? `<br><small>半徑: ${shapeInfo.radius}</small>` : ''}
@@ -1047,14 +1235,16 @@ function showShapeSaveDialog(btn) {
           ${shapeInfo.angle ? `<br><small>角度: ${shapeInfo.angle}</small>` : ''}
           ${geometryInfoHtml}
         </div>
+        ${saveScopeHtml}
         <div class="note-input-group">
           <label for="shapeNoteName">名稱 <span style="color:#ef4444">*</span></label>
-          <input type="text" id="shapeNoteName" class="note-input" placeholder="輸入圖形名稱（必填）..." value="" maxlength="100" required>
+          <input type="text" id="shapeNoteName" class="note-input" placeholder="輸入圖形名稱（必填）..." value="${escapeHtml(hasGroupOption ? (groupTitle || title) : title)}" maxlength="100" required>
         </div>
         <div class="note-input-group">
           <label for="shapeNoteContent">備註說明</label>
           <textarea id="shapeNoteContent" class="note-textarea" placeholder="輸入備註說明（選填）..." rows="4" maxlength="2000">${escapeHtml(text)}</textarea>
         </div>
+        ${scopeHintHtml}
         <div class="note-dialog-info">
           <span>座標：${lat.toFixed(5)}, ${lng.toFixed(5)}</span>
           <span>${new Date().toLocaleString('zh-TW')}</span>
@@ -1062,7 +1252,7 @@ function showShapeSaveDialog(btn) {
       </div>
       <div class="note-dialog-footer">
         <button class="note-btn note-btn-secondary" onclick="closeShapeSaveDialog()">取消</button>
-        <button class="note-btn note-btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);" onclick="saveShapeNote()">
+        <button class="note-btn note-btn-primary note-btn-primary-shape" onclick="saveShapeNote()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
             <polyline points="17,21 17,13 7,13 7,21"/>
@@ -1080,6 +1270,11 @@ function showShapeSaveDialog(btn) {
   dialog.dataset.lng = lng;
   dialog.dataset.shapeInfo = JSON.stringify(shapeInfo);
   dialog.dataset.geometry = JSON.stringify(geometry);
+  dialog.dataset.groupGeometry = JSON.stringify(groupGeometry);
+  dialog.dataset.groupShapeCount = String(groupShapeCount || 0);
+  dialog.dataset.groupTitle = groupTitle || title || '';
+  dialog.dataset.singleTitle = title || '';
+  dialog.dataset.groupItems = JSON.stringify(groupItems || []);
 
   document.body.appendChild(dialog);
   
@@ -1087,6 +1282,50 @@ function showShapeSaveDialog(btn) {
   setTimeout(() => {
     document.getElementById('shapeNoteName')?.focus();
   }, 100);
+}
+
+function handleShapeSaveScopeChange(input) {
+  const dialog = document.getElementById('shape-save-dialog');
+  if (!dialog || !input) return;
+  document.querySelectorAll('.note-choice-card').forEach(card => {
+    card.classList.toggle('is-selected', card.contains(input));
+  });
+
+  const nameInput = document.getElementById('shapeNoteName');
+  if (!nameInput) return;
+
+  const currentName = nameInput.value.trim();
+  const groupTitle = dialog.dataset.groupTitle || '';
+  const singleTitle = dialog.dataset.singleTitle || '';
+  if (!currentName || currentName === groupTitle || currentName === singleTitle) {
+    nameInput.value = input.value === 'group'
+      ? (groupTitle || singleTitle)
+      : (singleTitle || groupTitle);
+  }
+}
+
+function refreshGeometryVisibilityUi() {
+  const items = document.querySelectorAll('.note-geometry-item');
+  const checked = document.querySelectorAll('.note-geometry-checkbox:checked').length;
+  items.forEach(item => {
+    const input = item.querySelector('.note-geometry-checkbox');
+    item.classList.toggle('is-selected', Boolean(input?.checked));
+  });
+  const summary = document.getElementById('noteGeometrySummary');
+  if (summary) {
+    summary.textContent = `${checked} / ${items.length} 已顯示`;
+  }
+}
+
+function handleGeometryVisibilityChange() {
+  refreshGeometryVisibilityUi();
+}
+
+function setAllGeometryVisibility(isVisible) {
+  document.querySelectorAll('.note-geometry-checkbox').forEach(input => {
+    input.checked = Boolean(isVisible);
+  });
+  refreshGeometryVisibilityUi();
 }
 
 // 關閉 Shape 儲存對話框
@@ -1116,6 +1355,13 @@ async function saveShapeNote() {
   const lng = parseFloat(dialog.dataset.lng);
   const shapeInfo = JSON.parse(dialog.dataset.shapeInfo || '{}');
   const geometry = JSON.parse(dialog.dataset.geometry || 'null');
+  const groupGeometry = JSON.parse(dialog.dataset.groupGeometry || 'null');
+  const groupShapeCount = parseInt(dialog.dataset.groupShapeCount || '0', 10);
+  const groupItems = JSON.parse(dialog.dataset.groupItems || '[]');
+  const saveScope = document.querySelector('input[name="shapeSaveScope"]:checked')?.value || 'single';
+  const useGroupGeometry = saveScope === 'group' && groupGeometry && groupShapeCount > 1;
+  const geometryToSave = useGroupGeometry ? groupGeometry : geometry;
+  const noteLayerName = useGroupGeometry ? `URL Shape Group (${groupShapeCount})` : `URL Shape (${shapeType})`;
 
   try {
     const featureId = `shape_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1124,21 +1370,26 @@ async function saveShapeNote() {
       type: 'drawing',
       featureId: featureId,
       featureName: name,
-      layerName: `URL Shape (${shapeType})`,
       lat: lat,
       lng: lng,
       title: name,
       content: content,
-      // 儲存完整的幾何資料
-      geometry: geometry,
+      geometry: geometryToSave,
       metadata: {
         drawingType: shapeType,
         source: 'url_shape',
+        saveScope: useGroupGeometry ? 'group' : 'single',
+        groupShapeCount: useGroupGeometry ? groupShapeCount : 1,
+        groupItems: useGroupGeometry ? groupItems : [],
+        visibleGeometryIndexes: useGroupGeometry && Array.isArray(groupGeometry?.geometries)
+          ? groupGeometry.geometries.map((_, index) => index)
+          : undefined,
         ...shapeInfo
-      }
+      },
+      layerName: noteLayerName
     });
 
-    showNoteToast('圖形筆記已儲存');
+    showNoteToast(useGroupGeometry ? `已儲存整組圖形 (${groupShapeCount})` : '圖形筆記已儲存');
     closeShapeSaveDialog();
     
     // 關閉地圖 popup
@@ -1148,6 +1399,35 @@ async function saveShapeNote() {
   } catch (error) {
     console.error('[Notes] Shape 儲存失敗:', error);
     showNoteToast('儲存失敗', 'error');
+  }
+}
+
+function updateNotesVisibilityControl() {
+  if (!notesVisibilityControlBtn) return;
+  notesVisibilityControlBtn.title = notesLayerVisible ? '隱藏筆記圖層' : '顯示筆記圖層';
+  notesVisibilityControlBtn.setAttribute('aria-label', notesLayerVisible ? '隱藏筆記圖層' : '顯示筆記圖層');
+  notesVisibilityControlBtn.classList.toggle('is-off', !notesLayerVisible);
+  notesVisibilityControlBtn.innerHTML = notesLayerVisible
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-6.5 0-10-7-10-7a21.77 21.77 0 0 1 5.06-5.94"/>
+        <path d="M9.9 4.24A10.94 10.94 0 0 1 12 5c6.5 0 10 7 10 7a21.8 21.8 0 0 1-4.23 5.17"/>
+        <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+        <path d="M1 1l22 22"/>
+      </svg>`;
+}
+
+function setNotesLayerVisibility(isVisible, options = {}) {
+  const { silent = false } = options;
+  notesLayerVisible = Boolean(isVisible);
+  localStorage.setItem(NOTES_LAYER_VISIBILITY_KEY, notesLayerVisible ? '1' : '0');
+  updateNotesVisibilityControl();
+  refreshNotesLayer();
+  if (!silent) {
+    showNoteToast(notesLayerVisible ? '筆記圖層已顯示' : '筆記圖層已隱藏');
   }
 }
 
@@ -1186,6 +1466,11 @@ window.importNotesFile = importNotesFile;
 window.handleImportNotes = handleImportNotes;
 window.openNoteFromPopup = openNoteFromPopup;
 window.showShapeSaveDialog = showShapeSaveDialog;
+window.handleShapeSaveScopeChange = handleShapeSaveScopeChange;
+window.handleGeometryVisibilityChange = handleGeometryVisibilityChange;
+window.setAllGeometryVisibility = setAllGeometryVisibility;
 window.closeShapeSaveDialog = closeShapeSaveDialog;
-
+window.toggleNoteVisibility = toggleNoteVisibility;
+window.toggleAllNotesVisibility = toggleAllNotesVisibility;
+window.toggleNotesLayerVisibility = setNotesLayerVisibility;
 window.saveShapeNote = saveShapeNote;
