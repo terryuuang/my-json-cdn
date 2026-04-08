@@ -474,9 +474,10 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
     
     // 添加形狀資訊
     if (shapeInfo.radius) popupHtml += `<div class="popup-field"><strong>半徑:</strong><span class="popup-field-value">${shapeInfo.radius}</span></div>`;
+    if (shapeInfo.angle) popupHtml += `<div class="popup-field"><strong>張角:</strong><span class="popup-field-value">${shapeInfo.angle}</span></div>`;
     if (shapeInfo.area) popupHtml += `<div class="popup-field"><strong>面積:</strong><span class="popup-field-value">${shapeInfo.area}</span></div>`;
+    if (shapeInfo.arcLength) popupHtml += `<div class="popup-field"><strong>弧長:</strong><span class="popup-field-value">${shapeInfo.arcLength}</span></div>`;
     if (shapeInfo.length) popupHtml += `<div class="popup-field"><strong>長度:</strong><span class="popup-field-value">${shapeInfo.length}</span></div>`;
-    if (shapeInfo.angle) popupHtml += `<div class="popup-field"><strong>角度:</strong><span class="popup-field-value">${shapeInfo.angle}</span></div>`;
 
     // AI 判斷折疊區塊（置於形狀資訊下方）
     if (parsedText.aiAnalysis) {
@@ -487,9 +488,10 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
       parsedText.subtitle,
       parsedText.description,
       shapeInfo.radius ? `半徑: ${shapeInfo.radius}` : '',
+      shapeInfo.angle ? `張角: ${shapeInfo.angle}` : '',
       shapeInfo.area ? `面積: ${shapeInfo.area}` : '',
+      shapeInfo.arcLength ? `弧長: ${shapeInfo.arcLength}` : '',
       shapeInfo.length ? `長度: ${shapeInfo.length}` : '',
-      shapeInfo.angle ? `角度: ${shapeInfo.angle}` : '',
       parsedText.aiAnalysis ? `AI 判斷: ${parsedText.aiAnalysis}` : ''
     ].filter(Boolean).join('\n');
 
@@ -534,8 +536,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
         // 建立 Point 幾何資料
         const pointGeometry = { type: 'Point', coordinates: [s.center.lng, s.center.lat] };
         const popupContent = buildShapePopup('point', markerText, s.center, {}, pointGeometry);
-        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(popupContent)
-          .bindTooltip(buildShapeTooltip('point', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(popupContent);
         nfzLayerGroup.addLayer(m);
         extendBounds([[s.center.lat, s.center.lng]]);
         if (Number.isFinite(s.radiusKm) && s.radiusKm > 0) {
@@ -544,9 +545,10 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           const circleText = s.text || shapeSpec.text || '圓形區域';
           // 建立 Circle 幾何資料
           const circleGeometry = { type: 'Circle', center: [s.center.lng, s.center.lat], radiusKm: s.radiusKm };
-          const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText }, circleGeometry);
-          c.bindPopup(circlePopup)
-            .bindTooltip(buildShapeTooltip('circle', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+          const circleAreaKm2a = Math.PI * s.radiusKm * s.radiusKm;
+          const circleCircKm2a = 2 * Math.PI * s.radiusKm;
+          const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText, area: fmtArea(circleAreaKm2a), perimeter: fmtDist(circleCircKm2a) }, circleGeometry);
+          c.bindPopup(circlePopup);
           nfzLayerGroup.addLayer(c);
           extendBounds(c.getBounds());
         }
@@ -567,8 +569,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           coordinates: s.coords.map(p => [p.lng, p.lat]) // GeoJSON 格式: [lng, lat]
         };
         const linePopup = buildShapePopup('line', lineText, { lat: center.lat, lng: center.lng }, { length: lengthText }, lineGeometry);
-        pl.bindPopup(linePopup)
-          .bindTooltip(buildShapeTooltip('line', s, totalLength), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        pl.bindPopup(linePopup);
         nfzLayerGroup.addLayer(pl);
         addPolylineEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
@@ -582,9 +583,14 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           type: 'Polygon', 
           coordinates: s.coords.map(p => [p.lng, p.lat]) // GeoJSON 格式: [lng, lat]
         };
-        const polyPopup = buildShapePopup('polygon', polyText, { lat: center.lat, lng: center.lng }, {}, polygonGeometry);
-        poly.bindPopup(polyPopup)
-          .bindTooltip(buildShapeTooltip('polygon', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        const polyAreaKm2 = calcPolygonAreaKm2(latlngs);
+        let polyPerim = 0;
+        for (let i = 0; i < latlngs.length; i++) {
+          const j = (i + 1) % latlngs.length;
+          polyPerim += calculateDistance(latlngs[i][0], latlngs[i][1], latlngs[j][0], latlngs[j][1]);
+        }
+        const polyPopup = buildShapePopup('polygon', polyText, { lat: center.lat, lng: center.lng }, { area: fmtArea(polyAreaKm2), perimeter: fmtDist(polyPerim) }, polygonGeometry);
+        poly.bindPopup(polyPopup);
         nfzLayerGroup.addLayer(poly);
         addPolygonEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
@@ -605,9 +611,12 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           type: 'Rectangle', 
           bounds: { west: s.bounds.west, south: s.bounds.south, east: s.bounds.east, north: s.bounds.north }
         };
-        const rectPopup = buildShapePopup('bbox', rectText, { lat: center.lat, lng: center.lng }, {}, rectGeometry);
-        rect.bindPopup(rectPopup)
-          .bindTooltip(buildShapeTooltip('bbox', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        const rectLatlngs = latlngs;
+        const rectAreaKm2 = calcPolygonAreaKm2(rectLatlngs);
+        const rectWKm = calculateDistance(s.bounds.south, s.bounds.west, s.bounds.south, s.bounds.east);
+        const rectHKm = calculateDistance(s.bounds.south, s.bounds.west, s.bounds.north, s.bounds.west);
+        const rectPopup = buildShapePopup('bbox', rectText, { lat: center.lat, lng: center.lng }, { area: fmtArea(rectAreaKm2), perimeter: fmtDist(2 * (rectWKm + rectHKm)) }, rectGeometry);
+        rect.bindPopup(rectPopup);
         nfzLayerGroup.addLayer(rect);
         addPolygonEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
@@ -619,9 +628,10 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
         const circleText = s.text || shapeSpec.text || '圓形區域';
         // 建立 Circle 幾何資料
         const circleGeometry = { type: 'Circle', center: [s.center.lng, s.center.lat], radiusKm: s.radiusKm };
-        const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText }, circleGeometry);
-        c.bindPopup(circlePopup)
-          .bindTooltip(buildShapeTooltip('circle', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        const circleAreaKm2b = Math.PI * s.radiusKm * s.radiusKm;
+        const circleCircKm2b = 2 * Math.PI * s.radiusKm;
+        const circlePopup = buildShapePopup('circle', circleText, s.center, { radius: radiusText, area: fmtArea(circleAreaKm2b), perimeter: fmtDist(circleCircKm2b) }, circleGeometry);
+        c.bindPopup(circlePopup);
         nfzLayerGroup.addLayer(c);
         extendBounds(c.getBounds());
       } else if (s.type === 'sector') {
@@ -637,12 +647,16 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
           startDeg: s.startDeg, 
           endDeg: s.endDeg 
         };
-        const sectorPopup = buildShapePopup('sector', sectorText, s.center, { 
+        const sectorAngleDegCw = (((s.endDeg - s.startDeg) + 360) % 360) || 360;
+        const sectorArcLen = 2 * Math.PI * s.radiusKm * (sectorAngleDegCw / 360);
+        const sectorAreaKm2 = (sectorAngleDegCw / 360) * Math.PI * s.radiusKm * s.radiusKm;
+        const sectorPopup = buildShapePopup('sector', sectorText, s.center, {
           radius: radiusText,
-          angle: `${s.startDeg}° - ${s.endDeg}°`
+          angle: `${sectorAngleDegCw.toFixed(1)}°（${s.startDeg}° → ${s.endDeg}°）`,
+          area: fmtArea(sectorAreaKm2),
+          arcLength: fmtDist(sectorArcLen)
         }, sectorGeometry);
-        sec.bindPopup(sectorPopup)
-          .bindTooltip(buildShapeTooltip('sector', s), { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
+        sec.bindPopup(sectorPopup);
         nfzLayerGroup.addLayer(sec);
         const sectorAngleDeg = (((s.endDeg - s.startDeg) + 360) % 360) || 360;
         addSectorEdgeLines(latlngs, s.radiusKm, sectorAngleDeg, nfzLayerGroup);
