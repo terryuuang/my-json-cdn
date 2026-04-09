@@ -541,8 +541,8 @@ ${items.join('\n')}
       }
     }
 
-    // 禁航區附近單位預設距離（線段緩衝）改為 50km
-    const lineBufferKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 50;
+    // 禁航區附近單位預設距離（線段緩衝）提高為 100km
+    const lineBufferKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 100;
     return { shape, unit, kmPerUnit, shapes, lineBufferKm, text };
   }
 

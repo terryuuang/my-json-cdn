@@ -135,6 +135,10 @@ input, textarea, [contenteditable="true"] {
     backdrop-filter: blur(10px);
 }
 
+.leaflet-popup-pane {
+    z-index: 10050;
+}
+
 .leaflet-popup-content {
     font-size: 14px;
     line-height: 1.5;
@@ -226,20 +230,59 @@ input, textarea, [contenteditable="true"] {
 }
 
 .popup-field {
-    margin-bottom: 8px;
-    padding: 6px 0;
+    display: grid;
+    grid-template-columns: fit-content(72px) minmax(0, 1fr);
+    gap: 8px 10px;
+    align-items: start;
+    margin-bottom: 10px;
+    padding: 0;
 }
 
-.popup-field strong {
-    color: #475569;
-    font-weight: 600;
-    display: inline-block;
-    min-width: 80px;
+.popup-field-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
 .popup-field-value {
-    color: #1e293b;
-    margin-left: 8px;
+    color: #0f172a;
+    min-width: 0;
+    line-height: 1.65;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.popup-field-multiline {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.popup-field-multiline .popup-field-label {
+    color: #475569;
+}
+
+.popup-field-multiline .popup-field-value {
+    white-space: pre-line;
+}
+
+.popup-field-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(226, 232, 240, 0.7);
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .popup-distance {
@@ -1395,6 +1438,10 @@ select.input-field:hover {
     background: #555;
     }
     
+    .leaflet-popup-pane {
+    z-index: 10050;
+    }
+
     /* 確保手機版關閉按鈕可見且可點擊 */
     .leaflet-popup-close-button {
     background: rgba(255, 255, 255, 0.9) !important;
@@ -1426,17 +1473,27 @@ select.input-field:hover {
     }
     
     .popup-field {
-    margin-bottom: 6px;
-    padding: 4px 0;
+    grid-template-columns: fit-content(64px) minmax(0, 1fr);
+    gap: 6px 8px;
+    margin-bottom: 8px;
     }
-    
-    .popup-field strong {
-    min-width: 70px;
-    font-size: 12px;
+
+    .popup-field-label {
+    font-size: 11px;
     }
     
     .popup-field-value {
-    font-size: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    }
+
+    .popup-field-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    }
+
+    .popup-field-multiline {
+    padding: 10px 12px;
     }
     
     .popup-distance {

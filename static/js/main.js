@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年04月09日',
+    description: '優化禁航區與搜尋體驗：搜尋地點後保留 shape 禁航區 overlay，並擴大禁航區附近單位顯示範圍；同步改善 GeoJSON popup UI/UX，包含自適應寬度、提升手機版 z-index、整理分層類別與說明欄位排版，以及強化說明文字清理與斷行顯示'
+  },
+  {
     date: '2026年04月08日',
     description: '增強筆記系統，新增筆記圖層顯示/隱藏與單筆可見性控制；多圖形 URL shape 支援整組儲存；優化筆記對話框與列表介面，並加入 Cloudflare Web Analytics'
   },
@@ -395,9 +399,16 @@ function addSectorEdgeLines(latlngs, radiusKm, angleDeg, layerGroup) {
 }
 
 // 根據 shape 規格渲染禁航區與附近點位
-function renderShapeMode(shapeSpec, selectedLayer = null) {
-  currentMarkers.clearLayers();
-  if (centerMarker) { try { map.removeLayer(centerMarker); } catch (_) {} centerMarker = null; }
+function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
+  const {
+    preserveMarkers = false,
+    preserveCenterMarker = false,
+    skipFeatureMarkers = false,
+    skipFitBounds = false
+  } = options;
+
+  if (!preserveMarkers) currentMarkers.clearLayers();
+  if (!preserveCenterMarker && centerMarker) { try { map.removeLayer(centerMarker); } catch (_) {} centerMarker = null; }
   try { nfzLayerGroup.clearLayers(); } catch (_) {}
 
   let featuresToScan = allFeatures;
@@ -749,12 +760,14 @@ function renderShapeMode(shapeSpec, selectedLayer = null) {
   }
 
   try {
-    if (bounds) {
+    if (!skipFitBounds && bounds) {
       map.fitBounds(bounds.pad(0.2));
     }
   } catch (_) {}
 
-  addMarkersForFeatures(matched, null, selectedLayer, null);
+  if (!skipFeatureMarkers) {
+    addMarkersForFeatures(matched, null, selectedLayer, null);
+  }
 }
 
 // 初始化地圖
@@ -1126,7 +1139,7 @@ let currentMarkers = L.layerGroup();
 let centerMarker = null;
 // 禁航區圖層（No-Fly Zones）
 let nfzLayerGroup = L.layerGroup();
-const NFZ_NEARBY_BUFFER_KM = 50;
+const NFZ_NEARBY_BUFFER_KM = 100;
 let unitsVisible = true;
 // 繪圖/測距控制元件
 let drawnItems = null;
@@ -1228,25 +1241,21 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
           let popupContent = '';
           let referenceLinks = [];
           let mainTitle = cleanText(props['名稱'] || props['name'] || '軍事設施');
-          popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${mainTitle}</h3></div>`;
-          const cleanLayerName = cleanText(layerName);
-          popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${cleanLayerName}</span></div>`;
+          popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${escapeHtml(mainTitle)}</h3></div>`;
+          popupContent += buildPopupFieldHtml('分層類別', layerName, { accentColor: iconData.color, valueClassName: 'popup-field-badge' });
           let equipmentText = '';
           Object.entries(props).forEach(([key, value]) => {
             if (key === '說明') {
-              const urlRegex = /(https?:\/\/[^\s]+)/g;
-              const matchedURLs = value.match(urlRegex);
-              if (matchedURLs) {
-                referenceLinks.push(...matchedURLs);
-                value = value.replace(urlRegex, '').trim();
-              }
-              value = cleanText(value);
+              const { links, text } = extractReferenceLinks(value);
+              if (links.length) referenceLinks.push(...links);
+              value = formatDescriptionText(text);
               if (value.includes('裝備')) equipmentText = value;
             }
             if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
             if (value && value.toString().trim()) {
-              const cleanValue = cleanText(value);
-              if (cleanValue) popupContent += `<div class=\"popup-field\"><strong>${key}:</strong><span class=\"popup-field-value\">${cleanValue}</span></div>`;
+              const multiline = key === '說明';
+              const fieldHtml = buildPopupFieldHtml(key, value, { multiline });
+              if (fieldHtml) popupContent += fieldHtml;
             }
           });
           if (targetCoords) {
@@ -1287,8 +1296,8 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
           
           const popupOptions = { className: 'custom-popup' };
           if (isMobileDevice()) {
-            popupOptions.maxWidth = Math.min(350, window.innerWidth - 40);
-            popupOptions.minWidth = Math.min(260, window.innerWidth - 60);
+            popupOptions.maxWidth = Math.min(520, window.innerWidth - 24);
+            popupOptions.minWidth = Math.min(320, window.innerWidth - 32);
             popupOptions.maxHeight = Math.min(500, window.innerHeight - 120);
             popupOptions.autoPan = true;
             popupOptions.autoPanPadding = [10, 10];
@@ -1297,8 +1306,8 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
             popupOptions.autoClose = false;
             popupOptions.closeOnEscapeKey = true;
           } else {
-            popupOptions.maxWidth = 350;
-            popupOptions.minWidth = 280;
+            popupOptions.maxWidth = Math.min(560, window.innerWidth - 48);
+            popupOptions.minWidth = Math.min(360, window.innerWidth - 72);
           }
           layer.bindPopup(popupContent, popupOptions);
           if (equipmentText && window.equipmentParser) {
@@ -1818,6 +1827,60 @@ return text.toString()
     .trim();                          // 移除首尾空格
 }
 
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text ?? '';
+  return div.innerHTML;
+}
+
+function extractReferenceLinks(rawText) {
+  const source = rawText == null ? '' : rawText.toString();
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const matchedURLs = source.match(urlRegex) || [];
+  const textWithoutUrls = source.replace(urlRegex, ' ');
+  return {
+    links: matchedURLs,
+    text: textWithoutUrls
+  };
+}
+
+function formatDescriptionText(text) {
+  if (!text) return '';
+
+  return text.toString()
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\u00A0/g, ' ')
+    .replace(/\u3000/g, ' ')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/([。；])/g, '$1\n')
+    .replace(/\s+(?=(裝備[:：]|戰術編號[:：]|部隊番號[:：]|別稱[:：]|榮譽稱號[:：]|車牌號[:：]|電話[:：]|地址[:：]|訓練科目[:：]|此地訓練科目[:：]|司令員[:：]|政治委員[:：]))/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .split('\n')
+    .map(line => cleanText(line))
+    .filter(Boolean)
+    .join('\n');
+}
+
+function buildPopupFieldHtml(label, value, options = {}) {
+  const {
+    accentColor = '',
+    multiline = false,
+    valueClassName = ''
+  } = options;
+
+  const cleanValue = multiline ? formatDescriptionText(value) : cleanText(value);
+  if (!cleanValue) return '';
+
+  const extraClass = multiline ? ' popup-field-multiline' : '';
+  const valueClass = ['popup-field-value', valueClassName].filter(Boolean).join(' ');
+  const styleAttr = accentColor ? ` style="color: ${accentColor}; font-weight: 600;"` : '';
+
+  return `<div class="popup-field${extraClass}"><div class="popup-field-label">${escapeHtml(label)}</div><div class="${valueClass}"${styleAttr}>${escapeHtml(cleanValue)}</div></div>`;
+}
+
 function downloadTextFile(content, filename, mimeType = 'text/plain;charset=utf-8') {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -2048,6 +2111,23 @@ function filterByLayer() {
   console.warn('[Map] filterByLayer() 已棄用，請使用 unified_dropdown.js');
 }
 
+function hasShapeModeInUrl(urlParams = new URLSearchParams(window.location.search)) {
+  return !!(urlParams.get('shape') || '').trim();
+}
+
+function renderShapeOverlayFromUrl(selectedLayer = null) {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!hasShapeModeInUrl(urlParams)) return;
+
+  const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
+  renderShapeMode(shapeSpec, selectedLayer, {
+    preserveMarkers: true,
+    preserveCenterMarker: true,
+    skipFeatureMarkers: true,
+    skipFitBounds: true
+  });
+}
+
 // 搜尋位置功能
 function searchLocation() {
 const lat = parseFloat(document.getElementById('latInput').value);
@@ -2062,18 +2142,8 @@ if (isNaN(lat) || isNaN(lng)) {
 // 獲取當前選中的圖層
 const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
 
-// 更新URL（保留 layers 參數，但清除 SHAPE 相關參數）
+// 更新 URL（保留既有 shape 參數，讓禁航區 overlay 能持續顯示）
 const urlParams = new URLSearchParams(window.location.search);
-
-// 清除 SHAPE 模式的所有參數
-urlParams.delete('shape');
-urlParams.delete('line');
-urlParams.delete('polygon');
-urlParams.delete('circle');
-urlParams.delete('sector');
-urlParams.delete('bbox');
-urlParams.delete('text');
-urlParams.delete('unit');
 
 // 設置座標搜尋參數
 urlParams.set('lat', lat);
@@ -2097,6 +2167,8 @@ if (selectedLayers.length === 0) {
 } else {
     renderMap({ lat, lng }, radius, null);
 }
+
+renderShapeOverlayFromUrl(selectedLayers.length === 1 ? selectedLayers[0] : null);
 
 // 手機版自動關閉控制面板
 if (isMobileDevice()) {
@@ -2228,11 +2300,10 @@ map.setView(mapCenter, mapZoom);
     let mainTitle = cleanText(props['名稱'] || props['name'] || '軍事設施');
 
     // 構建popup標題
-    popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${mainTitle}</h3></div>`;
+    popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${escapeHtml(mainTitle)}</h3></div>`;
 
     // 顯示分層資訊
-    const cleanLayerName = cleanText(layerName);
-    popupContent += `<div class="popup-field"><strong>分層類別:</strong><span class="popup-field-value" style="color: ${iconData.color}; font-weight: 600;">${cleanLayerName}</span></div>`;
+    popupContent += buildPopupFieldHtml('分層類別', layerName, { accentColor: iconData.color, valueClassName: 'popup-field-badge' });
 
     // 儲存裝備文本供後續處理
     let equipmentText = '';
@@ -2240,15 +2311,11 @@ map.setView(mapCenter, mapZoom);
     // 處理其他屬性
         Object.entries(props).forEach(([key, value]) => {
         if (key === '說明') {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matchedURLs = value.match(urlRegex);
-            if (matchedURLs) {
-            referenceLinks.push(...matchedURLs);
-            value = value.replace(urlRegex, '').trim();
+            const { links, text } = extractReferenceLinks(value);
+            if (links.length) {
+            referenceLinks.push(...links);
             }
-            
-            // 清理說明文字
-            value = cleanText(value);
+            value = formatDescriptionText(text);
             
             // 儲存包含裝備資訊的文本
             if (value.includes('裝備')) {
@@ -2260,10 +2327,9 @@ map.setView(mapCenter, mapZoom);
         if (['名稱', 'name', 'layer', '分層', '類別'].includes(key)) return;
         
         if (value && value.toString().trim()) {
-        const cleanValue = cleanText(value);
-        if (cleanValue) {
-            popupContent += `<div class="popup-field"><strong>${key}:</strong><span class="popup-field-value">${cleanValue}</span></div>`;
-        }
+        const multiline = key === '說明';
+        const fieldHtml = buildPopupFieldHtml(key, value, { multiline });
+        if (fieldHtml) popupContent += fieldHtml;
         }
     });
 
@@ -2314,8 +2380,8 @@ map.setView(mapCenter, mapZoom);
     };
     
     if (isMobileDevice()) {
-        popupOptions.maxWidth = Math.min(350, window.innerWidth - 40);
-        popupOptions.minWidth = Math.min(260, window.innerWidth - 60);
+        popupOptions.maxWidth = Math.min(520, window.innerWidth - 24);
+        popupOptions.minWidth = Math.min(320, window.innerWidth - 32);
         popupOptions.maxHeight = Math.min(500, window.innerHeight - 120);
         popupOptions.autoPan = true;
         popupOptions.autoPanPadding = [10, 10];
@@ -2324,8 +2390,8 @@ map.setView(mapCenter, mapZoom);
         popupOptions.autoClose = false;
         popupOptions.closeOnEscapeKey = true;
     } else {
-        popupOptions.maxWidth = 350;
-        popupOptions.minWidth = 280;
+        popupOptions.maxWidth = Math.min(560, window.innerWidth - 48);
+        popupOptions.minWidth = Math.min(360, window.innerWidth - 72);
     }
     
     // 綁定popup
@@ -2545,18 +2611,8 @@ function selectSearchResult(index) {
   const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
   const radius = parseFloat(radiusInput.value) || 10;
 
-  // 更新 URL（保留 layers 參數，但清除 SHAPE 相關參數）
+  // 更新 URL（保留既有 shape 參數，讓禁航區 overlay 能持續顯示）
   const urlParams = new URLSearchParams(window.location.search);
-
-  // 清除 SHAPE 模式的所有參數
-  urlParams.delete('shape');
-  urlParams.delete('line');
-  urlParams.delete('polygon');
-  urlParams.delete('circle');
-  urlParams.delete('sector');
-  urlParams.delete('bbox');
-  urlParams.delete('text');
-  urlParams.delete('unit');
 
   // 設置座標搜尋參數
   urlParams.set('lat', lat);
@@ -2580,6 +2636,8 @@ function selectSearchResult(index) {
   } else {
     renderMap({ lat, lng }, radius, null);
   }
+
+  renderShapeOverlayFromUrl(selectedLayers.length === 1 ? selectedLayers[0] : null);
 
   // 手機版自動關閉面板
   if (isMobileDevice()) {
@@ -2719,18 +2777,8 @@ function selectMobileSearchResult(index) {
   const selectedLayers = window.getSelectedLayers ? window.getSelectedLayers() : [];
   const radius = parseFloat(radiusInput.value) || 10;
 
-  // 更新 URL（保留 layers 參數，但清除 SHAPE 相關參數）
+  // 更新 URL（保留既有 shape 參數，讓禁航區 overlay 能持續顯示）
   const urlParams = new URLSearchParams(window.location.search);
-
-  // 清除 SHAPE 模式的所有參數
-  urlParams.delete('shape');
-  urlParams.delete('line');
-  urlParams.delete('polygon');
-  urlParams.delete('circle');
-  urlParams.delete('sector');
-  urlParams.delete('bbox');
-  urlParams.delete('text');
-  urlParams.delete('unit');
 
   // 設置座標搜尋參數
   urlParams.set('lat', lat);
@@ -2754,6 +2802,8 @@ function selectMobileSearchResult(index) {
   } else {
     renderMap({ lat, lng }, radius, null);
   }
+
+  renderShapeOverlayFromUrl(selectedLayers.length === 1 ? selectedLayers[0] : null);
 }
 
 // 清除手機版搜尋
