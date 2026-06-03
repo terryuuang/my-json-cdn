@@ -292,35 +292,30 @@ input, textarea, [contenteditable="true"] {
 
 .ais-vessel-symbol {
     position: relative;
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     transform: rotate(var(--ais-heading));
+    transform-origin: 50% 50%;
 }
 
-.ais-vessel-heading {
-    position: absolute;
-    left: 50%;
-    top: 1px;
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 9px solid var(--ais-color);
-    transform: translateX(-50%);
-    filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.35));
+.ais-vessel-ship {
+    display: block;
+    width: 18px;
+    height: 18px;
+    overflow: visible;
 }
 
-.ais-vessel-dot {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 13px;
-    height: 13px;
-    background: var(--ais-color);
-    border: 1.5px solid #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.3);
-    transform: translate(-50%, -50%);
+.ais-vessel-shadow {
+    fill: rgba(15, 23, 42, 0.35);
+    transform: translate(1.4px, 1.6px);
+}
+
+.ais-vessel-arrow {
+    fill: var(--ais-color);
+    stroke: #ffffff;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .ais-popup-icon {

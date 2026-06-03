@@ -10,7 +10,7 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年06月03日',
-    description: '新增 AIS 快照功能，支援 /#ais=<vessel>|<vessel> 連結，方便快速查看特定船舶位置；新增 12/24 海浬線圖層控制按鈕，預設關閉（AIS 快照連結開啟時自動顯示海浬線，方便搭配船舶位置判讀）'
+    description: '新增 AIS 快照功能，支援 /#ais=<vessel>|<vessel> 連結，方便快速查看特定船舶位置；新增 12/24 海浬線圖層控制按鈕，預設關閉（AIS 快照連結開啟時自動顯示海浬線，方便搭配船舶位置判讀）；改善短網址導入 AIS hash 後的即時同步'
   },
   {
     date: '2026年04月09日',
@@ -1372,6 +1372,28 @@ function toggleUnitsVisibility() {
   applyUnitVisibility();
 }
 
+function hasAisHashSnapshot() {
+  if (window.AISSnapshot && typeof window.AISSnapshot.hasAisHash === 'function') {
+    return window.AISSnapshot.hasAisHash();
+  }
+  const hash = window.location.hash.replace(/^#/, '').trim().toLowerCase();
+  return hash === 'ais' || hash.startsWith('ais=');
+}
+
+function syncAisHashState() {
+  if (!hasAisHashSnapshot()) return;
+
+  unitsVisible = false;
+  applyUnitVisibility();
+
+  if (window.AISSnapshot && typeof window.AISSnapshot.render === 'function') {
+    window.AISSnapshot.render();
+  }
+  if (window.MaritimeZones && typeof window.MaritimeZones.setVisible === 'function') {
+    window.MaritimeZones.setVisible(true);
+  }
+}
+
 
 // 顯示載入指示器
 function showLoading() {
@@ -2473,6 +2495,9 @@ applyUnitVisibility();
 
 // 當頁面載入完成時啟動應用程式
 document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('hashchange', syncAisHashState);
+window.addEventListener('pageshow', syncAisHashState);
+window.addEventListener('focus', syncAisHashState);
 
 // 頂部提醒：滑入+3秒後淡出
 function showTopNotice() {

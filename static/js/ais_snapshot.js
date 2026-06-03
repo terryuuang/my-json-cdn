@@ -11,6 +11,8 @@
   const MAX_VESSELS = 1000;
   const MAX_RECORD_LENGTH = 700;
   const MAX_FIELD_LENGTHS = [16, 80, 16, 16, 4, 8, 8, 8, 40, 16];
+  const DEFAULT_AIS_CENTER = [23.75, 121.0];
+  const DEFAULT_AIS_ZOOM = 7;
 
   let layerGroup = null;
   let mapRef = null;
@@ -126,13 +128,15 @@
       className: 'ais-vessel-marker',
       html: `
         <div class="ais-vessel-symbol" style="--ais-color:${color}; --ais-heading:${heading}deg;">
-          <div class="ais-vessel-heading"></div>
-          <div class="ais-vessel-dot"></div>
+          <svg class="ais-vessel-ship" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path class="ais-vessel-shadow" d="M12 1.6 20.8 22.1 12 17.1 3.2 22.1 12 1.6Z"/>
+            <path class="ais-vessel-arrow" d="M12 1.6 20.8 22.1 12 17.1 3.2 22.1 12 1.6Z"/>
+          </svg>
         </div>
       `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      popupAnchor: [0, -14]
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      popupAnchor: [0, -10]
     });
   }
 
@@ -180,7 +184,7 @@
     return html;
   }
 
-  function shouldFitBounds() {
+  function shouldUseDefaultAisView() {
     const params = new URLSearchParams(window.location.search);
     return !params.has('lat') &&
       !params.has('lng') &&
@@ -192,9 +196,14 @@
     if (!mapRef || !layerGroup) return [];
 
     layerGroup.clearLayers();
-    if (!vessels.length) return [];
-
-    const bounds = L.latLngBounds([]);
+    if (!vessels.length) {
+      if (shouldUseDefaultAisView()) {
+        try {
+          mapRef.setView(DEFAULT_AIS_CENTER, DEFAULT_AIS_ZOOM);
+        } catch (_) {}
+      }
+      return [];
+    }
 
     vessels.forEach(vessel => {
       const latlng = [vessel.lat, vessel.lon];
@@ -205,14 +214,13 @@
         minWidth: Math.min(300, window.innerWidth - 48)
       });
       layerGroup.addLayer(marker);
-      bounds.extend(latlng);
     });
 
     layerGroup.addTo(mapRef);
 
-    if (shouldFitBounds() && bounds.isValid()) {
+    if (shouldUseDefaultAisView()) {
       try {
-        mapRef.fitBounds(bounds.pad(0.2), { maxZoom: 11 });
+        mapRef.setView(DEFAULT_AIS_CENTER, DEFAULT_AIS_ZOOM);
       } catch (_) {}
     }
 
