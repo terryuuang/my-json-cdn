@@ -1,8 +1,8 @@
 // AIS 船舶快照 URL 圖層
 // 支援 /#ais=<vessel>|<vessel>
 (function () {
-  const TYPE_LABELS = { c: '陸漁', g: '公務／軍艦', d: '暗船', k: '民兵目標' };
-  const TYPE_COLORS = { c: '#2563eb', g: '#dc2626', d: '#7c3aed', k: '#f97316' };
+  const TYPE_LABELS = { c: '陸漁', g: '公務／軍艦', d: '暗船', k: '民兵目標', n: '非漁中共船' };
+  const TYPE_COLORS = { c: '#2563eb', g: '#dc2626', d: '#7c3aed', k: '#f97316', n: '#ea580c' };
   const REGION_LABELS = { n: '北部', w: '西部', sw: '西南', e: '東部', se: '東南' };
   const VALID_TYPES = new Set(Object.keys(TYPE_LABELS));
   const VALID_REGIONS = new Set(Object.keys(REGION_LABELS));

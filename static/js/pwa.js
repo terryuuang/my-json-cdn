@@ -8,7 +8,7 @@
 // ============================================
 let deferredPrompt = null; // Android 安裝提示事件
 let swRegistration = null; // Service Worker 註冊物件
-let currentAppVersion = '0.3.3';
+let currentAppVersion = '0.3.4';
 
 // ============================================
 // 初始化
