@@ -9,6 +9,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年06月03日',
+    description: '新增 AIS 快照功能，支援 /#ais=<vessel>|<vessel> 連結，方便快速查看特定船舶位置；新增 12/24 海浬線圖層控制按鈕，預設關閉（AIS 快照連結開啟時自動顯示海浬線，方便搭配船舶位置判讀）'
+  },
+  {
     date: '2026年04月09日',
     description: '優化禁航區與搜尋體驗：搜尋地點後保留 shape 禁航區 overlay，並擴大禁航區附近單位顯示範圍；同步改善 GeoJSON popup UI/UX，包含自適應寬度、提升手機版 z-index、整理分層類別與說明欄位排版，以及強化說明文字清理與斷行顯示'
   },
@@ -1091,6 +1095,11 @@ try {
     
     allFeatures = geojsonData.features;
     layerIndex = buildLayerIndex(allFeatures);
+
+    const hasAisSnapshot = window.AISSnapshot && typeof window.AISSnapshot.hasAisHash === 'function'
+      ? window.AISSnapshot.hasAisHash()
+      : window.location.hash.replace(/^#/, '').toLowerCase().startsWith('ais=');
+    if (hasAisSnapshot) unitsVisible = false;
     
     // 支援 shape 模式（禁航區繪制 + 附近點位）
     const shapeParam = (urlParams.get('shape') || '').trim().toLowerCase();
@@ -1102,6 +1111,10 @@ try {
       const targetCoords = urlCoords || { lat: 25.5100, lng: 119.7910 };
       renderMap(targetCoords, radius, selectedLayer);
     }
+
+    if (window.AISSnapshot && typeof window.AISSnapshot.init === 'function') {
+      window.AISSnapshot.init(map);
+    }
     
     // 完成後隱藏載入指示器
     hideLoading();
@@ -1111,6 +1124,7 @@ try {
       setupMapTools();
       if (window.PLATheater) window.PLATheater.init(map);
       if (window.ADIZ) window.ADIZ.init(map);
+      if (window.MaritimeZones) window.MaritimeZones.init(map, { visible: hasAisSnapshot });
       if (window.SubmarineCable) window.SubmarineCable.init(map);
     });
     

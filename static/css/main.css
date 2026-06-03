@@ -285,6 +285,58 @@ input, textarea, [contenteditable="true"] {
     line-height: 1.4;
 }
 
+.ais-vessel-marker {
+    background: transparent;
+    border: 0;
+}
+
+.ais-vessel-symbol {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    transform: rotate(var(--ais-heading));
+}
+
+.ais-vessel-heading {
+    position: absolute;
+    left: 50%;
+    top: 1px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 9px solid var(--ais-color);
+    transform: translateX(-50%);
+    filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.35));
+}
+
+.ais-vessel-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    background: var(--ais-color);
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.3);
+    transform: translate(-50%, -50%);
+}
+
+.ais-popup-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
 .popup-distance {
     background: linear-gradient(135deg, #dbeafe, #bfdbfe);
     padding: 8px 12px;
