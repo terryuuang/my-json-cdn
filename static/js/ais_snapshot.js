@@ -89,6 +89,7 @@
 
     const vesselRecords = raw
       .replace(/｜/g, '|')
+      .replace(/%7C/gi, '|')
       .split('|')
       .slice(0, MAX_VESSELS);
 
