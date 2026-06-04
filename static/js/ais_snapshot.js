@@ -10,7 +10,7 @@
   const MAX_HASH_LENGTH = 90000;
   const MAX_VESSELS = 1000;
   const MAX_RECORD_LENGTH = 700;
-  const MAX_FIELD_LENGTHS = [16, 80, 16, 16, 4, 8, 8, 8, 40, 16];
+  const MAX_FIELD_LENGTHS = [16, 80, 16, 16, 4, 8, 8, 8, 40, 16, 20];
   const DEFAULT_AIS_CENTER = [23.75, 121.0];
   const DEFAULT_AIS_ZOOM = 7;
 
@@ -79,8 +79,8 @@
     const fields = normalized.includes(':')
       ? normalized.split(':').map((value, index) => cleanField(value, index))
       : decodeValue(normalized).replace(/：/g, ':').split(':').map((value, index) => cleanField(value, index));
-    while (fields.length < 10) fields.push('');
-    return fields.slice(0, 10);
+    while (fields.length < 11) fields.push('');
+    return fields.slice(0, 11);
   }
 
   function parseVessels() {
@@ -97,7 +97,7 @@
       .map(item => item.trim())
       .filter(Boolean)
       .map(record => {
-        const [mmsi, name, lon, lat, type, sog, cog, region, cat, ml] = splitVesselFields(record);
+        const [mmsi, name, lon, lat, type, sog, cog, region, cat, ml, ts] = splitVesselFields(record);
         const vesselType = decodeValue(type).toLowerCase();
         const vesselRegion = decodeValue(region).toLowerCase();
         const vessel = {
@@ -110,7 +110,8 @@
           cog: normalizeCog(cog),
           region: VALID_REGIONS.has(vesselRegion) ? vesselRegion : '',
           cat: decodeValue(cat),
-          ml: decodeValue(ml) === '' ? null : parseNumber(ml)
+          ml: decodeValue(ml) === '' ? null : parseNumber(ml),
+          ts: decodeValue(ts) || null
         };
 
         if (!/^\d{9}$/.test(vessel.mmsi) || !Number.isFinite(vessel.lon) || !Number.isFinite(vessel.lat) || !vessel.type) {
@@ -151,6 +152,35 @@
     return `${String(normalized).padStart(3, '0')}°`;
   }
 
+  function formatTimestamp(value) {
+    if (!value) return '';
+    const s = String(value).trim();
+
+    // Unix timestamp (純數字，10位秒 or 13位毫秒)
+    if (/^\d{10}$/.test(s)) {
+      const d = new Date(Number(s) * 1000);
+      if (!isNaN(d)) return d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }).replace(/\//g, '-');
+    }
+    if (/^\d{13}$/.test(s)) {
+      const d = new Date(Number(s));
+      if (!isNaN(d)) return d.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false }).replace(/\//g, '-');
+    }
+
+    // ISO 8601 / 常見格式：嘗試 Date 解析
+    const d = new Date(s.replace(/\s/, 'T'));
+    if (!isNaN(d)) {
+      // 若原始字串有時區資訊就保留，否則視為台北時間
+      const hasTimezone = /Z$|[+-]\d{2}:?\d{2}$/.test(s);
+      const tz = hasTimezone ? 'UTC' : 'Asia/Taipei';
+      return d.toLocaleString('zh-TW', { timeZone: tz, hour12: false,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+    }
+
+    // 無法解析就原樣顯示
+    return s;
+  }
+
   function formatMidlineDistance(value) {
     if (!Number.isFinite(value)) return '';
     const side = value > 0 ? '臺灣側' : value < 0 ? '中國側' : '中線';
@@ -181,6 +211,8 @@
       html += buildPopupField('類別', vessel.cat);
       html += buildPopupField('中線距離', formatMidlineDistance(vessel.ml));
     }
+
+    html += buildPopupField('最後紀錄', formatTimestamp(vessel.ts));
 
     return html;
   }
