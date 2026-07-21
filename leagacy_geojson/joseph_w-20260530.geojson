@@ -101,7 +101,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區海軍 定海軍港(三)",
+        "名稱": "定海基地(三)",
         "說明": "東部戰區海軍  作戰支援艦第2支隊  92118部隊  浙江省舟山市定海區沿港東路92號 （益富商行門前）東部戰區海軍 偵測船大隊  91937部隊（原92899部隊）  浙江省舟山市定海區沿港東路92號 （益富商行門前）  東部戰區海軍 勤務船大隊  91562部隊  裝備：福林級運油船6艘：東油630艦、東油632艦、東油634艦、東油635艦、東油638、東油639艦；拖船2艘：東拖872、東拖877；海軍航標船1艘：東標263   https://new.qq.com/rain/a/20230419A07INO00    https://getit01.com/p201808044404095/",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -147,7 +147,7 @@
       },
       "properties": {
         "名稱": "東部戰區海軍 寶山基地",
-        "說明": "東部戰區海軍 作戰支援艦第二支隊  92681部隊  上海市寶山區民康路95號  東部戰區海軍 護衛艦8支隊  92993部隊    https://www.bslib.org/bthd/smjz.aspx?nianfen=2012",
+        "說明": "東部戰區海軍 作戰支援艦第二支隊  92681部隊  上海市寶山區民康路95號    https://www.bslib.org/bthd/smjz.aspx?nianfen=2012",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -444,7 +444,7 @@
         ]
       },
       "properties": {
-        "名稱": "大榭島軍港(東)",
+        "名稱": "大榭島基地(東)",
         "說明": "東部戰區海軍 潛艇第22支隊  92858部隊  浙江省寧波市象山縣大榭島    https://x.com/JosephWen___/status/1743853604656841128?s=20",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -474,7 +474,7 @@
         ]
       },
       "properties": {
-        "名稱": "貓頭嘴軍港(東)",
+        "名稱": "貓頭嘴基地(東)",
         "說明": "東部戰區海軍潛艇第42支隊  92815部隊\n  浙江省寧波市西滬港\nhttps://maphub.net/Cengiz/plan-Xiashacun-submarine-base",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -535,7 +535,7 @@
       },
       "properties": {
         "名稱": "海軍陸戰隊機關",
-        "說明": "海軍陸戰隊  91811部隊  車牌號：HL30  廣東潮州市永春北路1號      https://x.com/JosephWen___/status/2066558872186429497?s=20    https://mp.weixin.qq.com/s/W_f9RT4nowVqt2_k8m8H4w                          https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E9%99%86%E6%88%98%E9%98%9F#%E6%B5%81%E8%A1%8C%E6%96%87%E5%8C%96",
+        "說明": "海軍陸戰隊  91811部隊  車牌號：HL30  廣東潮州市永春北路1號       https://mp.weixin.qq.com/s/W_f9RT4nowVqt2_k8m8H4w                          https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E9%99%86%E6%88%98%E9%98%9F#%E6%B5%81%E8%A1%8C%E6%96%87%E5%8C%96",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -1042,7 +1042,7 @@
         ]
       },
       "properties": {
-        "名稱": "海軍陸戰隊 晉江營區(南)",
+        "名稱": "海軍陸戰隊 晉江基地(南)",
         "說明": "海軍陸戰隊第四旅(91718部隊)  福建省晉江市羅山街道倉邊179號  https://redtsai.blogspot.com/2019/12/blog-post_86.html                         https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E9%99%86%E6%88%98%E9%98%9F%E7%AC%AC%E5%9B%9B%E6%97%85",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -1057,7 +1057,7 @@
         ]
       },
       "properties": {
-        "名稱": "海軍陸戰隊 晉江營區(北)",
+        "名稱": "海軍陸戰隊 晉江基地(北)",
         "說明": "海軍陸戰隊第四旅(91718部隊) https://redtsai.blogspot.com/2019/12/blog-post_86.html                            https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E9%99%86%E6%88%98%E9%98%9F%E7%AC%AC%E5%9B%9B%E6%97%85",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -1221,8 +1221,8 @@
         ]
       },
       "properties": {
-        "名稱": "南北山潛艦通信岸臺",
-        "說明": "海軍參謀部某保障大隊 92665部隊  車牌號：HA13  上圖水池座標：29.582062, 110.747147                                                                  「南北山位於湘西腹地，這裡山連著山，沒有盡頭，是快遞不能直達的地方。這裡，坐落著海軍參謀部某保障大隊南北山分隊，常年守護某天線場區的天線和平衡鋼架。南北山上2個班、8個兵，像黃智堅一樣的戰士們已經接力堅守了41年。」「1969年8月4日，毛澤東主席親自批准了“6984工程”。 “6984工程”是為戰略核潛艇bai“09”工程配套的通信工程，擔負著中央軍委指揮戰略核潛艇的重任。 “6984工程”選址在偏僻的湘西深山——湖南省慈利縣江埡鎮。為了實施“6984工程”，軍委調動陸、海軍工程部隊參戰，還投入了數万民工，開山、築路、打山洞。海軍司、政、後調集幾百人組建了6984工區，工作條件極為艱苦。 1970年盛夏，幾十名軍電幹部、教員和畢業的學員，來到湘西，參加“6984工程”的建設。海軍“6984”工程是為戰略核潛艇“09”工程配套的超長波通信台工程的代號。由十大元帥共同擬定的方案，1969年8月4日毛主席批准的國防工程，內部叫6984工程。它的發射功率為2000千瓦(世界發射功率最大的發信台)，通信距離能覆蓋美國西海岸，擔負中央軍委指揮戰略核潛艇的任務。第一發信台在山西大同，是毛主席與赫魯曉夫鬥爭的產物，當時前蘇聯想在我國國土上為其太平洋艦隊建立長波台，事關國家主權，毛主席和黨中央決定建可以，主權是我國的，由我國自己建，設備向蘇聯訂貨。由蘇聯設計工程、生產設備，技術幫助。這就是著名的海軍01工程。 59年01工程正在進行，赫魯曉夫撕毀協議，撤走了全部專家，帶走了主要圖紙，01工程被追停工。怎麼辦?工程動了一半，錢也花了，設備成了廢鐵。是上馬還是下馬，中央和軍委等著海軍拿出意見。海軍通信部長老紅軍徐明德將軍冒著風險，建議大膽起用國民黨過來的工程師周建畏。在事實上的總工程師周建畏的帶領下，一批五十年代入伍的青年學生王東山、袁翊、胡生甫、劉渭濱等參加技術攻關，克服了難以想像的困難和壓力，通信部隊、工程部隊經過幾年艱苦奮鬥，在荒涼的平原上，建成了有巨大的天線陣，當時世界上最大功率發信台。周建畏由於歷史複雜，不能得到應有的待遇，但他在海軍建軍史上留下濃重的一筆，歷史不會忘記他的功績。工程中鍛煉出的王東山、袁翊等人成為共和國海軍通信的主要技術骨幹。但第一發信台坐標是公開的，又地處平原容易被摧毀，它的功能是指揮常規潛艇在遠海作戰。因此中央軍委決定建第二發信台(又稱新01)，能指揮戰略核潛艇出現在美國西海岸實施核打擊。並選址湘西山區，湖南省慈利縣江埡鎮。極為偏僻，機房全在山洞裡，天線陣在兩條山脊之間，是海軍通信工程師王東山發明設計的山谷天線。 6984工程完全是我國自己設計、自己來生產設備、自己施工的國防工程。」–摘自央廣軍事(2020年9月)  https://mp.weixin.qq.com/s/rzD2r19Jh1SJUkUebrwAlw?fbclid=IwAR2InDHAsNtpYgT1BukHVcUAoKt3FpO61xCZkUoDpYWrjG2jT_UdHrT_74s     https://x.com/JosephWen___/status/2063447343882813927?s=20   https://twitter.com/JosephWen___/status/1631602464964358144?s=20     http://big5.china.com.cn/gate/big5/m.china.com.cn/appdoc/doc_1_3_1750675.html?fbclid=IwAR21g3in4TYdQkp2PAxPIZVEr0zFDoPd6pVMBwAwsWb5GWhmW0HHMweCUiE   https://tv.cctv.com/2020/12/31/VIDE2snh03wObJbDLrx0uTpW201231.shtml?fbclid=IwAR0xwx3KucOiJ5SlbEAwYPsNDVx1K7dIWw9xYv94bfPlq3P9X3UJ7ZpX5es   https://www.indiatoday.in/news-analysis/story/china-communication-efforts-nuclear-submarines-1737292-2020-11-02    https://tv.cctv.com/2022/08/31/VIDEnQQ1io9hblqTpgsx7FuS220831.shtml?spm=C52346.PJuZuRpZGQUy.EEnf9Ugeu28r.47&fbclid=IwAR32E6YpR4Y4wNe2aCKw6b2KwJoGbu88HbaguYhahW7lsPFUbxxQnWMzYJw",
+        "名稱": "南北山潛艦通信岸臺(隸屬海軍參謀部)",
+        "說明": "92665部隊  車牌號：HA13  上圖水池座標：29.582062, 110.747147                                                                  「南北山位於湘西腹地，這裡山連著山，沒有盡頭，是快遞不能直達的地方。這裡，坐落著海軍參謀部某保障大隊南北山分隊，常年守護某天線場區的天線和平衡鋼架。南北山上2個班、8個兵，像黃智堅一樣的戰士們已經接力堅守了41年。」「1969年8月4日，毛澤東主席親自批准了“6984工程”。 “6984工程”是為戰略核潛艇bai“09”工程配套的通信工程，擔負著中央軍委指揮戰略核潛艇的重任。 “6984工程”選址在偏僻的湘西深山——湖南省慈利縣江埡鎮。為了實施“6984工程”，軍委調動陸、海軍工程部隊參戰，還投入了數万民工，開山、築路、打山洞。海軍司、政、後調集幾百人組建了6984工區，工作條件極為艱苦。 1970年盛夏，幾十名軍電幹部、教員和畢業的學員，來到湘西，參加“6984工程”的建設。海軍“6984”工程是為戰略核潛艇“09”工程配套的超長波通信台工程的代號。由十大元帥共同擬定的方案，1969年8月4日毛主席批准的國防工程，內部叫6984工程。它的發射功率為2000千瓦(世界發射功率最大的發信台)，通信距離能覆蓋美國西海岸，擔負中央軍委指揮戰略核潛艇的任務。第一發信台在山西大同，是毛主席與赫魯曉夫鬥爭的產物，當時前蘇聯想在我國國土上為其太平洋艦隊建立長波台，事關國家主權，毛主席和黨中央決定建可以，主權是我國的，由我國自己建，設備向蘇聯訂貨。由蘇聯設計工程、生產設備，技術幫助。這就是著名的海軍01工程。 59年01工程正在進行，赫魯曉夫撕毀協議，撤走了全部專家，帶走了主要圖紙，01工程被追停工。怎麼辦?工程動了一半，錢也花了，設備成了廢鐵。是上馬還是下馬，中央和軍委等著海軍拿出意見。海軍通信部長老紅軍徐明德將軍冒著風險，建議大膽起用國民黨過來的工程師周建畏。在事實上的總工程師周建畏的帶領下，一批五十年代入伍的青年學生王東山、袁翊、胡生甫、劉渭濱等參加技術攻關，克服了難以想像的困難和壓力，通信部隊、工程部隊經過幾年艱苦奮鬥，在荒涼的平原上，建成了有巨大的天線陣，當時世界上最大功率發信台。周建畏由於歷史複雜，不能得到應有的待遇，但他在海軍建軍史上留下濃重的一筆，歷史不會忘記他的功績。工程中鍛煉出的王東山、袁翊等人成為共和國海軍通信的主要技術骨幹。但第一發信台坐標是公開的，又地處平原容易被摧毀，它的功能是指揮常規潛艇在遠海作戰。因此中央軍委決定建第二發信台(又稱新01)，能指揮戰略核潛艇出現在美國西海岸實施核打擊。並選址湘西山區，湖南省慈利縣江埡鎮。極為偏僻，機房全在山洞裡，天線陣在兩條山脊之間，是海軍通信工程師王東山發明設計的山谷天線。 6984工程完全是我國自己設計、自己來生產設備、自己施工的國防工程。」–摘自央廣軍事(2020年9月)  https://mp.weixin.qq.com/s/rzD2r19Jh1SJUkUebrwAlw?fbclid=IwAR2InDHAsNtpYgT1BukHVcUAoKt3FpO61xCZkUoDpYWrjG2jT_UdHrT_74s     https://twitter.com/JosephWen___/status/1631602464964358144?s=20     http://big5.china.com.cn/gate/big5/m.china.com.cn/appdoc/doc_1_3_1750675.html?fbclid=IwAR21g3in4TYdQkp2PAxPIZVEr0zFDoPd6pVMBwAwsWb5GWhmW0HHMweCUiE   https://tv.cctv.com/2020/12/31/VIDE2snh03wObJbDLrx0uTpW201231.shtml?fbclid=IwAR0xwx3KucOiJ5SlbEAwYPsNDVx1K7dIWw9xYv94bfPlq3P9X3UJ7ZpX5es   https://www.indiatoday.in/news-analysis/story/china-communication-efforts-nuclear-submarines-1737292-2020-11-02    https://tv.cctv.com/2022/08/31/VIDEnQQ1io9hblqTpgsx7FuS220831.shtml?spm=C52346.PJuZuRpZGQUy.EEnf9Ugeu28r.47&fbclid=IwAR32E6YpR4Y4wNe2aCKw6b2KwJoGbu88HbaguYhahW7lsPFUbxxQnWMzYJw",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -1563,7 +1563,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區海軍 定海軍港(二)",
+        "名稱": "定海基地(二)",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -1577,7 +1577,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區海軍 定海軍港(一)",
+        "名稱": "定海基地(一)",
         "說明": "東部戰區海軍 驅逐艦第6支隊  91991部隊  浙江省舟山市定海區鹽倉街道興舟大道381號   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2024-09-02&paperNumber=07&articleid=938775     https://new.qq.com/rain/a/20230419A07INO00   https://indsr.org.tw/uploads/indsr/files/202205/4691ce06-55f9-491f-86a8-e54bcd0c767a.pdf",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -1592,7 +1592,7 @@
         ]
       },
       "properties": {
-        "名稱": "海珠營區",
+        "名稱": "海珠基地",
         "說明": "海測船大隊 駐廣州海珠。\n636A型海洋綜合調查船1艘：海洋二十六號（2016）、海洋二十三號/873錢學森（2015）\n新型1500噸級雙體測量船2艘：南測430（2013）、南測429（2013）",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -1623,7 +1623,7 @@
       },
       "properties": {
         "名稱": "江門基地(南)",
-        "說明": "裝備:022型飛彈快艇、掃雷艦第10大隊，駐江門新會。\n081型掃雷艦6艘：844鶴山（2013）、843常熟（2013）、842台山（2012）、841孝義（2012）、840瀘溪（2007）、839瀏陽（2007）。\n082II型獵掃雷艦1艘：809開平（2015）。    https://tv.cctv.com/2026/07/09/VIDEiTuejaabeeuFdlHiGpQm260709.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.16",
+        "說明": "裝備:022型飛彈快艇、掃雷艦第10大隊，駐江門新會。\n081型掃雷艦6艘：844鶴山（2013）、843常熟（2013）、842台山（2012）、841孝義（2012）、840瀘溪（2007）、839瀏陽（2007）。\n082II型獵掃雷艦1艘：809開平（2015）。",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -1652,7 +1652,7 @@
         ]
       },
       "properties": {
-        "名稱": "大榭島軍港(西)",
+        "名稱": "大榭島基地(西)",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -1859,7 +1859,7 @@
         ]
       },
       "properties": {
-        "名稱": "貓頭嘴軍港(西)",
+        "名稱": "貓頭嘴基地(西)",
         "說明": "https://maphub.net/Cengiz/plan-Xiashacun-submarine-base",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
@@ -2008,7 +2008,7 @@
       },
       "properties": {
         "名稱": "岸導部隊 仰島灣反艦飛彈營區(南)",
-        "說明": "東部戰區海軍岸導三團 92706部隊  車牌號：HD94  浙江省寧波市北侖區仰島灣 https://x.com/JosephWen___/status/1759830245044335104?s=20    https://twitter.com/isekaimint/status/1654809330443599872?s=20     https://twitter.com/JosephWen___/status/1630399720219906048?s=20    https://weibo.com/7483054836/R1ix27ToO   https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/    https://mp.weixin.qq.com/s/w1m82cW7pU3k9Tqvno0TJg     https://mapwith.ai/rapid#background=Maxar-Premium&datasets=fbRoads,msBuildings&disable_features=building_parts,indoor,pistes,aerialways&map=18.40/29.87586/122.00907",
+        "說明": "東部戰區海軍岸導三團 92706部隊 浙江省寧波市北侖區仰島灣 https://x.com/JosephWen___/status/1759830245044335104?s=20    https://twitter.com/isekaimint/status/1654809330443599872?s=20     https://twitter.com/JosephWen___/status/1630399720219906048?s=20    https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/    https://mp.weixin.qq.com/s/w1m82cW7pU3k9Tqvno0TJg     https://mapwith.ai/rapid#background=Maxar-Premium&datasets=fbRoads,msBuildings&disable_features=building_parts,indoor,pistes,aerialways&map=18.40/29.87586/122.00907",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -2023,7 +2023,7 @@
       },
       "properties": {
         "名稱": "岸導部隊 仰島灣反艦飛彈營區(北)",
-        "說明": "東部戰區海軍岸導三團 92706部隊 車牌號：HD94  浙江省寧波市北侖區仰島灣     https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1650920408571322384?s=20    https://twitter.com/JosephWen___/status/1630399720219906048?s=20",
+        "說明": "東部戰區海軍岸導三團 92706部隊  浙江省寧波市北侖區仰島灣     https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1650920408571322384?s=20    https://twitter.com/JosephWen___/status/1630399720219906048?s=20",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -2038,7 +2038,7 @@
       },
       "properties": {
         "名稱": "岸導部隊 小烏石塘反艦飛彈營區(東)",
-        "說明": "東部戰區海軍岸導三團 92706部隊 車牌號：HD94  浙江省舟山市普陀區朱家尖島小鳥石塘村 裝備：YJ-12B    https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1649351703098011650?s=20    https://twitter.com/jesusfroman/status/1649315572981669891?s=20    https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/",
+        "說明": "東部戰區海軍岸導三團 92706部隊  浙江省舟山市普陀區朱家尖島小鳥石塘村 裝備：YJ-12B    https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1649351703098011650?s=20    https://twitter.com/jesusfroman/status/1649315572981669891?s=20    https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -2218,7 +2218,7 @@
       },
       "properties": {
         "名稱": "海軍陸戰隊 嶺北營區",
-        "說明": "南部戰區海軍 陸戰2旅（92510部隊）別稱：拳頭部隊、雄獅旅  兩棲裝甲團  91755部隊 廣東省湛江市嶺北鎮三多塘：\n坦克營：坦克一連、坦克二連、坦克三連\n戰車營：戰車一連、戰車二連、戰車三連\n裝甲營：裝甲一連、裝甲二連、裝甲三連  https://x.com/JosephWen___/status/2061493411761598536?s=20    https://x.com/JosephWen___/status/2008735936189001991?s=20    https://x.com/JosephWen___/status/1807043490574196961",
+        "說明": "南部戰區海軍 陸戰2旅（92510部隊）別稱：拳頭部隊、雄獅旅  兩棲裝甲團  91755部隊 廣東省湛江市嶺北鎮三多塘：\n坦克營：坦克一連、坦克二連、坦克三連\n戰車營：戰車一連、戰車二連、戰車三連\n裝甲營：裝甲一連、裝甲二連、裝甲三連  https://x.com/JosephWen___/status/2008735936189001991?s=20    https://x.com/JosephWen___/status/1807043490574196961",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -2412,7 +2412,7 @@
       },
       "properties": {
         "名稱": "三亞基地(海航)",
-        "說明": "海航9師26團  裝備：Y-7G、Z-8、Z-8J、Z-8S、Z-9C、Z-9D   91911部隊  戰術編號：9xx7   據報導，Y-7G 於 2019 年初轉移到陵水。  南部戰區海軍無人機團  92781部隊   裝備：BZK-005   https://x.com/JosephWen___/status/1754399545424069109?s=20   https://x.com/JosephWen___/status/1724698446207304159?s=20   https://twitter.com/JosephWen___/status/1614266920622252033?s=20&t=03r1QIUWGQgHvFrTYLhJ3A",
+        "說明": "海航9師26團  裝備：Y-7G、Z-8、Z-8J、Z-8S、Z-9C、Z-9D   戰術編號：9xx7   據報導，Y-7G 於 2019 年初轉移到陵水。  南部戰區海軍無人機團  92781部隊   裝備：BZK-005   https://x.com/JosephWen___/status/1754399545424069109?s=20   https://x.com/JosephWen___/status/1724698446207304159?s=20   https://twitter.com/JosephWen___/status/1614266920622252033?s=20&t=03r1QIUWGQgHvFrTYLhJ3A",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -2886,7 +2886,7 @@
       },
       "properties": {
         "名稱": "海軍試驗訓練基地 賀家屯營區",
-        "說明": "92493部隊。92785部隊可能亦位於此。    https://x.com/JosephWen___/status/2061326322656498177?s=20   https://twitter.com/JosephWen___/status/1698596590989251049?s=20",
+        "說明": "92493部隊。92785部隊可能亦位於此。    https://twitter.com/JosephWen___/status/1698596590989251049?s=20",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -3330,7 +3330,7 @@
       },
       "properties": {
         "名稱": "南北山潛艦通信岸臺 營區(南山班)",
-        "說明": "車牌號：HA13   https://x.com/JosephWen___/status/2063447343882813927?s=20   https://twitter.com/JosephWen___/status/1631602464964358144?s=20",
+        "說明": "車牌號：HA13   https://twitter.com/JosephWen___/status/1631602464964358144?s=20",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -3744,7 +3744,7 @@
       },
       "properties": {
         "名稱": "岸導部隊 大沙裡反艦飛彈陣地",
-        "說明": "東部戰區海軍岸導三團 92706部隊 車牌號：HD94  裝備：YJ-12B https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1649351703098011650?s=20 https://twitter.com/jesusfroman/status/1649315572981669891?s=20",
+        "說明": "東部戰區海軍岸導三團 92706部隊 裝備：YJ-12B https://x.com/JosephWen___/status/1759830245044335104?s=20   https://twitter.com/isekaimint/status/1649351703098011650?s=20 https://twitter.com/jesusfroman/status/1649315572981669891?s=20",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -4415,7 +4415,7 @@
       },
       "properties": {
         "名稱": "海軍試驗訓練基地 第三試驗區",
-        "說明": "海軍試驗訓練基地 第三試驗區 91404部隊  河北省秦皇島市海港區燕山大街建國路331號（秦皇島電大西側）  https://x.com/JosephWen___/status/2061326322656498177?s=20   https://x.com/JosephWen___/status/1743853604656841128?s=20    https://www.bidcenter.com.cn/newscontent-76409703-4.html    https://www.meipian.cn/42ddb0hh    https://iask.sina.com.cn/b/1SY1gYVHASA5.html",
+        "說明": "海軍試驗訓練基地 第三試驗區 91404部隊  河北省秦皇島市海港區燕山大街建國路331號（秦皇島電大西側）  https://x.com/JosephWen___/status/1743853604656841128?s=20    https://www.bidcenter.com.cn/newscontent-76409703-4.html    https://www.meipian.cn/42ddb0hh    https://iask.sina.com.cn/b/1SY1gYVHASA5.html",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -4743,7 +4743,7 @@
       },
       "properties": {
         "名稱": "岸導部隊 小烏石塘反艦飛彈營區(西)",
-        "說明": "東部戰區海軍岸導三團 92706部隊 車牌號：HD94 浙江省舟山市普陀區朱家尖島小鳥石塘村 裝備：YJ-12B  https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/",
+        "說明": "東部戰區海軍岸導三團 92706部隊 浙江省舟山市普陀區朱家尖島小鳥石塘村 裝備：YJ-12B  https://www.airuniversity.af.edu/CASI/Display/Article/3727771/the-pla-navy-coastal-defense-missile-force/",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -5672,78 +5672,6 @@
       "properties": {
         "名稱": "岸導部隊 洞頭反艦飛彈陣地(南)",
         "說明": "岸導一團(海岸霹靂第一團)(92383部隊) 裝備：YJ-12B、YJ-62",
-        "layer": "解放軍海軍、海軍陸戰隊基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          113.377419,
-          23.0800095
-        ]
-      },
-      "properties": {
-        "名稱": "南部戰區海軍 防險救生支隊",
-        "說明": "南部戰區海軍 防險救生支隊 91650部隊   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2026-06-05&paperNumber=02&articleid=980045   https://mp.weixin.qq.com/s?__biz=MzI1MzQ4OTcwOA==&mid=2247528816&idx=2&sn=9b02b2da80edfc69da37ae7c4ef16cf2&chksm=e821fe1dafc6726a2d757fca622b1950c42bc2ff9b3a5c4cb4bab4e7d8539fa1a802cfc705a8&scene=27",
-        "layer": "解放軍海軍、海軍陸戰隊基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          122.4500419,
-          39.5007557
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區海軍 龍船港浮升器陣地/營區",
-        "說明": "北部戰區海軍 觀察通信第3旅（92677部隊）遼寧省大連市普蘭店市城子坦鎮。註：該浮升器裝備 JY-400雷達。   https://x.com/pir34/status/2065782185429213434",
-        "layer": "解放軍海軍、海軍陸戰隊基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.9097456,
-          36.5097622
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區海軍 黃山彈藥庫(一)",
-        "layer": "解放軍海軍、海軍陸戰隊基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.9190825,
-          36.4961258
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區海軍 黃山彈藥庫(二)",
-        "layer": "解放軍海軍、海軍陸戰隊基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.9098959,
-          36.4936128
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區海軍 黃山彈藥庫(三)",
         "layer": "解放軍海軍、海軍陸戰隊基地及設施"
       }
     },
@@ -6686,7 +6614,21 @@
       },
       "properties": {
         "名稱": "武警第二機動總隊 交通第三支隊",
-        "說明": "武警第二機動總隊 交通第三支隊  車牌號：WJ-J28xxx  西藏林芝市波密縣扎木鎮桑登中路1號   https://x.com/JosephWen___/status/1707695870404350401?s=20 (疑似此單位)     https://tv.cctv.com/2024/03/08/VIDElU91K82YBpADb9NKdU0m240308.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.23",
+        "說明": "武警第二機動總隊 交通第三支隊  車牌號：WJ-J28xxx  西藏自治區林芝市波密縣扎木鎮桑登中路1號   https://x.com/JosephWen___/status/1707695870404350401?s=20 (疑似此單位)     https://tv.cctv.com/2024/03/08/VIDElU91K82YBpADb9NKdU0m240308.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.23",
+        "layer": "武裝警察、海外軍事設施及其他分類"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.756942,
+          29.8610765
+        ]
+      },
+      "properties": {
+        "名稱": "武警交通第三支隊 林芝直升機場",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -7042,7 +6984,7 @@
       },
       "properties": {
         "名稱": "武警貴州總隊 機動支隊",
-        "說明": "車牌號：WJ-N55xxx 貴州省貴陽市南明區小碧路  https://x.com/JosephWen___/status/2062938090587795553?s=20   https://x.com/JosephWen___/status/1943960719101505824    https://x.com/JosephWen___/status/1807329232185380972   https://tv.cctv.com/2025/07/11/VIDEWeyD6WHxYqKR2SNrYUVl250711.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.8   https://www.gzstv.com/a/c955294c24ea46359485aa6cfb178602   https://twitter.com/nuwangzi/status/1688575920930447360?s=20",
+        "說明": "車牌號：WJ-N55xxx 貴州省貴陽市南明區小碧路  https://x.com/JosephWen___/status/1943960719101505824    https://x.com/JosephWen___/status/1807329232185380972   https://tv.cctv.com/2025/07/11/VIDEWeyD6WHxYqKR2SNrYUVl250711.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.8   https://www.gzstv.com/a/c955294c24ea46359485aa6cfb178602   https://twitter.com/nuwangzi/status/1688575920930447360?s=20",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -7102,7 +7044,7 @@
       },
       "properties": {
         "名稱": "武警新疆總隊 機動第一支隊 綜合技能駕駛訓場(南)",
-        "說明": "https://twitter.com/JosephWen___/status/1694258316392931711?s=20    https://tv.cctv.com/2026/07/09/VIDEno2hMJgvhFiTUBsBb2PK260709.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.5",
+        "說明": "https://twitter.com/JosephWen___/status/1694258316392931711?s=20",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -9225,7 +9167,7 @@
       },
       "properties": {
         "名稱": "武警黑龍江總隊 牡丹江支隊",
-        "說明": "黑龍江省牡丹江市愛民區通鄉路81號   https://x.com/JosephWen___/status/2075524852489011404?s=20   https://tv.cctv.com/2024/01/29/VIDEUlfi4KhcVJ8x3uBswFn1240129.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.6",
+        "說明": "https://tv.cctv.com/2024/01/29/VIDEUlfi4KhcVJ8x3uBswFn1240129.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.6",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -11758,8 +11700,8 @@
         ]
       },
       "properties": {
-        "名稱": "武警廣西總隊 梧州支隊",
-        "說明": "廣西梧州市棗子沖路63號   https://x.com/JosephWen___/status/2070181461215637518?s=20    https://aiqicha.baidu.com/xbb/f8e4d52ac8cb226456d1d32e822f8790510d5f9f?source=aqc_seo    https://gxbidding.cn/Home/Announcement/826f2813-5f56-4a85-955e-9887de665f39",
+        "名稱": "武警廣東總隊 梧州支隊",
+        "說明": "廣東省梧州市棗子沖路63號    https://aiqicha.baidu.com/xbb/f8e4d52ac8cb226456d1d32e822f8790510d5f9f?source=aqc_seo    https://gxbidding.cn/Home/Announcement/826f2813-5f56-4a85-955e-9887de665f39",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -13115,7 +13057,7 @@
       },
       "properties": {
         "名稱": "武警廣西總隊 桂林支隊",
-        "說明": "武警廣西總隊 桂林支隊  車牌號：WJ-N32xxx   https://x.com/JosephWen___/status/2069586332675178525?s=20    https://tv.cctv.com/2024/06/21/VIDEhMAnPH0Uq8i294vPzV8G240621.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.3",
+        "說明": "車牌號：WJ-N32xxx    https://tv.cctv.com/2024/06/21/VIDEhMAnPH0Uq8i294vPzV8G240621.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.3",
         "layer": "武裝警察、海外軍事設施及其他分類"
       }
     },
@@ -16324,120 +16266,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          113.3941727,
-          23.1104442
-        ]
-      },
-      "properties": {
-        "名稱": "武警海警總隊 廣東支隊",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          118.0660186,
-          24.4673639
-        ]
-      },
-      "properties": {
-        "名稱": "武警海警總隊 福建支隊 廈門大隊",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          113.3779555,
-          23.0799305
-        ]
-      },
-      "properties": {
-        "名稱": "海監總隊 南海分局 第七支隊",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          113.4321228,
-          23.0776538
-        ]
-      },
-      "properties": {
-        "名稱": "武警海警總隊 廣東支隊",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.31822,
-          25.0699883
-        ]
-      },
-      "properties": {
-        "名稱": "武警廣西總隊 桂林支隊 訓練基地",
-        "說明": "武警廣西總隊 桂林支隊 訓練基地  車牌號：WJ-N32xxx   廣西桂林市雁山區雁山鎮雁興街    https://x.com/JosephWen___/status/2069586332675178525?s=20",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          111.1762746,
-          23.3939499
-        ]
-      },
-      "properties": {
-        "名稱": "武警廣西總隊 梧州支隊 訓練基地",
-        "說明": "廣西梧州市塘步鎮大元村石良角    https://x.com/JosephWen___/status/2070181461215637518?s=20",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          109.0032423,
-          34.2482235
-        ]
-      },
-      "properties": {
-        "名稱": "武警陝西總隊 西安支隊",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          109.0213133,
-          34.1529292
-        ]
-      },
-      "properties": {
-        "名稱": "武警陝西總隊 西安支隊 訓練基地",
-        "layer": "武裝警察、海外軍事設施及其他分類"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           87.5275863,
           43.4653967
         ]
@@ -16848,7 +16676,7 @@
         ]
       },
       "properties": {
-        "名稱": "瀘州基地(廢棄)",
+        "名稱": "瀘州基地",
         "說明": "西部戰區空軍第4運輸機師 空10團                            戰術編號：1XX5X 機型：運-9                                      https://zh.wikipedia.org/wiki/%E6%B3%B8%E5%B7%9E%E8%93%9D%E7%94%B0%E6%9C%BA%E5%9C%BA",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
@@ -17118,8 +16946,8 @@
         ]
       },
       "properties": {
-        "名稱": "二台子場站",
-        "說明": "某飛行團 93057部隊  二台子場站  93062部隊  https://x.com/nuwangzi/status/1908065087576834180   http://www.jleda.gov.cn/zwyw/201707/t20170727_250947.html   https://zh.wikipedia.org/wiki/%E5%90%89%E6%9E%97%E4%BA%8C%E5%8F%B0%E5%AD%90%E6%9C%BA%E5%9C%BA",
+        "名稱": "二台子軍用機場(吉林機場)",
+        "說明": "https://x.com/nuwangzi/status/1908065087576834180   https://zh.wikipedia.org/wiki/%E5%90%89%E6%9E%97%E4%BA%8C%E5%8F%B0%E5%AD%90%E6%9C%BA%E5%9C%BA",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -17389,7 +17217,7 @@
       },
       "properties": {
         "名稱": "大連基地 赤峰場站",
-        "說明": "北部戰區 空2旅  93088部隊   內蒙古自治區赤峰市喀喇沁旗牛家營子鎮土城子村玉龍機場/土城子機場\n戰術編號：61x3x 裝備： J-10A、J-10C、J-10S  註：夏北浩模範機務中隊 所在場站  https://x.com/JosephWen___/status/2065688599476187410?s=20    https://x.com/JosephWen___/status/1754676989070598153?s=20   https://twitter.com/JosephWen___/status/1692097273193460176?s=20     https://zh.wikipedia.org/wiki/%E8%B5%A4%E5%B3%B0%E7%8E%89%E9%BE%99%E6%9C%BA%E5%9C%BA",
+        "說明": "北部戰區 空2旅  93088部隊   內蒙古自治區赤峰市喀喇沁旗牛家營子鎮土城子村玉龍機場/土城子機場\n戰術編號：61x3x 裝備： J-10A、J-10C、J-10S  註：夏北浩模範機務中隊 所在場站   https://x.com/JosephWen___/status/1754676989070598153?s=20   https://twitter.com/JosephWen___/status/1692097273193460176?s=20     https://zh.wikipedia.org/wiki/%E8%B5%A4%E5%B3%B0%E7%8E%89%E9%BE%99%E6%9C%BA%E5%9C%BA",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -17569,7 +17397,7 @@
       },
       "properties": {
         "名稱": "南寧基地 遂溪場站",
-        "說明": "南部戰區 空6旅  95380部隊 遂溪場站 (95364部隊)  廣東省湛江市遂溪縣遂溪鎮機場路3號 \n裝備：J-16、Su-35S   戰術編號：61x7x 註：H-6與WZ-10亦有進駐。   https://x.com/JosephWen___/status/1932461730392879467   https://x.com/JosephWen___/status/1932458264421339307   https://x.com/JosephWen___/status/1791004094414664050   https://x.com/JosephWen___/status/1770645553862562108?s=20   https://weibo.com/7580476099/NmLjkbOne   https://x.com/JosephWen___/status/1708874074905334235?s=20   https://twitter.com/JosephWen___/status/1662135476864823296?s=20   https://twitter.com/JosephWen___/status/1620781031640141824?s=20&t=m4pLJJwo5MP6cZSesucQNg     https://twitter.com/benreuter_IMINT/status/1613559873249198083?s=20&t=D1DSy9YWw0ghHCBbMwx48Q        https://twitter.com/JosephWen___/status/1623240035779895297?s=20&t=LOydS29h2dqlIwfyBQ0jag",
+        "說明": "南部戰區 空6旅  95380部隊 遂溪場站 (95364部隊)  廣東省湛江市遂溪縣遂溪鎮機場路3號 \n裝備：J-16、Su-35S   戰術編號：61x7x  https://x.com/JosephWen___/status/1932461730392879467   https://x.com/JosephWen___/status/1932458264421339307   https://x.com/JosephWen___/status/1791004094414664050   https://x.com/JosephWen___/status/1770645553862562108?s=20   https://weibo.com/7580476099/NmLjkbOne   https://x.com/JosephWen___/status/1708874074905334235?s=20   https://twitter.com/JosephWen___/status/1662135476864823296?s=20   https://twitter.com/JosephWen___/status/1620781031640141824?s=20&t=m4pLJJwo5MP6cZSesucQNg     https://twitter.com/benreuter_IMINT/status/1613559873249198083?s=20&t=D1DSy9YWw0ghHCBbMwx48Q        https://twitter.com/JosephWen___/status/1623240035779895297?s=20&t=LOydS29h2dqlIwfyBQ0jag",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -17734,7 +17562,7 @@
       },
       "properties": {
         "名稱": "故城場站",
-        "說明": "飛行試驗訓練中心 空170旅  裝備：J-10C、J-10S、JL-9  戰術編號：78x1x  故城場站（95920部隊）河北省衡水市故城縣里老鄉里老村1001號    https://www.hnzbcgxxw.com/list/detail/40228.html     https://www.dzvc.edu.cn/info/1047/7408.htm",
+        "說明": "飛行試驗訓練中心 空170旅  裝備：J-10C、J-10S、JL-9  戰術編號：78x1x",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -17942,7 +17770,7 @@
       },
       "properties": {
         "名稱": "渭南軍用機場",
-        "說明": "裝備：FH-97A  註：飛虹FH-97A曾於2026年3月30日於此機場測試。",
+        "說明": "註：飛虹FH-97A曾於2026年3月30日於此機場出現。",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -18225,8 +18053,8 @@
         ]
       },
       "properties": {
-        "名稱": "長治場站(海航)",
-        "說明": "海軍航空大學 第2航空團 裝備：JL-8 戰術編號：82x0x                                                                              海軍航空大學 第6航空團 92925部隊  裝備：Y-7、HYJ-7、Y-9H  戰術編號：9xx0、xx                                                               海航維保廠  裝備：CJ-6、Y-5     https://x.com/JosephWen___/status/2067091235953860916?s=20    https://x.com/JosephWen___/status/1974799009844978021   https://twitter.com/JosephWen___/status/1645257404542746625?s=20      https://tv.cctv.com/2025/05/14/VIDEFF6GxkZ9Ai1GAWCN0iRG250514.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.10      https://mp.weixin.qq.com/s/0QT_uegvZPJItp3_UbGJmA",
+        "名稱": "長治場站(海航)(王村機場)",
+        "說明": "海軍航空大學 第2航空團 裝備：JL-8 戰術編號：82x0x                                                                              海軍航空大學 第6航空團 92925部隊  裝備：Y-7、HYJ-7、Y-9H  戰術編號：9xx0、xx                                                               海航維保廠  裝備：CJ-6、Y-5      https://x.com/JosephWen___/status/1974799009844978021   https://twitter.com/JosephWen___/status/1645257404542746625?s=20      https://tv.cctv.com/2025/05/14/VIDEFF6GxkZ9Ai1GAWCN0iRG250514.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.10      https://mp.weixin.qq.com/s/0QT_uegvZPJItp3_UbGJmA",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -18389,7 +18217,37 @@
       },
       "properties": {
         "名稱": "張家口雷達站(LPAR)",
-        "說明": "https://x.com/Hurin92/status/2060620466759635408?s=20  https://www.globalsecurity.org/wmd/world/china/lpar.htm     https://twitter.com/ArmsControlWonk/status/741332481127776256?s=20&t=EogsQ9lbfhXWANYlGfSgow",
+        "說明": "https://www.globalsecurity.org/wmd/world/china/lpar.htm     https://twitter.com/ArmsControlWonk/status/741332481127776256?s=20&t=EogsQ9lbfhXWANYlGfSgow",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.0917068,
+          36.0246987
+        ]
+      },
+      "properties": {
+        "名稱": "沂源 大型相控陣雷達站(LPAR)",
+        "說明": "https://www.defensenews.com/global/asia-pacific/2022/04/18/new-chinese-radar-looks-towards-japan-satellite-image-shows/   https://www.laitimes.com/en/article/3mul6_43jln.html",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.5716363,
+          35.4827358
+        ]
+      },
+      "properties": {
+        "名稱": "平涼 大型相控陣雷達站(LPAR)",
+        "說明": "63726部隊      https://twitter.com/pir34/status/1287819236111519745",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -18404,7 +18262,7 @@
       },
       "properties": {
         "名稱": "格爾木場站",
-        "說明": "西部戰區電子作戰團   裝備：KJ-500A  戰術編號：\t53x5x   格爾木場站（93951部隊）青海省格爾木市機場路15號‌ 註：2026年6月14日衛星影像顯示H-6亦有進駐此機場。   https://x.com/RupprechtDeino/status/1590200196130279424   https://www.bidcenter.com.cn/newscontent-144804650-1.html",
+        "說明": "西部戰區電子作戰團   裝備：KJ-500A  戰術編號：\t53x5x   格爾木場站（93951部隊）青海省格爾木市機場路15號‌  https://x.com/RupprechtDeino/status/1590200196130279424   https://www.bidcenter.com.cn/newscontent-144804650-1.html",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -18449,7 +18307,7 @@
       },
       "properties": {
         "名稱": "超視距後向散射雷達(OTH-B) 湖北接收站",
-        "說明": "95980部隊  發射站座標:32.33728, 112.7066                                    60 度扇區（假設）向東南方向 120 度發射，會覆蓋範圍 700至3500 公里。需要另外 400 公里才能到達關島和塞班島。 天波旅\nhttps://x.com/sfx_ewss/status/2069002161296740621?s=20  https://x.com/sfx_ewss/status/1935933744101441619    http://hfasia.blogspot.com/2017/02/chinas-oth-b-radar-network-site.html",
+        "說明": "95980部隊  發射站座標:32.33728, 112.7066                                    60 度扇區（假設）向東南方向 120 度發射，會覆蓋範圍 700至3500 公里。需要另外 400 公里才能到達關島和塞班島。 天波旅\nhttps://x.com/sfx_ewss/status/1935933744101441619    http://hfasia.blogspot.com/2017/02/chinas-oth-b-radar-network-site.html",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -19022,7 +18880,7 @@
         ]
       },
       "properties": {
-        "名稱": "池州場站",
+        "名稱": "池州基地",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -20099,7 +19957,7 @@
       },
       "properties": {
         "名稱": "湖北 超視距後向散射雷達(OTH-B)發射站",
-        "說明": "95980部隊  接收站座標:31.62127, 111.91617                               很明顯，此站點有3組發射機天線陣列，因此理論上至少有3個雷達信號和3個不同的無線電頻率可以同時從這個站點傳輸。\n\n每組天線陣還可以劃分給多個發射機使用，這樣可以同時從這個站點發出更多的雷達信號。https://x.com/sfx_ewss/status/2069002161296740621?s=20   http://hfasia.blogspot.com/2017/02/chinas-oth-b-radar-network-site.html",
+        "說明": "95980部隊  接收站座標:31.62127, 111.91617                               很明顯，此站點有3組發射機天線陣列，因此理論上至少有3個雷達信號和3個不同的無線電頻率可以同時從這個站點傳輸。\n\n每組天線陣還可以劃分給多個發射機使用，這樣可以同時從這個站點發出更多的雷達信號。http://hfasia.blogspot.com/2017/02/chinas-oth-b-radar-network-site.html",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -20404,6 +20262,36 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          119.1289219,
+          30.2865984
+        ]
+      },
+      "properties": {
+        "名稱": "天池 大型相控陣雷站(LPAR)",
+        "說明": "https://x.com/pir34/status/1917387937089810549  https://x.com/nuwangzi/status/1916717249236287783   https://www.globalsecurity.org/wmd/world/china/linan.htm",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.2367244,
+          41.6412031
+        ]
+      },
+      "properties": {
+        "名稱": "庫爾勒 大型相控陣雷達站(LPAR)",
+        "說明": "https://www.indiatoday.in/world/story/china-missile-early-warning-capabilities-satellite-images-1709882-2020-08-11   https://www.globalsecurity.org/space/world/china/korla.htm",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           85.4045934,
           28.3615649
         ]
@@ -20514,7 +20402,6 @@
       },
       "properties": {
         "名稱": "小河頭軍用機場",
-        "說明": "陸軍單位  駐有ASN-209與CH-4無人機",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -22219,6 +22106,20 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          115.3758915,
+          22.707433
+        ]
+      },
+      "properties": {
+        "名稱": "掃帚尾雷達站(南)",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           114.9086982,
           22.5648693
         ]
@@ -23429,12 +23330,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          115.3751987,
-          22.7089049
+          115.3743297,
+          22.7089296
         ]
       },
       "properties": {
-        "名稱": "掃帚尾雷達站",
+        "名稱": "掃帚尾雷達站(北)",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -24683,6 +24584,20 @@
       },
       "properties": {
         "名稱": "石城島雷達站",
+        "layer": "解放軍空軍、海軍航空兵基地及設施"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118.5840501,
+          24.7944739
+        ]
+      },
+      "properties": {
+        "名稱": "晉江機場雷達站",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -31636,7 +31551,7 @@
       },
       "properties": {
         "名稱": "鹽城 大型相控陣雷達站(LPAR)",
-        "說明": "https://twitter.com/JosephWen___/status/1603690796372226048?s=20&t=yvC0uSx0CnZte4Tz_Twmqg    https://x.com/Hurin92/status/2060620478600159701?s=20",
+        "說明": "https://twitter.com/JosephWen___/status/1603690796372226048?s=20&t=yvC0uSx0CnZte4Tz_Twmqg",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -31753,7 +31668,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區空軍 南昌防空陣地/營區(南)",
+        "名稱": "東部戰區空軍 南昌防空陣地/基地(南)",
         "說明": "94623部隊  地空導彈兵第16旅 裝備：HQ-9B https://twitter.com/nuwangzi/status/1605802355915489281?s=20&t=zzxLqI9qYEKkU9enI1-7ng",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
@@ -31768,7 +31683,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區空軍 南昌防空陣地/營區(北)",
+        "名稱": "東部戰區空軍 南昌防空陣地/基地(北)",
         "說明": "地空導彈兵第16旅某營  94907部隊  榮譽：一等功營  裝備：HQ-9B  江西省南昌市青山湖區桂苑路以東，方志敏大道以北  https://x.com/JosephWen___/status/1756369735057629335?s=20   https://weibo.com/7483054836/OjxTR5len   https://www.bidcenter.com.cn/news-249904580-17.html    https://twitter.com/nuwangzi/status/1605802355915489281?s=20&t=zzxLqI9qYEKkU9enI1-7ng",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
@@ -34289,13 +34204,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          78.3405948,
-          35.3179375
+          78.3099962,
+          35.3090076
         ]
       },
       "properties": {
         "名稱": "阿克賽欽雷達站",
-        "說明": "https://x.com/sfx_ewss/status/2064297546596643134?s=20   https://twitter.com/Kyangs_Thang/status/1696783676434948224?s=20    https://twitter.com/viper202020/status/1696697758667714871?s=20",
+        "說明": "https://twitter.com/Kyangs_Thang/status/1696783676434948224?s=20    https://twitter.com/viper202020/status/1696697758667714871?s=20",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -34309,8 +34224,8 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區空軍 昆明基地 機關",
-        "說明": "南部戰區空軍 昆明基地 機關  95429部隊  昆明市西山區明朗水庫      http://zgrmjfjkj.zbycg.com/",
+        "名稱": "南部戰區空軍 昆明基地 指揮所",
+        "說明": "南部戰區空軍 昆明基地 指揮所  95429部隊  昆明市西山區明朗水庫      http://zgrmjfjkj.zbycg.com/",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -35449,13 +35364,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          77.3805498,
-          37.7688459
+          77.4072861,
+          37.7767498
         ]
       },
       "properties": {
-        "名稱": "西部戰區空軍 葉城防空陣地/營區(西)",
-        "說明": "西部戰區空軍地導第18旅  裝備：HQ-9B   https://x.com/sfx_ewss/status/2072994812371095847?s=20    https://x.com/pir34/status/1854867817151013243",
+        "名稱": "西部戰區空軍 葉城防空陣地/基地(西)",
+        "說明": "西部戰區空軍地導第18旅    https://x.com/pir34/status/1854867817151013243",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -35679,7 +35594,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區空軍 菠蘿山防空陣地/營區",
+        "名稱": "南部戰區空軍 菠蘿山防空陣地/基地",
         "說明": "95111部隊   https://x.com/benreuter_IMINT/status/1873686595431432317",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
@@ -35739,8 +35654,8 @@
         ]
       },
       "properties": {
-        "名稱": "西部戰區空軍 葉城防空陣地/營區(東)",
-        "說明": "西部戰區空軍地導第18旅  此地已搬遷至西側補遠處的新營區。    https://x.com/pir34/status/1854867817151013243   https://x.com/nuwangzi/status/1879801995315536308",
+        "名稱": "西部戰區空軍 葉城防空陣地/基地(東)",
+        "說明": "西部戰區空軍地導第18旅  此地已搬遷至西側補遠處的新營區。    https://x.com/nuwangzi/status/1879801995315536308",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -36084,7 +35999,7 @@
       },
       "properties": {
         "名稱": "仲巴雷達站",
-        "說明": "西藏自治區日喀則市仲巴縣扎東鄉。註：全球海拔最高雷達站（海拔約 5655 公尺）。  https://x.com/sfx_ewss/status/2065954416818323549?s=20    https://x.com/sfx_ewss/status/1946435722199826833",
+        "說明": "西藏自治區日喀則市仲巴縣扎東鄉。註：全球海拔最高雷達站（海拔約 5655 公尺）。   https://x.com/sfx_ewss/status/1946435722199826833",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -36339,165 +36254,6 @@
       "properties": {
         "名稱": "東部戰區空軍 興寧防空陣地/營區",
         "說明": "疑似裝備：HQ-12",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.3328997,
-          27.0918332
-        ]
-      },
-      "properties": {
-        "名稱": "周寧雷達站",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          109.5823593,
-          40.8739926
-        ]
-      },
-      "properties": {
-        "名稱": "明安場站",
-        "說明": "裝備：FH-95  解放軍空軍曾於2026年5月11日於此進行FH-95測試。內蒙古自治區巴彥淖爾市烏拉特前旗明安鎮",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.6208423,
-          23.0676962
-        ]
-      },
-      "properties": {
-        "名稱": "南部戰區空軍 下雙嶺防空陣地/營區",
-        "說明": "疑似裝備：HQ-12",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          117.9977358,
-          27.5838382
-        ]
-      },
-      "properties": {
-        "名稱": "仙店雷達站",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          98.5351481,
-          29.7075167
-        ]
-      },
-      "properties": {
-        "名稱": "拉烏山雷達站",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.8627772,
-          36.4908329
-        ]
-      },
-      "properties": {
-        "名稱": "筆架山雷達站",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3081896,
-          25.2142529
-        ]
-      },
-      "properties": {
-        "名稱": "桂林場站防空雷達",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          115.6407314,
-          40.3036132
-        ]
-      },
-      "properties": {
-        "名稱": "中部戰區空軍 康祁防空陣地/營區",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          126.4726801,
-          43.9006153
-        ]
-      },
-      "properties": {
-        "名稱": "鍋頂山雷達站",
-        "說明": "http://www.jleda.gov.cn/zwyw/201707/t20170727_250947.html",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          92.3447191,
-          28.3178384
-        ]
-      },
-      "properties": {
-        "名稱": "覺拉雷達站",
-        "說明": "西藏山南錯那縣覺拉鄉    https://x.com/sfx_ewss/status/2072241939714658653?s=20",
-        "layer": "解放軍空軍、海軍航空兵基地及設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          91.0800027,
-          30.4861302
-        ]
-      },
-      "properties": {
-        "名稱": "當雄場站",
-        "說明": "裝備：J-20",
         "layer": "解放軍空軍、海軍航空兵基地及設施"
       }
     },
@@ -37802,7 +37558,7 @@
       },
       "properties": {
         "名稱": "網路空間部隊 機關",
-        "說明": "網路空間部隊 北京市海淀區青龍橋街道廂紅旗遺光寺社區3號院  副戰區級 前戰略支援部隊網絡系統部（32069部隊），位於北京市海淀區，負責空間信息和計算機網絡系統等工作。戰略支援部隊「網路系統部」主要由軍改前總參三部（技術偵察部）、總參四部（電子對抗與雷達部）、部分總參二部（情報部）及總裝備部之專業人員所組成。29總參四部總部在軍改後成為戰略支援部隊聯合參謀部之網路電子局，網路系統部組織架構中，僅有原先下轄的電子作戰部隊編入網路系統部，原屬政治工作部下轄的總政治部311基地也可能在此次軍改中移入網路系統部。吳建興，〈戰略支援部隊在不對稱作戰下的角色與功能– 以網路系統部為例〉，《台灣碩博士論文網》，2022年5月12日，頁78。註：網路空間部隊後勤部  32047部隊 。   https://x.com/JosephWen___/status/1804020374197424326   https://x.com/JosephWen___/status/1781333000057500010 https://x.com/JosephWen___/status/1781501311894303015 https://jamestown.org/program/the-cyberspace-force-a-bellwether-for-conflict/   https://cyberdefensereview.army.mil/CDR-Content/Articles/Article-View/Article/4500583/from-bytes-to-satellites-improving-us-joint-force-all-source-intelligence-to-co/     https://indsr.org.tw/uploads/indsr/files/202212/5b5e33da-d28e-41da-9380-92157bff19a1.pdf http://www.zbejmrh.cn/jdxxhjs/1155.jhtml https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%88%98%E7%95%A5%E6%94%AF%E6%8F%B4%E9%83%A8%E9%98%9F%E7%BD%91%E7%BB%9C%E7%B3%BB%E7%BB%9F%E9%83%A8",
+        "說明": "網路空間部隊 北京市海淀區青龍橋街道廂紅旗遺光寺社區3號院  副戰區級 前戰略支援部隊網絡系統部（32069部隊），位於北京市海淀區，負責空間信息和計算機網絡系統等工作。戰略支援部隊「網路系統部」主要由軍改前總參三部（技術偵察部）、總參四部（電子對抗與雷達部）、部分總參二部（情報部）及總裝備部之專業人員所組成。29總參四部總部在軍改後成為戰略支援部隊聯合參謀部之網路電子局，網路系統部組織架構中，僅有原先下轄的電子作戰部隊編入網路系統部，原屬政治工作部下轄的總政治部311基地也可能在此次軍改中移入網路系統部。吳建興，〈戰略支援部隊在不對稱作戰下的角色與功能– 以網路系統部為例〉，《台灣碩博士論文網》，2022年5月12日，頁78。註：網路空間部隊後勤部  32047部隊 。   https://x.com/JosephWen___/status/1804020374197424326   https://x.com/JosephWen___/status/1781333000057500010 https://x.com/JosephWen___/status/1781501311894303015 https://jamestown.org/program/the-cyberspace-force-a-bellwether-for-conflict/   https://indsr.org.tw/uploads/indsr/files/202212/5b5e33da-d28e-41da-9380-92157bff19a1.pdf http://www.zbejmrh.cn/jdxxhjs/1155.jhtml https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%88%98%E7%95%A5%E6%94%AF%E6%8F%B4%E9%83%A8%E9%98%9F%E7%BD%91%E7%BB%9C%E7%B3%BB%E7%BB%9F%E9%83%A8",
         "layer": "黨和國家重要政經軍事機關"
       }
     },
@@ -37892,7 +37648,7 @@
       },
       "properties": {
         "名稱": "陸軍朱日和聯合訓練基地",
-        "說明": "朱日和聯合訓練基地(66029部隊)，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地。央視於2024年7月14日報導顯示，此訓練基地番號由「朱日和合同戰術訓練基地」更名為「朱日和聯合訓練基地」。https://x.com/JosephWen___/status/2073377493084668193?s=20   https://x.com/JosephWen___/status/2060399670132953431?s=20   https://x.com/JosephWen___/status/1983942689297945032   https://x.com/JosephWen___/status/1942486595032231939   https://x.com/JosephWen___/status/1812673686622929061   https://x.com/JosephWen___/status/1795691838717972804    https://twitter.com/JosephWen___/status/1682604973811707906?s=20     https://www.tearline.mil/public_page/pla-joint-training   https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0",
+        "說明": "朱日和聯合訓練基地(66029部隊)，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地。央視於2024年7月14日報導顯示，此訓練基地番號由「朱日和合同戰術訓練基地」更名為「朱日和聯合訓練基地」。https://x.com/JosephWen___/status/1983942689297945032   https://x.com/JosephWen___/status/1942486595032231939   https://x.com/JosephWen___/status/1812673686622929061   https://x.com/JosephWen___/status/1795691838717972804    https://twitter.com/JosephWen___/status/1682604973811707906?s=20     https://www.tearline.mil/public_page/pla-joint-training   https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -37922,7 +37678,7 @@
       },
       "properties": {
         "名稱": "興城場站/海軍綜合試驗訓練基地/海軍航空兵訓練處(戰鬥機)",
-        "說明": "海軍艦載航空兵第1聯隊  92853部隊  裝備：J-15、J-15S、Z-9D、Z-18、Z-18F、Z-18YJ  戰術編號：xxx/xx                     海軍航空大學  第三訓練團  裝備：JL-9G   戰術編號：83x0x (xx)  註1：該團自2022年4月14日調整部署，進駐濟源場站。註2：衛星圖像顯示，2026年6月4日GJ-21進駐此場站訓練。   〈https://x.com/JosephWen___/status/1863486381521347030〉。    https://x.com/JosephWen___/status/1950930563700781125   https://x.com/JosephWen___/status/1861248561507086810   https://x.com/JosephWen___/status/1733946139559473285?s=20   https://twitter.com/JosephWen___/status/1692090715466321936?s=20    https://twitter.com/JosephWen___/status/1655088755022389248?s=20    https://twitter.com/JosephWen___/status/1642904093080576000?s=20   https://twitter.com/JosephWen___/status/1626896159573946368?s=20     https://twitter.com/JosephWen___/status/1609951606384242689?s=20   https://weibo.com/7580476099/Oj6jktpQp （試飛大隊徽章）    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%88%B0%E8%BD%BD%E6%9C%BA%E7%BB%BC%E5%90%88%E8%AF%95%E9%AA%8C%E8%AE%AD%E7%BB%83%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%AF%95%E9%AA%8C%E5%9F%BA%E5%9C%B0                                 https://zh.wikipedia.org/w/index.php?title=%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%88%AA%E7%A9%BA%E5%85%B5&useFormat=mobile&variant=zh-hant#%E5%8D%97%E9%83%A8%E6%88%98%E5%8C%BA%E6%B5%B7%E5%86%9B%E8%88%AA%E7%A9%BA%E5%85%B5",
+        "說明": "海軍艦載航空兵第1聯隊  92853部隊  裝備：J-15、J-15S、Z-9D、Z-18、Z-18F、Z-18YJ  戰術編號：xxx/xx                     海軍航空大學  第三訓練團  裝備：JL-9G   戰術編號：83x0x (xx)  註：該團自2022年4月14日調整部署，進駐濟源場站〈https://x.com/JosephWen___/status/1863486381521347030〉。    https://x.com/JosephWen___/status/1950930563700781125   https://x.com/JosephWen___/status/1861248561507086810   https://x.com/JosephWen___/status/1733946139559473285?s=20   https://twitter.com/JosephWen___/status/1692090715466321936?s=20    https://twitter.com/JosephWen___/status/1655088755022389248?s=20    https://twitter.com/JosephWen___/status/1642904093080576000?s=20   https://twitter.com/JosephWen___/status/1626896159573946368?s=20     https://twitter.com/JosephWen___/status/1609951606384242689?s=20   https://weibo.com/7580476099/Oj6jktpQp （試飛大隊徽章）    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%88%B0%E8%BD%BD%E6%9C%BA%E7%BB%BC%E5%90%88%E8%AF%95%E9%AA%8C%E8%AE%AD%E7%BB%83%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%AF%95%E9%AA%8C%E5%9F%BA%E5%9C%B0                                 https://zh.wikipedia.org/w/index.php?title=%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%88%AA%E7%A9%BA%E5%85%B5&useFormat=mobile&variant=zh-hant#%E5%8D%97%E9%83%A8%E6%88%98%E5%8C%BA%E6%B5%B7%E5%86%9B%E8%88%AA%E7%A9%BA%E5%85%B5",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -37951,8 +37707,8 @@
         ]
       },
       "properties": {
-        "名稱": "金沙溝場站",
-        "說明": "註：J-50與J-36曾在此測試。  https://x.com/Hurin92/status/2076232949247431087?s=20       https://www.twz.com/air/chinas-6th-generation-stealth-fighters-both-appear-at-secretive-test-base   https://www.chinatimes.com/realtimenews/20210708006634-260417?chdtv&fbclid=IwAR2_6k6GZRbxujWFkT5zhr-y05Nr9aX4sdJ58NtmPy_m6OPv3hi7O4-gVHE      https://www.npr.org/2021/07/01/1011806020/satellite-photos-show-china-expanding-its-mysterious-desert-airfield",
+        "名稱": "新疆羅布泊特殊場站",
+        "說明": "註：J-36曾在此測試。   https://www.twz.com/air/chinas-6th-generation-stealth-fighters-both-appear-at-secretive-test-base   https://www.chinatimes.com/realtimenews/20210708006634-260417?chdtv&fbclid=IwAR2_6k6GZRbxujWFkT5zhr-y05Nr9aX4sdJ58NtmPy_m6OPv3hi7O4-gVHE      https://www.npr.org/2021/07/01/1011806020/satellite-photos-show-china-expanding-its-mysterious-desert-airfield",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38054,7 +37810,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 陸軍第二綜合訓練基地(二)",
+        "名稱": "東部戰區 陸軍第二綜合訓練基地(北)",
         "說明": "主要負責新兵訓練  31620部隊 福建省福州市福清市鏡洋鎮長征村   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%AC%AC%E4%BA%8C%E7%BB%BC%E5%90%88%E8%AE%AD%E7%BB%83%E5%9F%BA%E5%9C%B0",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -38279,7 +38035,7 @@
         ]
       },
       "properties": {
-        "名稱": "三軍聯合登陸訓練基地 大埕灣訓場(三)",
+        "名稱": "三軍聯合登陸訓練基地 大埕灣(三)",
         "說明": "73501部隊（傳聞此代號於2017年軍改後撤銷，新代號為32187部隊，番號為三軍聯合登陸訓練基地。）    https://www.chinanews.com.cn/m/mil/2015/11-13/7621550.shtml  https://twitter.com/JosephWen___/status/1623698653927079939?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w https://twitter.com/JosephWen___/status/1623701079895707648?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w     https://www.google.com/maps/d/u/0/viewer?hl=zh-TW&mid=1b3VFUonMlHi0Eh9tdZyvWvOT4bCnRf8&ll=23.627599881855186%2C117.18872702689953&z=14",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -38294,7 +38050,7 @@
         ]
       },
       "properties": {
-        "名稱": "三軍聯合登陸訓練基地 大埕灣訓場(一)",
+        "名稱": "三軍聯合登陸訓練基地 大埕灣(一)",
         "說明": "73501部隊（傳聞此代號於2017年軍改後撤銷，新代號為32187部隊，番號為三軍聯合登陸訓練基地。）福建省漳州市詔安縣大埕灣\n  https://x.com/JosephWen___/status/1916183506969104726   https://x.com/JosephWen___/status/1843872641452830986   https://x.com/JosephWen___/status/1837909719207629208   https://x.com/JosephWen___/status/1831534562880713004   https://x.com/JosephWen___/status/1792084582373974056    https://x.com/JosephWen___/status/1705624709675782561?s=20    https://twitter.com/JosephWen___/status/1631652963012976640?s=20  https://allsourceanalysis.com/featured-analysis/   https://x.com/AllSourceA/status/1712178603444883637?s=20    https://www.chinanews.com.cn/m/mil/2015/11-13/7621550.shtml      https://twitter.com/JosephWen___/status/1623698653927079939?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w https://twitter.com/JosephWen___/status/1623701079895707648?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w     https://www.google.com/maps/d/u/0/viewer?hl=zh-TW&mid=1b3VFUonMlHi0Eh9tdZyvWvOT4bCnRf8&ll=23.627599881855186%2C117.18872702689953&z=14",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -38455,7 +38211,7 @@
       },
       "properties": {
         "名稱": "海軍試驗訓練基地(西)",
-        "說明": "92493部隊  遼寧省葫蘆島市海濱南路1號   https://tv.cctv.com/2026/07/09/VIDE7uRijpHoBrxKCpyDFbCY260709.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.19   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%AF%95%E9%AA%8C%E5%9F%BA%E5%9C%B0?fbclid=IwAR3-nDYNv5h4Oyf7p5qVlwInfhNjH9EtiQ_dWKrBtvui1fJaBevjMlpJxMI  http://zghsjj.cn/instance/40/40.html?fbclid=IwAR1q3JnIixJYtPLaqmxKNewwq8c6qekXdSnoqP9Hd1JbuReU_FVzTvcc6Nw",
+        "說明": "92493部隊  遼寧省葫蘆島市海濱南路1號   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E6%B5%B7%E5%86%9B%E8%AF%95%E9%AA%8C%E5%9F%BA%E5%9C%B0?fbclid=IwAR3-nDYNv5h4Oyf7p5qVlwInfhNjH9EtiQ_dWKrBtvui1fJaBevjMlpJxMI  http://zghsjj.cn/instance/40/40.html?fbclid=IwAR1q3JnIixJYtPLaqmxKNewwq8c6qekXdSnoqP9Hd1JbuReU_FVzTvcc6Nw",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38484,7 +38240,7 @@
       },
       "properties": {
         "名稱": "陸軍朱日和聯合訓練基地 陸航/空降步兵訓場(北)",
-        "說明": "朱日和聯合訓練基地，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地，此陸航基地無固定駐紮單位，為演習時使用。https://tv.cctv.com/2025/09/27/VIDE0f7bpJtRvzhAMSTmmGMe250927.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3  s=20https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0   https://www.scramble.nl/planning/orbats/china/china-army-aviation#ZY19177      https://tv.cctv.com/2026/07/05/VIDEKwfXNalwZ0xYbyEgUT0x260705.shtml?spm=C53074552346.P4BWJvVoMUky.0.0",
+        "說明": "朱日和聯合訓練基地，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地，此陸航基地無固定駐紮單位，為演習時使用。https://tv.cctv.com/2025/09/27/VIDE0f7bpJtRvzhAMSTmmGMe250927.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3  s=20https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0   https://www.scramble.nl/planning/orbats/china/china-army-aviation#ZY19177",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38544,7 +38300,7 @@
       },
       "properties": {
         "名稱": "陸軍朱日和聯合訓練基地 陸航/空降步兵訓場(南)",
-        "說明": "朱日和聯合訓練基地，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地，此陸航基地無固定駐紮單位，為演習時使用。https://x.com/JosephWen___/status/2073377493084668193?s=20   https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0 https://www.scramble.nl/planning/orbats/china/china-army-aviation#ZY19177",
+        "說明": "朱日和聯合訓練基地，可展開師規模的陸空實兵對抗，並有全計算機化C4ISR模擬裝備和5個師以上進駐的營房、醫院、後勤等設備，可演習面積達1000多平方公里，為亞洲最大陸戰軍事訓練基地，此陸航基地無固定駐紮單位，為演習時使用。https://zh.wikipedia.org/wiki/%E6%9C%B1%E6%97%A5%E5%92%8C%E8%A8%93%E7%B7%B4%E5%9F%BA%E5%9C%B0 https://www.scramble.nl/planning/orbats/china/china-army-aviation#ZY19177",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38574,7 +38330,7 @@
       },
       "properties": {
         "名稱": "羅布泊測試場營區(北)",
-        "說明": "https://horsdoeuvresofbattle.substack.com/p/on-reuters-launch-pads-story   https://x.com/Topol_MSS27/status/2018017270669230298?s=20   https://x.com/pir34/status/2017600534748729432?s=20   https://x.com/Topol_MSS27/status/2018015496595972115?s=20   https://twitter.com/viper202020/status/1483646919549272064/photo/1   https://benjaminpittet.substack.com/p/china-is-expanding-its-military-facilities",
+        "說明": "https://x.com/Topol_MSS27/status/2018017270669230298?s=20   https://x.com/pir34/status/2017600534748729432?s=20   https://x.com/Topol_MSS27/status/2018015496595972115?s=20   https://twitter.com/viper202020/status/1483646919549272064/photo/1   https://benjaminpittet.substack.com/p/china-is-expanding-its-military-facilities",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38619,7 +38375,7 @@
       },
       "properties": {
         "名稱": "解放軍 對艦炸射模擬平台移動滑軌",
-        "說明": "https://twitter.com/benreuter_IMINT/status/1550095732597821440?s=20&t=eQu0ydbTj7hQ0tpu3hlSnQ   https://www.twz.com/43046/chinas-giant-moving-warship-target-in-the-desert-shows-how-seriously-its-taking-the-naval-arms-race    https://cn.wsj.com/articles/%E4%B8%AD%E5%9C%8B%E5%9C%A8%E6%B2%99%E6%BC%A0%E5%BB%BA%E9%80%A0%E4%BA%86%E7%BE%8E%E5%9C%8B%E8%88%AA%E6%AF%8D%E7%AD%89%E8%BB%8D%E8%89%A6%E7%9A%84%E7%AD%89%E6%AF%94%E4%BE%8B%E6%A8%A1%E5%9E%8B-121636433112   https://www.sohu.com/a/788499507_121451128     https://www.axios.com/2021/11/08/china-mockups-us-warships-detected",
+        "說明": "https://twitter.com/benreuter_IMINT/status/1550095732597821440?s=20&t=eQu0ydbTj7hQ0tpu3hlSnQ",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -38690,7 +38446,7 @@
         ]
       },
       "properties": {
-        "名稱": "三軍聯合登陸訓練基地 大埕灣訓場(二)",
+        "名稱": "三軍聯合登陸訓練基地 大埕灣(二)",
         "說明": "73501部隊（傳聞此代號於2017年軍改後撤銷，新代號為32187部隊，番號為三軍聯合登陸訓練基地。）    https://x.com/JosephWen___/status/1837909719207629208   https://twitter.com/JosephWen___/status/1623698653927079939?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w https://twitter.com/JosephWen___/status/1623701079895707648?s=20&t=VaQ9gVqfMI4rZd6PdKbt7w    https://www.google.com/maps/d/u/0/viewer?hl=zh-TW&mid=1b3VFUonMlHi0Eh9tdZyvWvOT4bCnRf8&ll=23.627599881855186%2C117.18872702689953&z=14",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -38780,7 +38536,7 @@
         ]
       },
       "properties": {
-        "名稱": "靖邊海則灘場站",
+        "名稱": "靖邊海則灘無人機試驗機場",
         "說明": "靖邊海則灘機場（Jingbian Haizetan Airport，許可證編號：T13820216000900），位於中國陝西省榆林市靖邊縣海則灘鎮大石砭村，西南距靖邊縣城約20千米，飛行區指標等級為3C，屬A1類跑道型通用機場，是中國第一個專業無人機試驗測試中心。     https://www.facebook.com/share/p/1bioaS3V4y/",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -38956,7 +38712,7 @@
       },
       "properties": {
         "名稱": "羅布泊測試場營區(南)",
-        "說明": "https://horsdoeuvresofbattle.substack.com/p/on-reuters-launch-pads-story  https://www.reuters.com/graphics/CHINA-MILITARY/NUCLEAR/zjpqmbrlqpx/?utm_source=braze&utm_medium=notifications&utm_campaign=2025_engagement   https://x.com/pir34/status/2017600534748729432?s=20    https://x.com/Topol_MSS27/status/2018015496595972115?s=20   https://benjaminpittet.substack.com/p/china-is-expanding-its-military-facilities",
+        "說明": "https://x.com/pir34/status/2017600534748729432?s=20    https://x.com/Topol_MSS27/status/2018015496595972115?s=20   https://benjaminpittet.substack.com/p/china-is-expanding-its-military-facilities",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -39194,7 +38950,7 @@
       },
       "properties": {
         "名稱": "若羌 炸射靶場",
-        "說明": "https://x.com/type36512/status/2073747656279748800?s=20   https://tv.cctv.com/2026/07/02/VIDEUJ4EYvTmAF7gxJLI9RFM260702.shtml   https://x.com/dex_eve/status/2026483006249054696?s=20   https://x.com/benreuter_IMINT/status/2026602319924559994?s=20   https://twitter.com/dex_eve/status/1622282580916854786?s=20&t=LOqoNMGI4DiHIkaa8vTeWg   https://x.com/clashreport/status/1803687979006763213",
+        "說明": "https://x.com/dex_eve/status/2026483006249054696?s=20   https://x.com/benreuter_IMINT/status/2026602319924559994?s=20   https://twitter.com/dex_eve/status/1622282580916854786?s=20&t=LOqoNMGI4DiHIkaa8vTeWg   https://x.com/clashreport/status/1803687979006763213",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -39715,7 +39471,7 @@
         ]
       },
       "properties": {
-        "名稱": "三軍聯合登陸訓練基地 大埕灣訓場(四)",
+        "名稱": "三軍聯合登陸訓練基地 大埕灣(四)",
         "說明": "73501部隊（傳聞此代號於2017年軍改後撤銷，新代號為32187部隊，番號為三軍聯合登陸訓練基地。）",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -39833,7 +39589,7 @@
         ]
       },
       "properties": {
-        "名稱": "解放軍 對艦炸射訓場（模擬伯克級驅逐艦)(二)",
+        "名稱": "解放軍 對艦炸射訓場（模擬伯克級驅逐艦）",
         "說明": "模擬伯克級驅逐艦   https://x.com/type36512/status/1743557110762455141?s=20  https://twitter.com/viper202020/status/1641295665815797761?s=20",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -39999,7 +39755,7 @@
       },
       "properties": {
         "名稱": "南部戰區 捷勝兩棲聯合訓場(西)",
-        "說明": "https://www.reuters.com/graphics/USA-CHINA/TAIWAN-INVASION/zjpqdekmlvx/?fbclid=IwVERDUAOL3rhleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAo2NjI4NTY4Mzc5AAEejcLWQS9aTiNQ2wAvbZ4-tCMKz_2S7ZxmQAJwBHaD6Ngzt1cktI0QaFIBC1s_aem_-w4Vg0WBWDfQ83DIYQbieA  https://x.com/AllSourceA/status/2061909172128813477?s=20    https://x.com/AllSourceA/status/1950975347580870937  https://x.com/JosephWen___/status/1951686737299972603   https://x.com/JosephWen___/status/1932461730392879467   https://x.com/JosephWen___/status/1810287493079777532   https://x.com/JosephWen___/status/1714487387282411541?s=20   https://twitter.com/JosephWen___/status/1672189585877790722?s=20   https://www.shanwei.gov.cn/swtyjrswj/zwgk/qt/gzdt/content/post_715687.html",
+        "說明": "https://www.reuters.com/graphics/USA-CHINA/TAIWAN-INVASION/zjpqdekmlvx/?fbclid=IwVERDUAOL3rhleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAo2NjI4NTY4Mzc5AAEejcLWQS9aTiNQ2wAvbZ4-tCMKz_2S7ZxmQAJwBHaD6Ngzt1cktI0QaFIBC1s_aem_-w4Vg0WBWDfQ83DIYQbieA   https://x.com/AllSourceA/status/1950975347580870937  https://x.com/JosephWen___/status/1951686737299972603   https://x.com/JosephWen___/status/1932461730392879467   https://x.com/JosephWen___/status/1810287493079777532   https://x.com/JosephWen___/status/1714487387282411541?s=20   https://twitter.com/JosephWen___/status/1672189585877790722?s=20   https://www.shanwei.gov.cn/swtyjrswj/zwgk/qt/gzdt/content/post_715687.html",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -40115,7 +39871,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 陸軍第二綜合訓練基地(一)",
+        "名稱": "東部戰區 陸軍第二綜合訓練基地(南)",
         "說明": "主要負責新兵訓練  31620部隊  福建省福州市福清市鏡洋鎮墩頭村      https://twitter.com/JosephWen___/status/1691329422371205120?s=20     https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%AC%AC%E4%BA%8C%E7%BB%BC%E5%90%88%E8%AE%AD%E7%BB%83%E5%9F%BA%E5%9C%B0",
         "layer": "解放軍重要訓場/特殊設施"
       }
@@ -40161,7 +39917,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 阿克賽欽地下掩體",
-        "說明": "https://x.com/sfx_ewss/status/2060978941117239486?s=20   https://twitter.com/viper202020/status/1696685965312450668?s=20",
+        "說明": "https://twitter.com/viper202020/status/1696685965312450668?s=20",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -40266,7 +40022,7 @@
       },
       "properties": {
         "名稱": "解放軍 對艦炸射訓場（模擬福特級航艦）",
-        "說明": "https://x.com/AllSourceA/status/2067230785115934961?s=20  https://x.com/HpwWJVafCv83954/status/2003376163201405070?s=20   https://x.com/sfx_ewss/status/1774002894498677214?s=20   https://x.com/type36512/status/1743304487765512403?s=20       https://x.com/type36512/status/1743557110762455141?s=20     https://www.thedrive.com/the-war-zone/china-has-new-full-scale-target-of-americas-ford-supercarrier",
+        "說明": "https://x.com/HpwWJVafCv83954/status/2003376163201405070?s=20   https://x.com/sfx_ewss/status/1774002894498677214?s=20   https://x.com/type36512/status/1743304487765512403?s=20       https://x.com/type36512/status/1743557110762455141?s=20     https://www.thedrive.com/the-war-zone/china-has-new-full-scale-target-of-americas-ford-supercarrier",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -40521,65 +40277,6 @@
       "properties": {
         "名稱": "南部戰區 東海島登陸訓場",
         "說明": "廣東省湛江市坡頭區南三島東門。特種登陸駁船2025年3月21日曾於此遂行訓練。",
-        "layer": "解放軍重要訓場/特殊設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          87.6299938,
-          38.6969851
-        ]
-      },
-      "properties": {
-        "名稱": "解放軍 對艦炸射訓場（模擬伯克級）",
-        "說明": "https://x.com/JosephWen___/status/2068146146732806527?s=20",
-        "layer": "解放軍重要訓場/特殊設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          87.7777535,
-          38.6054273
-        ]
-      },
-      "properties": {
-        "名稱": "解放軍 對艦炸射訓場（模擬伯克級驅逐艦)(一)",
-        "layer": "解放軍重要訓場/特殊設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -82.3641306,
-          22.9485311
-        ]
-      },
-      "properties": {
-        "名稱": "貝胡卡爾 中國信號監聽站",
-        "說明": "https://features.csis.org/hiddenreach/snapshots/cuba-china-cdaa-base/    https://www.csis.org/analysis/new-activity-possible-chinese-intelligence-facilities-cuba",
-        "layer": "解放軍重要訓場/特殊設施"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -75.746792,
-          20.0053189
-        ]
-      },
-      "properties": {
-        "名稱": "埃爾薩勞 中國信號監聽站",
-        "說明": "埃爾薩勞（El Salao）圓形陣列天線（CDAA）   https://features.csis.org/hiddenreach/snapshots/cuba-china-cdaa-base/ https://www.csis.org/analysis/new-activity-possible-chinese-intelligence-facilities-cuba",
         "layer": "解放軍重要訓場/特殊設施"
       }
     },
@@ -41769,7 +41466,6 @@
       },
       "properties": {
         "名稱": "日喀則 天線陣列",
-        "說明": "https://x.com/sfx_ewss/status/2067919433239232587?s=20",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
     },
@@ -41976,7 +41672,6 @@
       },
       "properties": {
         "名稱": "戰略支援部隊 庫爾勒基地(推測)",
-        "說明": "可能為63656部隊",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
     },
@@ -42034,7 +41729,7 @@
         ]
       },
       "properties": {
-        "名稱": "蕭山衛星通信營區(SATCOM)",
+        "名稱": "蕭山衛星通信基地(SATCOM)",
         "說明": "61085部隊",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
@@ -44668,7 +44363,7 @@
       },
       "properties": {
         "名稱": "軍事航天部隊 佳木斯監測預警站",
-        "說明": "軍事航天部隊 佳木斯監測預警站  裝備：LPAR  此站曾於2025年1月24日習近平視察北部戰區機關時出現於視頻通話中。https://x.com/JosephWen___/status/1883218822666351092   https://x.com/JosephWen___/status/1883184337463759014  https://x.com/Hurin92/status/2060620478600159701?s=20    https://www.globalsecurity.org/wmd/world/china/lpar-x.htm",
+        "說明": "軍事航天部隊 佳木斯監測預警站  此站曾於2025年1月24日習近平視察北部戰區機關時出現於視頻通話中。https://x.com/JosephWen___/status/1883218822666351092   https://x.com/JosephWen___/status/1883184337463759014   https://www.globalsecurity.org/wmd/world/china/lpar-x.htm",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
     },
@@ -44743,7 +44438,7 @@
       },
       "properties": {
         "名稱": "軍事航天部隊 臨滄監測預警站",
-        "說明": "軍事航天部隊 臨滄監測預警站  裝備：LPAR  https://x.com/Hurin92/status/2060620478600159701?s=20   https://x.com/Mrcool63040811/status/1892249792417255468",
+        "說明": "軍事航天部隊 臨滄監測預警站  裝備：LPAR  https://x.com/Mrcool63040811/status/1892249792417255468",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
     },
@@ -44773,7 +44468,7 @@
       },
       "properties": {
         "名稱": "軍事航天部隊 賀州監測預警站",
-        "說明": "廣西壯族自治區賀州市昭平縣庇江鄉   https://x.com/benreuter_IMINT/status/1922259646124892470   https://x.com/Hurin92/status/2060620488062443967?s=20",
+        "說明": "廣西壯族自治區賀州市昭平縣庇江鄉   https://x.com/benreuter_IMINT/status/1922259646124892470",
         "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
       }
     },
@@ -45321,96 +45016,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          83.6624593,
-          45.7793013
-        ]
-      },
-      "properties": {
-        "名稱": "軍事航天部隊 鐵克佩監測預警站",
-        "說明": "軍事航天部隊 鐵克佩監測預警站  裝備：LPAR  新疆塔城地區托里縣鐵克佩    https://x.com/sfx_ewss/status/2073392668009476251?s=20",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          86.2366942,
-          41.6412842
-        ]
-      },
-      "properties": {
-        "名稱": "軍事航天部隊 庫爾勒監測預警站",
-        "說明": "軍事航天部隊 庫爾勒監測預警站  裝備：LPAR  新疆庫爾勒西尼爾鎮鼎興路   https://x.com/Hurin92/status/2060620466759635408?s=20 https://www.indiatoday.in/world/story/china-missile-early-warning-capabilities-satellite-images-1709882-2020-08-11 https://www.globalsecurity.org/space/world/china/korla.htm",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.1286168,
-          30.2867072
-        ]
-      },
-      "properties": {
-        "名稱": "軍事航天部隊 天池監測預警站",
-        "說明": "軍事航天部隊 天池監測預警站  裝備：LPAR   https://x.com/Hurin92/status/2060620466759635408?s=20 https://x.com/pir34/status/1917387937089810549 https://x.com/nuwangzi/status/1916717249236287783 https://www.globalsecurity.org/wmd/world/china/linan.htm",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.5718748,
-          35.4829326
-        ]
-      },
-      "properties": {
-        "名稱": "軍事航天部隊 平涼監測預警站",
-        "說明": "軍事航天部隊 平涼監測預警站  63726部隊  裝備：LPAR   https://x.com/Hurin92/status/2060620478600159701?s=20 https://twitter.com/pir34/status/1287819236111519745",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          118.0916981,
-          36.0251073
-        ]
-      },
-      "properties": {
-        "名稱": "軍事航天部隊 沂源監測預警站",
-        "說明": "軍事航天部隊 沂源監測預警站  裝備：LPAR    https://x.com/Hurin92/status/2060620466759635408?s=20 https://www.defensenews.com/global/asia-pacific/2022/04/18/new-chinese-radar-looks-towards-japan-satellite-image-shows/ https://www.laitimes.com/en/article/3mul6_43jln.html",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          80.2804195,
-          34.6395685
-        ]
-      },
-      "properties": {
-        "名稱": "信息支援部隊 紅山河機務站",
-        "說明": "信息支援部隊 某部 63656部隊 2營某連 紅山河機務站  車牌號：YX32  西藏阿里地區日土縣松木希錯湖東北側  註：該營在7月2日中國共產黨成立105周年之際，被中央軍委表彰為全軍先進基層黨組織。\n https://x.com/JosephWen___/status/2074809819580780864?s=20    https://cpc.people.com.cn/BIG5/n1/2026/0703/c64387-40752598.html",
-        "layer": "解放軍軍事航天部隊、網路空間部隊、信息支援部隊"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           114.0785593,
           22.4372227
         ]
@@ -45506,7 +45111,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 方家山營區",
+        "名稱": "東部戰區  方家山營區",
         "說明": "72集團軍勤支旅 31606部隊 車號牌：LD46   浙江湖州吳興區杭長橋北路3667號    https://twitter.com/JosephWen___/status/1641735232360697856?s=20     https://twitter.com/JosephWen___/status/1618849668150202368?s=20&t=RyGx7Tbu1bODciNLUkEvsQ",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -45536,7 +45141,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 龍田陸航場站",
+        "名稱": "東部戰區 龍田陸航基地",
         "說明": "東部戰區 73集團軍陸航旅 (73159部隊)      裝備：KVD-001、CH4 (0512B4)     https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%AC%AC%E4%B8%83%E5%8D%81%E4%B8%89%E9%9B%86%E5%9B%A2%E5%86%9B   https://www.thedrive.com/the-war-zone/42722/major-construction-underway-at-three-of-chinas-airbases-closest-to-taiwan",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -45760,7 +45365,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 漳浦陸航場站",
+        "名稱": "東部戰區 漳浦陸航基地",
         "說明": "東部戰區 73集團軍陸航旅  73159部隊  旅部 裝備：Mi-171、Mi-171E、Z-8B、Z-9、WZ-10、Z-10A、Z-19 戰術編號：LH993cxx                                                  此基地擁有 1700 公尺的機場跑道（戰備跑道）、600 公尺的主跑道（目前可見）、10 個直升機降落坪，以及 27 個停機棚，規模相當大，空拍中還可看見已有三架直升機停靠在停機棚旁邊。除直升機外，軍用 UAV 極可能也部署在這個基地。  https://x.com/JosephWen___/status/1973986890723570132   https://x.com/JosephWen___/status/1774023411708395730?s=20    https://x.com/JosephWen___/status/1726654518514090028?s=20   https://x.com/JosephWen___/status/1646202083266408448?s=20\nhttps://x.com/JosephWen___/status/1623021887998787584?s=20    https://twitter.com/JosephWen___/status/1610561737224515585?s=20&t=NIJk1S9Fl4h4p7pm2n5Alg           https://tv.cctv.com/2024/06/12/VIDENsEz0zWGiOpcTylo8zN3240612.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.8   https://www.pourquoi.tw/d-atis-china-ccp-new-heliport-in-zhangpu-fujian/amp/                                 https://content-static.cctvnews.cctv.com/snow-book/video.html?item_id=228054127044257873&toc_style_id=video_default&share_to=copy_url&track_id=f6665026-6c85-4b66-8a11-5750050c89fc",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -45820,7 +45425,7 @@
       },
       "properties": {
         "名稱": "南部戰區 仕塘營區",
-        "說明": "74集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團 裝步六連榮譽稱號：硬骨頭六連、英雄硬六連 裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連 某連榮譽稱號：攻堅英雄連 車牌號：LN11  廣東省惠州市博羅縣仕塘。央視亦曾於2023年9月20日報導南部戰區陸軍在此組織新排長崗前集訓（https://x.com/JosephWen___/status/1704337443053564258?s=20）。     https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20    https://x.com/JosephWen___/status/1743853604656841128?s=20 https://x.com/JosephWen___/status/1742074529504272470?s=20 https://twitter.com/JosephWen___/status/1669005450157907968?s=20 https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
+        "說明": "74集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團  裝步六連榮譽稱號：硬骨頭六連  裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連  車牌號：LN11  廣東省惠州市博羅縣仕塘。央視亦曾於2023年9月20日報導南部戰區陸軍在此組織新排長崗前集訓（https://x.com/JosephWen___/status/1704337443053564258?s=20）。     https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20    https://x.com/JosephWen___/status/1743853604656841128?s=20 https://x.com/JosephWen___/status/1742074529504272470?s=20 https://twitter.com/JosephWen___/status/1669005450157907968?s=20 https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -45979,7 +45584,7 @@
         ]
       },
       "properties": {
-        "名稱": "北部戰區 七十八集團軍機關",
+        "名稱": "北部戰區 七十八集團軍軍部",
         "說明": "31669部隊  黑龍江省哈爾濱市香坊區壩牆子屯  習近平曾於2023年9月8日前往視察。     https://twitter.com/JosephWen___/status/1700851638146363872?s=20    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%AC%AC%E4%B8%83%E5%8D%81%E5%85%AB%E9%9B%86%E5%9B%A2%E5%86%9B",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -46883,7 +46488,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 東方紅陸航場站",
+        "名稱": "東部戰區 東方紅陸航場站/傘降訓場",
         "說明": "南部戰區 74集團軍陸航旅 裝備：Mi-171、Z-9W、Z-9WZ、Z-10A 戰術編號：LH981cxx (75752部隊)(戰藍雄鷹)   廣東省河源市連平縣連平縣三角鎮  https://x.com/JosephWen___/status/1810308044213084356   https://twitter.com/JosephWen___/status/1673173785653161985?s=20    https://twitter.com/nuwangzi/status/1627899811537072130?s=20     https://twitter.com/JosephWen___/status/1613070471767142401?s=20&t=agHOmxH1ScHKSdha8qFLag    https://www.youtube.com/watch?v=lRvW6wEU1Nw                  https://tv.cctv.com/2022/02/13/VIDEFDLmIWkvZ8jGwbubkX3V220213.shtml?fbclid=IwAR2DdvSDJfkd6TjvlYuoIS1lx8FOu1h8suCGlMseOYPlLpTM2g9ZCSDiMxw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -47256,7 +46861,7 @@
       },
       "properties": {
         "名稱": "東部戰區 丹陽營區",
-        "說明": "73集團軍重型合成第86旅  73127部隊  車號牌：LD53   榮譽稱號：沂蒙雄獅、強軍勁旅  裝步4連（原73122部隊61分隊）榮譽稱號：強軍精武紅四連、夜襲陽明堡戰鬥模範連  裝步8連榮譽稱號：青州連  福建省福州市連江縣丹陽鎮山邊崗8號  https://x.com/JosephWen___/status/1990107504869830873?s=20   https://x.com/JosephWen___/status/1943352784889540855   https://x.com/JosephWen___/status/1734100342315667735?s=20    https://twitter.com/JosephWen___/status/1666742708323622912?s=20     https://twitter.com/JosephWen___/status/1647840887920263168?s=20     https://twitter.com/JosephWen___/status/1635975584160567296?s=20    https://twitter.com/Dichlorvos2021/status/1625542512487321600?s=20&t=52Yc10KcL_0MQ15F4ZT8hg    https://twitter.com/JosephWen___/status/1625531112046075904?s=20&t=UfPQfQcCHE4OVxZ3Y1ux5A     https://twitter.com/JosephWen___/status/1601583961116856320?s=20&t=SE49lMngOGNfkb4ZtGSNKg                     https://mp.weixin.qq.com/s/18eLlyCk8xp630Bl3j53ig  https://tv.cctv.com/2026/06/06/VIDE9Im8wyoyQD80Lhk0JUxQ260606.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.11     https://tv.cctv.com/2022/12/10/VIDEdSKEN9VfvejhK90Dd15m221210.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.2",
+        "說明": "73集團軍重型合成第86旅  73127部隊  車號牌：LD53   榮譽稱號：沂蒙雄獅、強軍勁旅  裝步4連（原73122部隊61分隊）榮譽稱號：強軍精武紅四連、夜襲陽明堡戰鬥模範連  裝步8連榮譽稱號：青州連  福建省福州市連江縣丹陽鎮山邊崗8號  https://x.com/JosephWen___/status/1990107504869830873?s=20   https://x.com/JosephWen___/status/1943352784889540855   https://x.com/JosephWen___/status/1734100342315667735?s=20    https://twitter.com/JosephWen___/status/1666742708323622912?s=20     https://twitter.com/JosephWen___/status/1647840887920263168?s=20     https://twitter.com/JosephWen___/status/1635975584160567296?s=20    https://twitter.com/Dichlorvos2021/status/1625542512487321600?s=20&t=52Yc10KcL_0MQ15F4ZT8hg    https://twitter.com/JosephWen___/status/1625531112046075904?s=20&t=UfPQfQcCHE4OVxZ3Y1ux5A     https://twitter.com/JosephWen___/status/1601583961116856320?s=20&t=SE49lMngOGNfkb4ZtGSNKg                     https://mp.weixin.qq.com/s/18eLlyCk8xp630Bl3j53ig    https://tv.cctv.com/2022/12/10/VIDEdSKEN9VfvejhK90Dd15m221210.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.2",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -47299,7 +46904,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 坂頂營區",
+        "名稱": "東部戰區 連江基地",
         "說明": "建於2006-2007 年，原先用於車輛訓練，2022開始開始作為直升機訓場，可視為解放軍在東南地區加快了軍事準備。",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -47400,6 +47005,21 @@
       },
       "properties": {
         "名稱": "東部戰區 團山基地",
+        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.6207024,
+          23.066986
+        ]
+      },
+      "properties": {
+        "名稱": "南部戰區 下雙嶺防空陣地/基地",
+        "說明": "疑似裝備:HQ-12",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -47562,7 +47182,7 @@
       },
       "properties": {
         "名稱": "東部戰區 上湖營區",
-        "說明": "東部戰區陸軍參謀部邊海防處 海防第303旅  31612部隊  車牌號：LD77  福建省福州市長樂市上湖   https://x.com/JosephWen___/status/2078549523421638880?s=20   https://twitter.com/JosephWen___/status/1699005777195958374?s=20    https://twitter.com/JosephWen___/status/1667394714637852672?s=20     https://www.openstreetmap.org/way/1023903769#map=16/25.9463/119.5031",
+        "說明": "東部戰區陸軍參謀部邊海防處 海防第303旅  31612部隊  車牌號：LD77  福建省福州市長樂市上湖    https://twitter.com/JosephWen___/status/1699005777195958374?s=20    https://twitter.com/JosephWen___/status/1667394714637852672?s=20     https://www.openstreetmap.org/way/1023903769#map=16/25.9463/119.5031",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -47749,7 +47369,6 @@
       },
       "properties": {
         "名稱": "中部戰區 康祁訓場",
-        "說明": "衛星圖像顯示，2026年6月5日有單位進駐此訓場演訓。",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -48260,7 +47879,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 李家巷營區",
+        "名稱": "東部戰區 李家巷基地",
         "說明": "72集團軍某訓練基地  浙江湖州長興縣李家巷鎮。前兩棲裝甲團（73027部隊）駐地（原南京軍區第1集團軍第1師第2裝甲團改編）。   https://x.com/JosephWen___/status/1731006919706587237?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -48333,7 +47952,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 新橋營區",
+        "名稱": "東部戰區 新橋基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -48406,7 +48025,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 月湖營區",
+        "名稱": "東部戰區 月湖基地",
         "說明": "72集團軍中型合成第85旅  73123部隊 榮譽稱號：鋼刀勁旅  車牌號：LD35  江西省鷹潭市月湖區童家鎮（緊靠魚種場中心小學）   已由原駐地福州市福清市鏡洋鎮琯口大道123號移防至此。旅長：曹彬大校  政委：周磊大校  參謀長：陸光印上校(2023年4月)       https://x.com/JosephWen___/status/1745442627963769033?s=20   https://twitter.com/JosephWen___/status/1686227221919494144?s=20   https://twitter.com/JosephWen___/status/1686228873263128577?s=20    https://new.qq.com/rain/a/20220310A06S3T00",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -48630,7 +48249,7 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 水磨溝營區(二)",
+        "名稱": "新疆軍區 水磨溝基地(二)",
         "說明": "新疆軍區獨立步兵第一團  69009部隊  稱號：白龍馬團  新疆烏魯木齊水磨溝區五星北路146號    https://x.com/JosephWen___/status/1765556690584543233?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -48749,7 +48368,7 @@
       },
       "properties": {
         "名稱": "中部戰區 新鄉陸航基地",
-        "說明": "中部戰區 83集團軍  161空中突擊旅 (32145部隊)（直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20  戰術編號：LH953cxx  車牌號：LZ61   2024年1月4日，此旅正式官宣入駐位於河南新鄉獲嘉縣丁村鄉新駐地。    另外，此基地亦駐有61330部隊(單位名稱不詳)，地址為人民路111號，161空中突擊旅 (32145部隊)則為河南新鄉衛濱區人民路131號。    https://x.com/JosephWen___/status/2073377493084668193?s=20   https://x.com/JosephWen___/status/1743615610741805139?s=20    https://twitter.com/JosephWen___/status/1677704768775507971?s=20    https://twitter.com/JosephWen___/status/1644372147488563201?s=20   https://twitter.com/JosephWen___/status/1611269912240214016?s=20 https://twitter.com/JosephWen___/status/1543913010808229888?s=20 https://twitter.com/pir34/status/1553381669255667712/photo/1",
+        "說明": "中部戰區 83集團軍  161空中突擊旅 (32145部隊)（直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20  戰術編號：LH953cxx  車牌號：LZ61   2024年1月4日，此旅正式官宣入駐位於河南新鄉獲嘉縣丁村鄉新駐地。    另外，此基地亦駐有61330部隊(單位名稱不詳)，地址為人民路111號，161空中突擊旅 (32145部隊)則為河南新鄉衛濱區人民路131號。    https://x.com/JosephWen___/status/1743615610741805139?s=20    https://twitter.com/JosephWen___/status/1677704768775507971?s=20    https://twitter.com/JosephWen___/status/1644372147488563201?s=20   https://twitter.com/JosephWen___/status/1611269912240214016?s=20 https://twitter.com/JosephWen___/status/1543913010808229888?s=20 https://twitter.com/pir34/status/1553381669255667712/photo/1",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -49551,7 +49170,7 @@
       },
       "properties": {
         "名稱": "中部戰區 符家莊營區",
-        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  某連榮譽稱號：堅守英雄連 某連榮譽稱號：常勝連 某連榮譽稱號：紅十連  石家莊市鹿泉區符家莊     https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
+        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  石家莊市鹿泉區符家莊     https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -49788,8 +49407,8 @@
         ]
       },
       "properties": {
-        "名稱": "西藏軍區 阿克賽欽陸航場站",
-        "說明": "https://x.com/sfx_ewss/status/2060418340670349731?s=20   https://www.chathamhouse.org/publications/the-world-today/2023-06/are-china-and-india-bound-another-deadly-border-clash?utm_source=twitter.com&utm_medium=organic-social&utm_campaign=twt-junejuly-2023&utm_content=osint-himalayas",
+        "名稱": "西藏軍區 阿克賽欽陸航基地",
+        "說明": "https://www.chathamhouse.org/publications/the-world-today/2023-06/are-china-and-india-bound-another-deadly-border-clash?utm_source=twitter.com&utm_medium=organic-social&utm_campaign=twt-junejuly-2023&utm_content=osint-himalayas",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -50641,8 +50260,8 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 鼓樓營區",
-        "說明": "71集團軍重型合成第35旅 73087部隊 別稱：老槐樹部隊   車號牌：LD12  江蘇省徐州市鼓樓區沈孟路。71集團軍新兵團亦駐於此營區。     https://x.com/JosephWen___/status/1760671253688647928?s=20    https://x.com/JosephWen___/status/1729408494875693464?s=20   https://x.com/JosephWen___/status/1720739623872364733?s=20    https://twitter.com/JosephWen___/status/1660924954399916033?s=20 https://twitter.com/JosephWen___/status/1639133140315951104?s=20 https://twitter.com/JosephWen___/status/1635514928055619584?s=20    https://twitter.com/jesusfroman/status/1638918463094702080?s=20       https://mp.weixin.qq.com/s/ilViXGXfiBakyn6wX-7IoQ     https://x.com/JosephWen___/status/1772513659400450554?s=20 (71集團軍新兵團)    https://k.sina.com.cn/article_6433100537_17f7152f90010043pv.html",
+        "名稱": "東部戰區 鼓樓基地",
+        "說明": "71集團軍重型合成第35旅 73087部隊 別稱：老槐樹部隊   車號牌：LD12  江蘇省徐州市鼓樓區沈孟路。71集團軍新兵團亦駐於此營區。     https://x.com/JosephWen___/status/1760671253688647928?s=20    https://x.com/JosephWen___/status/1729408494875693464?s=20   https://x.com/JosephWen___/status/1720739623872364733?s=20    https://twitter.com/JosephWen___/status/1660924954399916033?s=20 https://twitter.com/JosephWen___/status/1639133140315951104?s=20 https://twitter.com/JosephWen___/status/1635514928055619584?s=20    https://twitter.com/jesusfroman/status/1638918463094702080?s=20       https://mp.weixin.qq.com/s/ilViXGXfiBakyn6wX-7IoQ     https://x.com/JosephWen___/status/1772513659400450554?s=20 (71集團軍新兵團)",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -50657,7 +50276,7 @@
       },
       "properties": {
         "名稱": "東部戰區 九里營區",
-        "說明": "71集團軍炮兵旅 73101部隊 九里營區 榮譽稱號：太行勁旅 車牌號：LD21 江蘇省徐州市九里山 https://x.com/JosephWen___/status/2057295102444486962?s=20   https://x.com/JosephWen___/status/1994805717103215017?s=20   https://x.com/JosephWen___/status/1924877292289065460   https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://www.bidcenter.com.cn/newscontent-48804959-1.html   https://tv.cctv.com/2025/11/21/VIDE72VgBvZFfx5yIKSIPHUu251121.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.18    https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
+        "說明": "71集團軍炮兵旅 73101部隊 九里營區 榮譽稱號：太行勁旅 車牌號：LD21 江蘇省徐州市九里山 https://x.com/JosephWen___/status/1994805717103215017?s=20   https://x.com/JosephWen___/status/1924877292289065460   https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://www.bidcenter.com.cn/newscontent-48804959-1.html   https://tv.cctv.com/2025/11/21/VIDE72VgBvZFfx5yIKSIPHUu251121.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.18    https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -50846,7 +50465,7 @@
       },
       "properties": {
         "名稱": "東部戰區 小壩山營區",
-        "說明": "71集團軍炮兵旅 73101部隊 小壩山營區 榮譽稱號：太行勁旅 車牌號：LD21 江蘇省徐州市雲龍區銅山路250號 https://x.com/JosephWen___/status/2057295102444486962?s=20   https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1924877292289065460    https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://www.bidcenter.com.cn/newscontent-48804959-1.html     https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
+        "說明": "71集團軍炮兵旅 73101部隊 小壩山營區 榮譽稱號：太行勁旅 車牌號：LD21 江蘇省徐州市雲龍區銅山路250號 https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1924877292289065460    https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://www.bidcenter.com.cn/newscontent-48804959-1.html     https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -50861,7 +50480,7 @@
       },
       "properties": {
         "名稱": "東部戰區 駱駝山營區",
-        "說明": "71集團軍重型第2合成旅 73089部隊  榮譽稱號：王杰部隊  車號牌：LD11  江蘇省徐州市雲龍區銅山路117號       https://x.com/JosephWen___/status/1930468666648473858    https://twitter.com/JosephWen___/status/1664988258688962560?s=20    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-06-18&paperNumber=06&articleid=957359    https://tv.cctv.com/2025/11/06/VIDEnccME3EVX3N6XMXokyGa251106.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.32",
+        "說明": "71集團軍重型第2合成旅 73089部隊  榮譽稱號：王傑部隊  車號牌：LD11  江蘇省徐州市雲龍區銅山路117號       https://x.com/JosephWen___/status/1930468666648473858    https://twitter.com/JosephWen___/status/1664988258688962560?s=20    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-06-18&paperNumber=06&articleid=957359    https://tv.cctv.com/2025/11/06/VIDEnccME3EVX3N6XMXokyGa251106.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.32",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -50921,7 +50540,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 無名湖哨所",
-        "說明": "西藏軍區邊防第354團（77629部隊）山南軍分區  無名湖邊防連  https://tv.cctv.com/2024/01/01/VIDE8IxP2kN8i9RmUTfuERg3240101.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.15   https://zhuanlan.zhihu.com/p/379947405?utm_id=0   https://weibo.com/2394264374/KC701dWef",
+        "說明": "https://tv.cctv.com/2024/01/01/VIDE8IxP2kN8i9RmUTfuERg3240101.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.15   https://zhuanlan.zhihu.com/p/379947405?utm_id=0   https://weibo.com/2394264374/KC701dWef",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -51926,7 +51545,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 孟津營區(西)",
+        "名稱": "中部戰區 孟津基地(西)",
         "說明": "83集團軍工化旅 32149部隊 車牌號：LZ65 河南省洛陽市孟津縣馬步村 https://x.com/JosephWen___/status/1909187764073205767   https://twitter.com/JosephWen___/status/1694043170341101997?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -51941,7 +51560,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 孟津營區(東)",
+        "名稱": "中部戰區 孟津基地(東)",
         "說明": "83集團軍工化旅  32149部隊  車牌號：LZ65  河南省洛陽市孟津縣馬步村    https://x.com/JosephWen___/status/1909187764073205767   https://twitter.com/JosephWen___/status/1694043170341101997?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -52178,7 +51797,7 @@
       },
       "properties": {
         "名稱": "東部戰區 燈光村營區",
-        "說明": "73集團軍炮兵旅（73146部隊） 車牌號：LD61 福建省泉州市南安市燈光村  註：原32515部隊    https://x.com/JosephWen___/status/2005936691627061577?s=20  https://x.com/JosephWen___/status/2005661342691398111?s=20    https://x.com/JosephWen___/status/1979565386376102240   https://x.com/JosephWen___/status/1954630140983705864    https://x.com/JosephWen___/status/1925022049522876483   https://x.com/JosephWen___/status/1845764661586911252   https://x.com/JosephWen___/status/1800614487499931695   https://x.com/JosephWen___/status/1793963698752766022   https://x.com/JosephWen___/status/1793667236588347816   https://x.com/JosephWen___/status/1787382907855950133   https://x.com/JosephWen___/status/1766077877857206350?s=20   https://x.com/JosephWen___/status/1726885163739865208?s=20   https://twitter.com/JosephWen___/status/1701245100444004556?s=20    https://twitter.com/JosephWen___/status/1699332672794095921?s=20    https://twitter.com/JosephWen___/status/1679911238850211840?s=20    https://twitter.com/JosephWen___/status/1676282215477706752?s=20    https://twitter.com/JosephWen___/status/1653744522227253250?s=20   https://twitter.com/JosephWen___/status/1649369213960880130?s=20   https://twitter.com/JosephWen___/status/1644678208003133442?s=20    https://twitter.com/JosephWen___/status/1644952706577203201?s=20   https://twitter.com/JosephWen___/status/1644571315800793088?s=20    https://tv.cctv.com/2024/10/10/VIDEPIk4OITbVMlYjDmdnZNf241010.shtml   https://twitter.com/isekaimint/status/1550821236774780928                   https://www.sohu.com/a/241070458_115427   https://tv.cctv.cn/2021/12/19/VIDEtGeLFxe21APQgif4V8R6211219.shtml   https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%82%AE%E5%85%B5%E7%AC%AC%E4%B8%83%E5%8D%81%E4%B8%89%E6%97%85",
+        "說明": "73集團軍炮兵旅（73146部隊） 車牌號：LD61 福建省泉州市南安市燈光村  註：原32515部隊    https://x.com/JosephWen___/status/2005936691627061577?s=20  https://x.com/JosephWen___/status/2005661342691398111?s=20    https://x.com/JosephWen___/status/1979565386376102240   https://x.com/JosephWen___/status/1954630140983705864    https://x.com/JosephWen___/status/1925022049522876483   https://x.com/JosephWen___/status/1845764661586911252   https://x.com/JosephWen___/status/1800614487499931695   https://x.com/JosephWen___/status/1793963698752766022   https://x.com/JosephWen___/status/1793667236588347816   https://x.com/JosephWen___/status/1787382907855950133   https://x.com/JosephWen___/status/1766077877857206350?s=20   https://x.com/JosephWen___/status/1726885163739865208?s=20   https://twitter.com/JosephWen___/status/1701245100444004556?s=20    https://twitter.com/JosephWen___/status/1699332672794095921?s=20    https://twitter.com/JosephWen___/status/1679911238850211840?s=20    https://twitter.com/JosephWen___/status/1676282215477706752?s=20    https://twitter.com/JosephWen___/status/1653744522227253250?s=20   https://twitter.com/JosephWen___/status/1649369213960880130?s=20   https://twitter.com/JosephWen___/status/1644678208003133442?s=20    https://twitter.com/JosephWen___/status/1644952706577203201?s=20   https://twitter.com/JosephWen___/status/1644571315800793088?s=20    https://twitter.com/isekaimint/status/1550821236774780928                   https://www.sohu.com/a/241070458_115427   https://tv.cctv.cn/2021/12/19/VIDEtGeLFxe21APQgif4V8R6211219.shtml   https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%82%AE%E5%85%B5%E7%AC%AC%E4%B8%83%E5%8D%81%E4%B8%89%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -52356,7 +51975,7 @@
       },
       "properties": {
         "名稱": "東部戰區 句容訓場",
-        "說明": "72集團軍中型第34合成旅（73091部隊）常用訓場。江蘇省鎮江市句容市東巷    https://x.com/JosephWen___/status/2065705965752865137?s=20 （72集團軍某兩棲合成旅）   https://x.com/JosephWen___/status/1771121039491407893?s=20 https://x.com/JosephWen___/status/1771128569118540164?s=20   https://x.com/JosephWen___/status/1731006919706587237?s=20   https://twitter.com/JosephWen___/status/1697107800978305139?s=20    https://twitter.com/JosephWen___/status/1640363987056603137?s=20     https://twitter.com/JosephWen___/status/1650398936455340032?s=20     https://x.com/JosephWen___/status/1790406260338364564 (71集團軍輕型合成第179旅)",
+        "說明": "72集團軍中型第34合成旅（73091部隊）常用訓場。江蘇省鎮江市句容市東巷     https://x.com/JosephWen___/status/1771121039491407893?s=20 https://x.com/JosephWen___/status/1771128569118540164?s=20   https://x.com/JosephWen___/status/1731006919706587237?s=20   https://twitter.com/JosephWen___/status/1697107800978305139?s=20    https://twitter.com/JosephWen___/status/1640363987056603137?s=20     https://twitter.com/JosephWen___/status/1650398936455340032?s=20     https://x.com/JosephWen___/status/1790406260338364564 (71集團軍輕型合成第179旅)",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -52873,8 +52492,8 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 大遼陸航場站",
-        "說明": "南部戰區 74集團軍陸航旅 裝備：Mi-171、Z-9W、Z-9WZ、Z-10A 戰術編號：LH981cxx (75752部隊)(戰藍雄鷹)  廣東省佛山市三水區三花路 (范湖機場) https://x.com/JosephWen___/status/1810308044213084356   https://twitter.com/JosephWen___/status/1673173785653161985?s=20     https://twitter.com/JosephWen___/status/1613070471767142401?s=20&t=agHOmxH1ScHKSdha8qFLag",
+        "名稱": "南部戰區 三水/大遼陸航基地(范湖機場)",
+        "說明": "南部戰區 74集團軍陸航旅 裝備：Mi-171、Z-9W、Z-9WZ、Z-10A 戰術編號：LH981cxx (75752部隊)(戰藍雄鷹)  廣東省佛山市三水區三花路  https://x.com/JosephWen___/status/1810308044213084356   https://twitter.com/JosephWen___/status/1673173785653161985?s=20     https://twitter.com/JosephWen___/status/1613070471767142401?s=20&t=agHOmxH1ScHKSdha8qFLag",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -53797,8 +53416,8 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 奎屯營區",
-        "說明": "新疆軍區合成第8師（69230部隊） 支援保障團（原該師高炮團） 69235部隊 車牌號：LJ50  新疆伊犁哈薩克自治州奎屯市北京西路     https://mapcarta.com/W927694470    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2026-07-09&paperNumber=06&articleid=982173    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2026-06-16&paperNumber=06&articleid=980720",
+        "名稱": "新疆軍區 奎屯基地",
+        "說明": "新疆軍區合成第8師（69230部隊） 支援保障團（原該師高炮團） 69235部隊 車牌號：LJ50  新疆伊犁哈薩克自治州奎屯市北京西路     https://mapcarta.com/W927694470",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54037,7 +53656,7 @@
       },
       "properties": {
         "名稱": "南部戰區 石景林營區",
-        "說明": "75集團軍中型第122合成旅 75180部隊  榮譽稱號：塔山先鋒、英勇善戰模範團  車牌號：LN35  崇左市石景林路46号      https://x.com/JosephWen___/status/1775873554728583296?s=20    https://x.com/JosephWen___/status/1736020832064028677?s=20   https://tv.cctv.com/2021/08/15/VIDE2fLxnvR6eIGrmAqII35N210815.shtml",
+        "說明": "75集團軍中型第122合成旅 31633部隊  榮譽稱號：塔山先鋒、英勇善戰模範團  車牌號：LN35  崇左市石景林路46号      https://x.com/JosephWen___/status/1775873554728583296?s=20    https://x.com/JosephWen___/status/1736020832064028677?s=20   https://tv.cctv.com/2021/08/15/VIDE2fLxnvR6eIGrmAqII35N210815.shtml",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54156,8 +53775,7 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 喀拉喀什陸航場站",
-        "說明": "https://x.com/sfx_ewss/status/2065111628434300966?s=20",
+        "名稱": "新疆軍區 喀拉喀什陸航基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54302,7 +53920,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 仁坂營區",
+        "名稱": "東部戰區 仁坂基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54535,7 +54153,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 青龍湖營區(西)",
+        "名稱": "中部戰區 青龍湖基地(西)",
         "說明": "66150部隊(後勤單位)",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -54624,7 +54242,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 大木切防空基地/陣地",
-        "說明": "裝備：HQ-9B   https://twitter.com/sfx_ewss/status/1489535952351797248?s=20&t=HgmxSEKqERxuK00TMr-Hhw",
+        "說明": "裝備:HQ-9   https://twitter.com/sfx_ewss/status/1489535952351797248?s=20&t=HgmxSEKqERxuK00TMr-Hhw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54889,7 +54507,7 @@
       },
       "properties": {
         "名稱": "東部戰區 洪瀨鎮營區",
-        "說明": "73集團軍炮兵旅（73146部隊） 車牌號：LD61   福建省泉州市南安市洪瀨鎮 裝備：PCL-191      https://x.com/JosephWen___/status/2005936691627061577?s=20 https://x.com/JosephWen___/status/2005661342691398111?s=20   https://x.com/JosephWen___/status/1979565386376102240   https://x.com/JosephWen___/status/1954630140983705864   https://x.com/JosephWen___/status/1925022049522876483   https://x.com/JosephWen___/status/1845764661586911252   https://x.com/JosephWen___/status/1800614487499931695    https://x.com/JosephWen___/status/1793963698752766022   https://x.com/JosephWen___/status/1793667236588347816   https://x.com/JosephWen___/status/1787382907855950133   https://x.com/JosephWen___/status/1766077877857206350?s=20   https://x.com/JosephWen___/status/1726885163739865208?s=20   https://twitter.com/JosephWen___/status/1701245100444004556?s=20   https://twitter.com/JosephWen___/status/1699332672794095921?s=20     https://twitter.com/JosephWen___/status/1679911238850211840?s=20 https://twitter.com/JosephWen___/status/1676282215477706752?s=20 https://twitter.com/JosephWen___/status/1653744522227253250?s=20 https://twitter.com/JosephWen___/status/1649369213960880130?s=20 https://twitter.com/JosephWen___/status/1644678208003133442?s=20 https://twitter.com/JosephWen___/status/1644952706577203201?s=20 https://twitter.com/JosephWen___/status/1644571315800793088?s=20 https://tv.cctv.com/2024/10/10/VIDEPIk4OITbVMlYjDmdnZNf241010.shtml   https://twitter.com/isekaimint/status/1550821236774780928                      https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%82%AE%E5%85%B5%E7%AC%AC%E4%B8%83%E5%8D%81%E4%B8%89%E6%97%85",
+        "說明": "73集團軍炮兵旅（73146部隊） 車牌號：LD61   福建省泉州市南安市洪瀨鎮 裝備：PCL-191      https://x.com/JosephWen___/status/2005936691627061577?s=20 https://x.com/JosephWen___/status/2005661342691398111?s=20   https://x.com/JosephWen___/status/1979565386376102240   https://x.com/JosephWen___/status/1954630140983705864   https://x.com/JosephWen___/status/1925022049522876483   https://x.com/JosephWen___/status/1845764661586911252   https://x.com/JosephWen___/status/1800614487499931695    https://x.com/JosephWen___/status/1793963698752766022   https://x.com/JosephWen___/status/1793667236588347816   https://x.com/JosephWen___/status/1787382907855950133   https://x.com/JosephWen___/status/1766077877857206350?s=20   https://x.com/JosephWen___/status/1726885163739865208?s=20   https://twitter.com/JosephWen___/status/1701245100444004556?s=20   https://twitter.com/JosephWen___/status/1699332672794095921?s=20     https://twitter.com/JosephWen___/status/1679911238850211840?s=20 https://twitter.com/JosephWen___/status/1676282215477706752?s=20 https://twitter.com/JosephWen___/status/1653744522227253250?s=20 https://twitter.com/JosephWen___/status/1649369213960880130?s=20 https://twitter.com/JosephWen___/status/1644678208003133442?s=20 https://twitter.com/JosephWen___/status/1644952706577203201?s=20 https://twitter.com/JosephWen___/status/1644571315800793088?s=20 https://twitter.com/isekaimint/status/1550821236774780928                      https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E7%82%AE%E5%85%B5%E7%AC%AC%E4%B8%83%E5%8D%81%E4%B8%89%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -54963,7 +54581,7 @@
       },
       "properties": {
         "名稱": "中部戰區 丁村鄉陸航基地",
-        "說明": "中部戰區 83集團軍 161空中突擊旅 32145部隊 （直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20 戰術編號：LH953cxx  車牌號：LZ61。 2024年1月4日，該旅正式官宣入駐此新駐地。河南新鄉獲嘉縣丁村鄉。  https://x.com/JosephWen___/status/2073377493084668193?s=20   https://x.com/JosephWen___/status/1743615610741805139?s=20    https://twitter.com/JosephWen___/status/1644372147488563201?s=20 https://twitter.com/JosephWen___/status/1611269912240214016?s=20 https://twitter.com/JosephWen___/status/1543913010808229888?s=20 https://twitter.com/pir34/status/1553381669255667712/photo/1  https://tv.cctv.com/2026/04/03/VIDEm5FoRo1MSaAylICOS327260403.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3   https://tv.cctv.com/2026/01/28/VIDEGETMyBAVTRHqzNLH5kKt260128.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.4  https://tv.cctv.com/2025/02/19/VIDE3LJJiyQamIRnbljNsZM5250219.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3   https://www.youtube.com/watch?v=LgHiZYl_e6I",
+        "說明": "中部戰區 83集團軍 161空中突擊旅 32145部隊 （直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20 戰術編號：LH953cxx  車牌號：LZ61。 2024年1月4日，該旅正式官宣入駐此新駐地。河南新鄉獲嘉縣丁村鄉。  https://x.com/JosephWen___/status/1743615610741805139?s=20    https://twitter.com/JosephWen___/status/1644372147488563201?s=20 https://twitter.com/JosephWen___/status/1611269912240214016?s=20 https://twitter.com/JosephWen___/status/1543913010808229888?s=20 https://twitter.com/pir34/status/1553381669255667712/photo/1  https://tv.cctv.com/2026/04/03/VIDEm5FoRo1MSaAylICOS327260403.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3   https://tv.cctv.com/2026/01/28/VIDEGETMyBAVTRHqzNLH5kKt260128.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.4  https://tv.cctv.com/2025/02/19/VIDE3LJJiyQamIRnbljNsZM5250219.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -55653,7 +55271,6 @@
       },
       "properties": {
         "名稱": "西部戰區 札達訓場(西)",
-        "說明": "HQ-16曾在此訓練。    https://x.com/sfx_ewss/status/2060748078169346166?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -56143,7 +55760,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 萬山營區",
+        "名稱": "南部戰區 萬山基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -56214,7 +55831,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 華山營區",
+        "名稱": "中部戰區 華山基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -58132,7 +57749,7 @@
         ]
       },
       "properties": {
-        "名稱": "北部戰區 船營營區",
+        "名稱": "北部戰區 船營基地",
         "說明": "78集團軍工化旅  31692部隊  車牌號：LB25  吉林市船營區長春路171號   https://x.com/JosephWen___/status/1917204791404691682   https://x.com/JosephWen___/status/1821429631494537243   https://twitter.com/JosephWen___/status/1691033897528918016?s=20    https://twitter.com/JosephWen___/status/1687847133125472256?s=20     https://tv.cctv.com/2025/11/05/VIDEcTbwxywv9f8zbBNMRgQY251105.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.17",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -58504,7 +58121,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 合和營區",
+        "名稱": "南部戰區 合和基地",
         "說明": "第370團  75211部隊",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -58843,8 +58460,8 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 二老莊營區",
-        "說明": "82集團軍輕型合成第196旅 66481部隊  別稱：忠誠猛士  榮譽稱號：勢如破竹十九團  摩步十連榮譽稱號：大青山模範守備連  車牌號：LZ36  北京市豐台區二老莊 。張又俠曾於2024年2月8日春節期間前往此營區視察。   https://x.com/JosephWen___/status/2064740097048916352?s=20   https://x.com/JosephWen___/status/1803767874068333008    https://x.com/JosephWen___/status/1796498865111314596   https://x.com/JosephWen___/status/1783917741847749094   https://x.com/JosephWen___/status/1755606584863113480?s=20   https://twitter.com/JosephWen___/status/1673052927269961728?s=20   https://tv.cctv.com/2024/10/21/VIDEU2hXviLNYiRMuBM2AhVv241021.shtml?spm=C53074552346.PNmj6mLLXIHu.S51904.2",
+        "名稱": "中部戰區 二老莊基地",
+        "說明": "82集團軍輕型合成第196旅 66481部隊  別稱：忠誠猛士  榮譽稱號：勢如破竹十九團  摩步十連榮譽稱號：大青山模範守備連  車牌號：LZ36  北京市豐台區二老莊 。張又俠曾於2024年2月8日春節期間前往此營區視察。   https://x.com/JosephWen___/status/1803767874068333008    https://x.com/JosephWen___/status/1796498865111314596   https://x.com/JosephWen___/status/1783917741847749094   https://x.com/JosephWen___/status/1755606584863113480?s=20   https://twitter.com/JosephWen___/status/1673052927269961728?s=20   https://tv.cctv.com/2024/10/21/VIDEU2hXviLNYiRMuBM2AhVv241021.shtml?spm=C53074552346.PNmj6mLLXIHu.S51904.2",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -58858,7 +58475,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 後甫營營區",
+        "名稱": "中部戰區 後甫營基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -58971,7 +58588,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 陽坊鎮營區",
+        "名稱": "中部戰區 陽坊鎮基地",
         "說明": "82集團軍工兵旅 32141部隊  車牌號：LZ45  北京市昌平區陽坊鎮沙陽路12號      https://x.com/JosephWen___/status/1833174072064454923   https://twitter.com/JosephWen___/status/1671766548644765697?s=20    https://twitter.com/JosephWen___/status/1662767463287894017?s=20       https://twitter.com/JosephWen___/status/1662770530125238274?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -59262,7 +58879,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 北岸崗車輛訓場",
+        "名稱": "南部戰區 北岸崗車輛訓練基地(一)",
         "說明": "74集團軍炮兵旅 31629部隊 車牌號：LN21 廣東省東莞市北岸崗 旅長：陳岩大校。政委：曲明遠大校。副旅長：曹春勇上校，楊峰上校。副政委：趙劍烈上校，余貽鋼上校。參謀長：余衞龍上校。政治工作部主任：田磊上校。（原廣州軍區第42集團軍炮兵第1師，代號75230部隊。炮1師所屬各炮團後縮編為42集團軍炮兵旅，代號改為75270部隊。軍改後75270部隊又改新代號為31629部隊，番號改為陸軍第74集團軍炮兵第74旅。）    https://x.com/JosephWen___/status/1769698463220977720?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -59277,7 +58894,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 北岸崗營區(一)",
+        "名稱": "南部戰區 北岸崗車輛訓練基地(二)",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -59291,7 +58908,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 北岸崗營區(二)",
+        "名稱": "南部戰區 北岸崗車輛訓練基地(三)",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -59319,7 +58936,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 水朗村營區",
+        "名稱": "南部戰區 水朗村基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -59450,7 +59067,21 @@
         ]
       },
       "properties": {
-        "名稱": "桂林聯勤保障中心 沙河彈藥庫",
+        "名稱": "南部戰區 沙河彈藥庫",
+        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          115.6405714,
+          40.3037505
+        ]
+      },
+      "properties": {
+        "名稱": "中部戰區 康祁防空陣地/基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -59680,7 +59311,7 @@
       },
       "properties": {
         "名稱": "東部戰區 泰山營區",
-        "說明": "71集團軍炮兵旅  73101部隊  泰山營區  榮譽稱號：太行勁旅  車牌號：LD21 江蘇省徐州市泉山區金山東路20號          https://x.com/JosephWen___/status/2057295102444486962?s=20   https://x.com/JosephWen___/status/1994805717103215017?s=20   https://x.com/JosephWen___/status/1924877292289065460    https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20   https://x.com/JosephWen___/status/1717200030770311296?s=20   https://twitter.com/JosephWen___/status/1691853473644687452?s=20      https://tv.cctv.com/2025/07/19/VIDEjbJgrzncHWLPCc9qkdGo250719.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.19   https://www.bidcenter.com.cn/newscontent-48804959-1.html   https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
+        "說明": "71集團軍炮兵旅  73101部隊  泰山營區  榮譽稱號：太行勁旅  車牌號：LD21 江蘇省徐州市泉山區金山東路20號          https://x.com/JosephWen___/status/1994805717103215017?s=20   https://x.com/JosephWen___/status/1924877292289065460    https://x.com/JosephWen___/status/1917932444675952896   https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20    https://x.com/JosephWen___/status/1748209583989149824?s=20   https://x.com/JosephWen___/status/1717200030770311296?s=20   https://twitter.com/JosephWen___/status/1691853473644687452?s=20      https://tv.cctv.com/2025/07/19/VIDEjbJgrzncHWLPCc9qkdGo250719.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.19   https://www.bidcenter.com.cn/newscontent-48804959-1.html   https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -60363,7 +59994,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 小浦營區",
+        "名稱": "東部戰區 小浦基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -60450,7 +60081,7 @@
       },
       "properties": {
         "名稱": "南部戰區 長寧營區(北)",
-        "說明": "74集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團 裝步六連榮譽稱號：硬骨頭六連、英雄硬六連  裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連  某連榮譽稱號：攻堅英雄連  車牌號：LN11  廣東惠州市博羅縣長寧鎮人民路89號   https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20   https://x.com/JosephWen___/status/1743853604656841128?s=20   https://x.com/JosephWen___/status/1742074529504272470?s=20 https://twitter.com/JosephWen___/status/1669005450157907968?s=20 https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
+        "說明": "74集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團 裝步六連榮譽稱號：硬骨頭六連  裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連  車牌號：LN11  廣東惠州市博羅縣長寧鎮人民路89號   https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20   https://x.com/JosephWen___/status/1743853604656841128?s=20   https://x.com/JosephWen___/status/1742074529504272470?s=20 https://twitter.com/JosephWen___/status/1669005450157907968?s=20 https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -60507,7 +60138,7 @@
       },
       "properties": {
         "名稱": "南部戰區 長寧營區(南)",
-        "說明": "74集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團 裝步六連榮譽稱號：硬骨頭六連、英雄硬六連 裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連 某連榮譽稱號：攻堅英雄連 車牌號：LN11 廣東惠州市博羅縣長寧鎮人民路89號  https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20   https://x.com/JosephWen___/status/1743853604656841128?s=20   https://x.com/JosephWen___/status/1742074529504272470?s=20   https://twitter.com/JosephWen___/status/1669005450157907968?s=20    https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
+        "說明": "774集團軍兩棲第1合成旅 73022部隊 別稱：賀龍旅 榮譽稱號：紅軍團 裝步六連榮譽稱號：硬骨頭六連  裝步七連榮譽稱號：尖刀七連、雁門關伏擊戰英雄連  車牌號：LN11  廣東惠州市博羅縣長寧鎮人民路89號  https://x.com/JosephWen___/status/1956205165784223979   https://x.com/JosephWen___/status/1753052246563266567?s=20   https://x.com/JosephWen___/status/1743853604656841128?s=20   https://x.com/JosephWen___/status/1742074529504272470?s=20   https://twitter.com/JosephWen___/status/1669005450157907968?s=20    https://twitter.com/JosephWen___/status/1661023275684855810?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -60591,7 +60222,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 東坪山營區(西)",
+        "名稱": "東部戰區 東坪山營區",
         "說明": "東部戰區陸軍直屬 情報偵查第一旅 31616部隊 福建省廈門市東坪山   https://x.com/JosephWen___/status/1923225517844574414    https://tv.cctv.com/2025/11/25/VIDE95hikJEVehieetYwZNsX251125.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.4",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -64393,7 +64024,7 @@
       },
       "properties": {
         "名稱": "中部戰區 姚村營區",
-        "說明": "83集團軍中型第60合成旅 71897部隊（原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅  榮譽稱號：江陰老虎團、沙家濱團  車牌號：LZ53   陝西渭南市富平縣姚村     https://x.com/JosephWen___/status/2078867421977559250?s=20   https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652   https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
+        "說明": "83集團軍中型第60合成旅 71897部隊（原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅  榮譽稱號：江陰老虎團、沙家濱團  車牌號：LZ53   陝西渭南市富平縣姚村     https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652   https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -64431,12 +64062,26 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          108.4553591,
+          34.0645859
+        ]
+      },
+      "properties": {
+        "名稱": "中部戰區 永豐村城鎮作戰訓場",
+        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           109.0986888,
           34.3368205
         ]
       },
       "properties": {
-        "名稱": "中部戰區 呂家堡營區",
+        "名稱": "中部戰區 呂家堡基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -65735,7 +65380,7 @@
       },
       "properties": {
         "名稱": "中部戰區 焦家村營區",
-        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅  榮譽稱號：江陰老虎團、沙家濱團  1營2連榮譽稱號：沙家濱連（該連駐於此營區）1營5連榮譽稱號：政紀模範連（該連駐於此營區，早年稱號為遵紀模範連）  車牌號：LZ53    陝西省西安市臨潼區焦家村       https://x.com/JosephWen___/status/2078867421977559250?s=20   https://x.com/JosephWen___/status/1780633522283364835    https://x.com/JosephWen___/status/1779179069260857652    https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20    https://tv.cctv.com/2025/07/26/VIDEyAzpUHbj6DQZ4yqX52NB250726.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
+        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅  榮譽稱號：江陰老虎團、沙家濱團  1營2連榮譽稱號：沙家濱連（該連駐於此營區）1營5連榮譽稱號：政紀模範連（該連駐於此營區，早年稱號為遵紀模範連）  車牌號：LZ53    陝西省西安市臨潼區焦家村       https://x.com/JosephWen___/status/1780633522283364835    https://x.com/JosephWen___/status/1779179069260857652    https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20    https://tv.cctv.com/2025/07/26/VIDEyAzpUHbj6DQZ4yqX52NB250726.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -66108,7 +65753,7 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 庫車營區(一)",
+        "名稱": "新疆軍區 庫車基地(一)",
         "說明": "新疆軍區合成第4師（69220部隊） 支援保障團  69224部隊  車牌號：LJ40  新疆維吾爾自治區阿克蘇地區庫車縣擁軍路2號  http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-06-25&paperNumber=06&articleid=957854   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2024-10-23&paperNumber=02&articleid=941795   https://baijiahao.baidu.com/s?id=1685966034800358290&wfr=spider&for=pc",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -66154,7 +65799,7 @@
       },
       "properties": {
         "名稱": "西部戰區 璧山營區",
-        "說明": "77集團軍重型第39合成旅  31672部隊  車牌號：LX31  2營5連榮譽稱號：英雄炮兵連  重慶市璧山區璧铜路238號。註：「金湯橋班」所在旅。   https://twitter.com/JosephWen___/status/1679158383272939520?s=20   https://mp.weixin.qq.com/s/xMii_Brxh6hb16WCuZVVAw    https://tv.cctv.com/2026/06/12/VIDEi2AQqaZupSRg9T6ektHp260612.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
+        "說明": "77集團軍重型第39合成旅  31672部隊  車牌號：LX31  重慶市璧山區璧铜路238號。註：「金湯橋班」所在旅。   https://twitter.com/JosephWen___/status/1679158383272939520?s=20   https://mp.weixin.qq.com/s/xMii_Brxh6hb16WCuZVVAw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -66259,7 +65904,7 @@
       },
       "properties": {
         "名稱": "北部戰區 東極哨所",
-        "說明": "北部戰區陸軍參謀部邊海防處 邊防第327旅 32112部隊  稱號：東方第一哨  黑龍江省佳木斯市撫遠縣黑瞎子島     https://x.com/JosephWen___/status/1741632977220866304?s=20   https://tv.cctv.com/2026/06/06/VIDEe1CxfYBqZvwJgCVvDBaF260606.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.15",
+        "說明": "北部戰區陸軍參謀部邊海防處 邊防第327旅 32112部隊  稱號：東方第一哨  黑龍江省佳木斯市撫遠縣黑瞎子島     https://x.com/JosephWen___/status/1741632977220866304?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -66304,7 +65949,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 江孜營區",
-        "說明": "西藏軍區重型合成第54旅  77626部隊  車牌號：LS12 https://x.com/JosephWen___/status/2072948174306849072?s=20   https://x.com/JosephWen___/status/2065481937721164097?s=20   https://x.com/sfx_ewss/status/2065451160228794632?s=20   https://tv.cctv.com/2025/10/21/VIDEgRfNrCFkteHHfkRl3WVm251021.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3   https://military.cctv.com/2022/06/13/ARTIeNS2zlXWO9MEjko1LMDu220613.shtml    https://twitter.com/isekaimint/status/1604804942392266752?s=20&t=ldpacTvx07XWfw52tUKAew   https://tw.news.yahoo.com/news/%E4%B8%AD%E5%8D%B0%E9%82%8A%E5%A2%83%E6%9A%97%E8%BC%83%E5%8B%81-%E9%99%B8%E8%AA%BF-%E9%AB%98%E5%8E%9F%E9%90%B5%E9%A8%8E-%E8%A3%9D%E7%94%B2%E6%97%85%E8%B5%B4%E8%A5%BF%E8%97%8F%E5%89%8D%E7%B7%9A-%E5%8D%B0%E8%BB%8D%E8%97%8F%E5%8D%97%E4%B8%8A%E7%A9%BA%E8%BB%8D%E6%BC%94-054849292.html       https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%BA%94%E5%8D%81%E5%9B%9B%E6%97%85",
+        "說明": "西藏軍區重型合成第54旅  77626部隊  車牌號：LS12 https://tv.cctv.com/2025/10/21/VIDEgRfNrCFkteHHfkRl3WVm251021.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3   https://military.cctv.com/2022/06/13/ARTIeNS2zlXWO9MEjko1LMDu220613.shtml    https://twitter.com/isekaimint/status/1604804942392266752?s=20&t=ldpacTvx07XWfw52tUKAew   https://tw.news.yahoo.com/news/%E4%B8%AD%E5%8D%B0%E9%82%8A%E5%A2%83%E6%9A%97%E8%BC%83%E5%8B%81-%E9%99%B8%E8%AA%BF-%E9%AB%98%E5%8E%9F%E9%90%B5%E9%A8%8E-%E8%A3%9D%E7%94%B2%E6%97%85%E8%B5%B4%E8%A5%BF%E8%97%8F%E5%89%8D%E7%B7%9A-%E5%8D%B0%E8%BB%8D%E8%97%8F%E5%8D%97%E4%B8%8A%E7%A9%BA%E8%BB%8D%E6%BC%94-054849292.html       https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%BA%94%E5%8D%81%E5%9B%9B%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -66568,7 +66213,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 赤山營區",
+        "名稱": "南部戰區 赤山基地",
         "說明": "74集團軍炮兵旅 31629部隊 車牌號：LN21 廣東省東莞市樟木頭鎮莞樟東路500號 旅長：陳岩大校。政委：曲明遠大校。副旅長：曹春勇上校，楊峰上校。副政委：趙劍烈上校，余貽鋼上校。參謀長：余衞龍上校。政治工作部主任：田磊上校。（原廣州軍區第42集團軍炮兵第1師，代號75230部隊。炮1師所屬各炮團後縮編為42集團軍炮兵旅，代號改為75270部隊。軍改後75270部隊又改新代號為31629部隊，番號改為陸軍第74集團軍炮兵第74旅。）     https://x.com/JosephWen___/status/1769698463220977720?s=20   https://tv.cctv.com/2024/03/10/VIDEUIXs3Adsrtv23wDc3BFq240310.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.4    https://tv.cctv.com/2023/11/10/VIDEaJ1aLU4awMNKhs5VDY4J231110.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.29",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -66583,7 +66228,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 長寧營區",
+        "名稱": "南部戰區 長寧基地",
         "說明": "裝甲團  原371團75215部隊  廣東惠州博羅縣長寧鎮羅浮山區",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -66628,7 +66273,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 銅鼓角船艇碼頭",
+        "名稱": "南部戰區 銅鼓角船艇基地",
         "說明": "南部戰區陸軍參謀部邊海防處 海防311旅（31644部隊）、南部戰區陸軍參謀部邊海防處 海防311旅船艇大隊（31645部隊）  珠海市香洲區情侶北路3901號 (銅鼓角 金門星港)  船編號紀錄：LD200     https://twitter.com/JosephWen___/status/1688868596196503552?s=20    https://twitter.com/JosephWen___/status/1672189585877790722?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -67082,8 +66727,8 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 漳浦無人機場站",
-        "說明": "東部戰區陸軍直屬無人偵察機第137旅  31621部隊  裝備：CH-4、BZK-005(不確定單位)  福建省漳州市漳浦縣綏安鎮龍泉路  https://x.com/JosephWen___/status/2022258065375182968?s=20   https://x.com/JosephWen___/status/1835703098935058877   https://twitter.com/JosephWen___/status/1628572870204076033?s=20     https://twitter.com/JosephWen___/status/1610561737224515585?s=20&t=NIJk1S9Fl4h4p7pm2n5Alg                 https://twitter.com/JosephWen___/status/1610323255864487942?s=20&t=DVseKAbSRrKw2mkAoMhGsQ     https://mp.weixin.qq.com/s/0RqO_Fi9tPEySn3_d13i3g?fbclid=IwAR3PMp_wBXDD2a9mCB-nSkWnp4kteJrpNTxMEr7_UUxveW4DeXVvOG-3ceo",
+        "名稱": "東部戰區 漳浦無人機基地",
+        "說明": "東部戰區陸軍直屬無人偵察機第137旅  31621部隊  裝備：CH-4、BZK-005(不確定單位)  福建省漳州市漳浦縣綏安鎮龍泉路  https://x.com/JosephWen___/status/1835703098935058877   https://twitter.com/JosephWen___/status/1628572870204076033?s=20     https://twitter.com/JosephWen___/status/1610561737224515585?s=20&t=NIJk1S9Fl4h4p7pm2n5Alg                 https://twitter.com/JosephWen___/status/1610323255864487942?s=20&t=DVseKAbSRrKw2mkAoMhGsQ     https://mp.weixin.qq.com/s/0RqO_Fi9tPEySn3_d13i3g?fbclid=IwAR3PMp_wBXDD2a9mCB-nSkWnp4kteJrpNTxMEr7_UUxveW4DeXVvOG-3ceo",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67157,8 +66802,8 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 湯陰營區",
-        "說明": "中部戰區 83集團軍 161空中突擊旅 (32145部隊)（直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20 戰術編號：LH953cxx     https://x.com/JosephWen___/status/2073377493084668193?s=20",
+        "名稱": "中部戰區 湯陰空突基地",
+        "說明": "中部戰區 83集團軍 161空中突擊旅 (32145部隊)（直升機機動輕步兵部隊，主要裝備直8、武直10、直20等）裝備：Z-8L、Z-10、Z-19、Z-20 戰術編號：LH953cxx",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67292,7 +66937,7 @@
       },
       "properties": {
         "名稱": "陸軍特種作戰基地",
-        "說明": "陸軍特種作戰基地  32390部隊  山東省濟南市市中區紅廟北路。註：此單位為是陸軍所屬17個正軍級單位之一，約2022年12月成立，司令員劉治安（原72集團軍司令員）、政委鄒仕輝（原新疆副政委）。註：此營區2022年前原駐80集團軍軍直屬防化團（71988部隊）。  https://x.com/JosephWen___/status/2074780545909944389?s=20    https://x.com/nuwangzi/status/1966765320602796278   https://mp.weixin.qq.com/s/zsTnWXRRpsMfS_84uO-bZw",
+        "說明": "陸軍特種作戰基地  32390部隊  山東省濟南市市中區紅廟北路。註：此單位為是陸軍所屬17個正軍級單位之一，約2022年12月成立，司令員劉治安（原72集團軍司令員）、政委鄒仕輝（原新疆副政委）。註：此營區2022年前原駐80集團軍軍直屬防化團（71988部隊）。   https://x.com/nuwangzi/status/1966765320602796278   https://mp.weixin.qq.com/s/zsTnWXRRpsMfS_84uO-bZw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67654,7 +67299,7 @@
       },
       "properties": {
         "名稱": "東部戰區 東湖鎮營區",
-        "說明": "71集團軍炮兵旅 73101部隊 東湖營區 榮譽稱號：太行勁旅 車牌號：LD21（原重型第86合成旅第256團 73122部隊 之營區）福建省福州市連江縣東湖鎮    https://x.com/JosephWen___/status/2057295102444486962?s=20   https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20 https://x.com/JosephWen___/status/1758130908148932637?s=20 https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20   https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
+        "說明": "71集團軍炮兵旅 73101部隊 東湖營區 榮譽稱號：太行勁旅 車牌號：LD21（原重型第86合成旅第256團 73122部隊 之營區）福建省福州市連江縣東湖鎮    https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1762856252189909246?s=20 https://x.com/JosephWen___/status/1758130908148932637?s=20 https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20   https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67739,7 +67384,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 馬額防空營區",
+        "名稱": "中部戰區 馬額防空基地(北)",
         "說明": "高炮防空旅 68306部隊",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -67755,7 +67400,7 @@
       },
       "properties": {
         "名稱": "中部戰區 南劉村營區",
-        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅 榮譽稱號：江陰老虎團、沙家濱團  4營榮譽稱號：葉挺營（該營5連駐於此）  車牌號：LZ53  陝西省西安市臨潼區南劉村（原為高炮防空旅 68306部隊之營區） https://x.com/JosephWen___/status/2078867421977559250?s=20   https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652 https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
+        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅 榮譽稱號：江陰老虎團、沙家濱團  4營榮譽稱號：葉挺營（該營5連駐於此）  車牌號：LZ53  陝西省西安市臨潼區南劉村（原為高炮防空旅 68306部隊之營區） https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652 https://twitter.com/JosephWen___/status/1681302332007649282?s=20 https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67770,7 +67415,7 @@
       },
       "properties": {
         "名稱": "中部戰區 新豐營區",
-        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅 榮譽稱號：江陰老虎團、沙家濱團  2營榮譽稱號：一江山主攻營 2營4連榮譽稱號：觀杰中隊 車牌號：LZ53  陝西省西安市臨潼區新豐街道陵新路   https://x.com/JosephWen___/status/2078867421977559250?s=20   https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652   https://twitter.com/JosephWen___/status/1681302332007649282?s=20    https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
+        "說明": "83集團軍中型第60合成旅 71897部隊 （原濟南軍區第20集團軍第60旅改稱） 別稱：一江山旅 榮譽稱號：江陰老虎團、沙家濱團  2營榮譽稱號：一江山主攻營 2營4連榮譽稱號：觀杰中隊 車牌號：LZ53  陝西省西安市臨潼區新豐街道陵新路   https://x.com/JosephWen___/status/1780633522283364835   https://x.com/JosephWen___/status/1779179069260857652   https://twitter.com/JosephWen___/status/1681302332007649282?s=20    https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -67844,7 +67489,7 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 庫車營區(二)",
+        "名稱": "新疆軍區 庫車基地(二)",
         "說明": "新疆軍區合成第4師（69220部隊） 支援保障團 69224部隊 車牌號：LJ40 新疆庫車縣天山東路376號 http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-06-25&paperNumber=06&articleid=957854   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2024-10-23&paperNumber=02&articleid=941795 https://baijiahao.baidu.com/s?id=1685966034800358290&wfr=spider&for=pc     https://mapcarta.com/W1079531376",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -67920,7 +67565,7 @@
       },
       "properties": {
         "名稱": "西部戰區 來風營區",
-        "說明": "77集團軍重型第39合成旅 31672部隊 車牌號：LX31  2營5連榮譽稱號：英雄炮兵連  重慶市璧山區來鳳街道解放西路399號。原炮兵團（77146部隊）註：「金湯橋班」所在旅。     https://twitter.com/JosephWen___/status/1679158383272939520?s=20   https://mp.weixin.qq.com/s/xMii_Brxh6hb16WCuZVVAw    https://tv.cctv.com/2026/06/12/VIDEi2AQqaZupSRg9T6ektHp260612.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
+        "說明": "77集團軍重型第39合成旅 31672部隊 車牌號：LX31  重慶市璧山區來鳳街道解放西路399號。原炮兵團（77146部隊）註：「金湯橋班」所在旅。     https://twitter.com/JosephWen___/status/1679158383272939520?s=20   https://mp.weixin.qq.com/s/xMii_Brxh6hb16WCuZVVAw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68113,7 +67758,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 陽波元營區",
+        "名稱": "中部戰區 陽波元基地",
         "說明": "853部隊  石龍北路23號院",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -68203,7 +67848,7 @@
       },
       "properties": {
         "名稱": "南部戰區 開遠營區(南)",
-        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城、夜襲常勝軍、紅軍旅  某連榮譽稱號：英勇善戰鋼八連  某連榮譽稱號：戰場中樞連  某連榮譽稱號：渡江南進鞏固模範連  某連榮譽稱號：彈無虛發連  某班榮譽稱號：周廣才班 車牌號：LN33  雲南省紅河州開遠市     https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20     https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
+        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城 車牌號：LN33  雲南省紅河州開遠市     https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20     https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68218,7 +67863,7 @@
       },
       "properties": {
         "名稱": "南部戰區 三臺寺營區",
-        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城、夜襲常勝軍、紅軍旅 某連榮譽稱號：英勇善戰鋼八連 某連榮譽稱號：戰場中樞連 某連榮譽稱號：渡江南進鞏固模範連 某連榮譽稱號：彈無虛發連 某班榮譽稱號：周廣才班  車牌號：LN33  雲南省紅河州開遠市  https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20     https://weibo.com/7495664675/KmAsXgNCG   https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
+        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城 車牌號：LN33  雲南省紅河州開遠市  https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20     https://weibo.com/7495664675/KmAsXgNCG   https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68232,7 +67877,7 @@
         ]
       },
       "properties": {
-        "名稱": "南部戰區 官渡營區",
+        "名稱": "南部戰區 官渡基地",
         "說明": "75集團軍輕型第42合成旅 31632部隊  榮譽稱號：南疆輕騎兵  車號牌：LN34       https://twitter.com/JosephWen___/status/1685680559199309824?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -68380,7 +68025,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 三角山營區",
+        "名稱": "東部戰區 三角山基地",
         "說明": "73052部隊",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -68780,7 +68425,7 @@
       },
       "properties": {
         "名稱": "中部戰區 鹿泉營區",
-        "說明": "82集團軍輕型第80合成旅 66172部隊  車牌號：LZ32  榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  某連榮譽稱號：堅守英雄連  某連榮譽稱號：常勝連  某連榮譽稱號：紅十連  石家莊市鹿泉區翠屏山路9號   https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
+        "說明": "82集團軍輕型第80合成旅 66172部隊  車牌號：LZ32  榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  石家莊市鹿泉區翠屏山路9號   https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68823,7 +68468,7 @@
       },
       "properties": {
         "名稱": "中部戰區 雙廟營區",
-        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  某連榮譽稱號：堅守英雄連 某連榮譽稱號：常勝連 某連榮譽稱號：紅十連  石家莊市鹿泉區雙廟村        https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20       https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
+        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營 2營4連榮譽稱號：新興里戰鬥模範連  石家莊市鹿泉區雙廟村        https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20       https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68838,7 +68483,7 @@
       },
       "properties": {
         "名稱": "中部戰區 石井營區",
-        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營  2營4連榮譽稱號：新興里戰鬥模範連  某連榮譽稱號：堅守英雄連 某連榮譽稱號：常勝連 某連榮譽稱號：紅十連  河北省石家莊市鹿泉區翠屏大街   https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
+        "說明": "82集團軍輕型第80合成旅 66172部隊 車牌號：LZ32 榮譽稱號：常勝勁旅  2營榮譽稱號：常模營  2營4連榮譽稱號：新興里戰鬥模範連  河北省石家莊市鹿泉區翠屏大街   https://x.com/JosephWen___/status/1987857771363213602?s=20   https://twitter.com/JosephWen___/status/1695061078365847847?s=20    https://twitter.com/JosephWen___/status/1685244519179276288?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68927,8 +68572,8 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 水頭村營區",
-        "說明": "82集團軍輕型合成第196旅 66481部隊 別稱：忠誠猛士 榮譽稱號：勢如破竹十九團 摩步十連榮譽稱號：大青山模範守備連 車牌號：LZ36   北京市房山區水頭村  https://x.com/JosephWen___/status/2064740097048916352?s=20     https://x.com/JosephWen___/status/1803767874068333008   https://x.com/JosephWen___/status/1783917741847749094 https://x.com/JosephWen___/status/1755606584863113480?s=20 https://twitter.com/JosephWen___/status/1673052927269961728?s=20",
+        "名稱": "中部戰區 水頭村基地",
+        "說明": "82集團軍輕型合成第196旅 66481部隊 別稱：忠誠猛士 榮譽稱號：勢如破竹十九團 摩步十連榮譽稱號：大青山模範守備連 車牌號：LZ36   北京市房山區水頭村   https://x.com/JosephWen___/status/1803767874068333008   https://x.com/JosephWen___/status/1783917741847749094 https://x.com/JosephWen___/status/1755606584863113480?s=20 https://twitter.com/JosephWen___/status/1673052927269961728?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -68942,7 +68587,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 黃土坡營區",
+        "名稱": "中部戰區 黃土坡基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -69045,7 +68690,7 @@
         ]
       },
       "properties": {
-        "名稱": "中部戰區 長陽營區",
+        "名稱": "中部戰區 長陽基地",
         "說明": "61606部隊 長陽營區",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -69205,7 +68850,7 @@
         ]
       },
       "properties": {
-        "名稱": "無錫聯勤保障中心 樟樹油庫",
+        "名稱": "東部戰區 樟樹油庫",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -69305,7 +68950,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 上張營區",
+        "名稱": "東部戰區 上張基地",
         "說明": "東部戰區陸軍參謀部邊海防處 海防第303旅（31612部隊）某分隊  車牌號：LD77",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -70043,7 +69688,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 坂頂陸航備降場",
+        "名稱": "東部戰區 連江陸航備降場",
         "說明": "建於2006-2007 年，原先用於車輛訓練，2022開始開始作為直升機訓場，可視為解放軍在東南地區加快了軍事準備。 https://twitter.com/nuwangzi/status/1625759363787882498?s=20&t=kjCazBDNbqC6aRSMpYwSaw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -70058,7 +69703,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 坂頂車輛訓場",
+        "名稱": "東部戰區 連江車輛訓場",
         "說明": "建於2006-2007 年，原先用於車輛訓練，2022開始開始作為直升機訓場，可視為解放軍在東南地區加快了軍事準備。    https://twitter.com/nuwangzi/status/1625759363787882498?s=20&t=kjCazBDNbqC6aRSMpYwSaw",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -70777,7 +70422,7 @@
         ]
       },
       "properties": {
-        "名稱": "無錫聯勤保障中心 東鄉油庫",
+        "名稱": "東部戰區 東鄉基地",
         "說明": "73866部隊",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -70932,13 +70577,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          97.1760152,
-          31.1665559
+          97.1771846,
+          31.1659913
         ]
       },
       "properties": {
         "名稱": "西部戰區 昌都營區",
-        "說明": "77集團軍輕型合成第150旅 31676部隊 榮譽稱號：兩不怕旅、群眾工作模範團  2營榮譽稱號：老虎營  某連榮譽稱號：衛國模範連  某連榮譽稱號：猛虎紅八連  車牌號：LX35  西藏昌都市卡若區。註：此旅自2020年移駐至此。   https://x.com/JosephWen___/status/2065391563069702420?s=20  https://www.youtube.com/watch?v=vXhQF-mzABM   https://mp.weixin.qq.com/s/n4aLxEtb5DzsMzLQh2eJag     https://weibo.com/7580476099/Nz5GPlW5z    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2026-06-07&paperNumber=05&articleid=980119",
+        "說明": "77集團軍輕型合成第150旅 31676部隊 榮譽稱號：兩不怕旅、群眾工作模範團  2營榮譽稱號：老虎營  車牌號：LX35  西藏昌都市卡若區   https://mp.weixin.qq.com/s/n4aLxEtb5DzsMzLQh2eJag     https://weibo.com/7580476099/Nz5GPlW5z",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -71568,7 +71213,7 @@
         ]
       },
       "properties": {
-        "名稱": "西藏軍區 紫金營區",
+        "名稱": "西藏軍區 紫金基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -71641,7 +71286,7 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 鐵提爾營區",
+        "名稱": "新疆軍區 鐵提爾基地",
         "說明": "新疆軍區合成第6師 重型合成第16團（前第21裝甲團） 69213部隊 新疆維吾爾自治區喀什地區葉城縣孟咯特路 車牌號： LJ46   https://x.com/JosephWen___/status/1889023291421347881   https://x.com/JosephWen___/status/1776148439556030798    https://x.com/JosephWen___/status/1726678712475844880?s=20   https://x.com/JosephWen___/status/1721755670503207129?s=20   https://x.com/JosephWen___/status/1705577659194102161?s=20    https://tv.cctv.com/2023/03/15/VIDETJ4PJi3rmY2lx7TqsJdL230315.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.2",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -71893,7 +71538,7 @@
         ]
       },
       "properties": {
-        "名稱": "北京衛戍區 西紅門營區",
+        "名稱": "北京衛戍區 西紅門基地",
         "說明": "北京衛戍區警衛第一師警衛第六團   https://moovitapp.com/beijing_%E5%8C%97%E4%BA%AC-3160/poi/%E5%8C%97%E4%BA%AC%E5%8D%AB%E6%88%8D%E5%8C%BA%E8%AD%A6%E5%8D%AB%E7%AC%AC%E4%B8%80%E5%B8%88%E8%AD%A6%E5%8D%AB%E7%AC%AC%E5%85%AD%E5%9B%A2/t/en?tll=39.795898_116.312397&ref=1&poiType=site&customerId=4908&af_sub8=%2Findex%2Fen%2Fpublic_transit-%25E5%258C%2597%25E4%25BA%25AC%25E5%258D%25AB%25E6%2588%258D%25E5%258C%25BA%25E8%25AD%25A6%25E5%258D%25AB%25E7%25AC%25AC%25E4%25B8%2580%25E5%25B8%2588%25E8%25AD%25A6%25E5%258D%25AB%25E7%25AC%25AC%25E5%2585%25AD%25E5%259B%25A2-Beijing_%25E5%258C%2597%25E4%25BA%25AC-site_219505747-3160",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -72339,7 +71984,7 @@
         ]
       },
       "properties": {
-        "名稱": "無錫聯勤保障中心 龍虎山彈藥庫(一)",
+        "名稱": "東部戰區 龍虎山營區",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -72368,7 +72013,7 @@
       },
       "properties": {
         "名稱": "南部戰區 開遠營區(北)",
-        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城、夜襲常勝軍、紅軍旅 某連榮譽稱號：英勇善戰鋼八連 某連榮譽稱號：戰場中樞連 某連榮譽稱號：渡江南進鞏固模範連 某連榮譽稱號：彈無虛發連 某班榮譽稱號：周廣才班  車牌號：LN33  雲南省紅河州開遠市 https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
+        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城 車牌號：LN33  雲南省紅河州開遠市 https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -72862,7 +72507,7 @@
       },
       "properties": {
         "名稱": "中部戰區 小丁莊訓場",
-        "說明": "83集團軍中型第60合成旅（71897部隊）作戰支援營 電子對抗連（8營4連）曾在2023年7月至此演訓。央視曾於2026年7月19日報導該旅4營1連於此演訓。    https://x.com/JosephWen___/status/2078867421977559250?s=20   https://twitter.com/JosephWen___/status/1681302332007649282?s=20",
+        "說明": "83集團軍中型第60合成旅（71897部隊）作戰支援營 電子對抗連（8營4連）曾在2023年7月至此演訓。    https://twitter.com/JosephWen___/status/1681302332007649282?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -72892,7 +72537,7 @@
       },
       "properties": {
         "名稱": "中部戰區 五峰山訓場",
-        "說明": "河南省駐馬店市泌陽縣象河鄉五峰山https://x.com/JosephWen___/status/1943531188796244029   https://twitter.com/JosephWen___/status/1661770666763505665?s=20   https://twitter.com/JosephWen___/status/1661329097275109377?s=20   https://twitter.com/JosephWen___/status/1661304831158673408?s=20    https://tv.cctv.com/2026/07/09/VIDEeviIuwJoIk2cFQCJuJlU260709.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.7",
+        "說明": "河南省駐馬店市泌陽縣象河鄉五峰山https://x.com/JosephWen___/status/1943531188796244029   https://twitter.com/JosephWen___/status/1661770666763505665?s=20   https://twitter.com/JosephWen___/status/1661329097275109377?s=20   https://twitter.com/JosephWen___/status/1661304831158673408?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -74034,7 +73679,7 @@
       },
       "properties": {
         "名稱": "中部戰區 小浪底水庫浮橋架設訓場",
-        "說明": "2023年6月22日，央視曾報導82集團軍工兵旅（32141部隊）舟橋分隊自該旅駐地（北京市昌平區陽坊鎮沙陽路12號）移地至此（河南省洛陽市孟津縣霞院村 小浪底水庫一帶）遂行浮橋架設演訓。曾於2026年6月21日報導83集團軍工化旅（32149部隊）遂行浮橋架設演訓。    https://x.com/JosephWen___/status/2069103133129879593?s=20   https://twitter.com/JosephWen___/status/1671766548644765697?s=20",
+        "說明": "2023年6月22日，央視曾報導82集團軍工兵旅（32141部隊）舟橋分隊自該旅駐地（北京市昌平區陽坊鎮沙陽路12號）移地至此（河南省洛陽市孟津縣霞院村 小浪底水庫一帶）遂行浮橋架設演訓。https://twitter.com/JosephWen___/status/1671766548644765697?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -74124,7 +73769,7 @@
       },
       "properties": {
         "名稱": "中部戰區 大石窩營區",
-        "說明": "82集團軍輕型合成第196旅 66481部隊 別稱：忠誠猛士 榮譽稱號：勢如破竹十九團 摩步十連榮譽稱號：大青山模範守備連（駐於此營區） 車牌號：LZ36   北京市房山區大石窩鎮   https://x.com/JosephWen___/status/2064740097048916352?s=20   https://x.com/JosephWen___/status/1803767874068333008   https://x.com/JosephWen___/status/1783917741847749094 https://x.com/JosephWen___/status/1755606584863113480?s=20 https://twitter.com/JosephWen___/status/1673052927269961728?s=20",
+        "說明": "82集團軍輕型合成第196旅 66481部隊 別稱：忠誠猛士 榮譽稱號：勢如破竹十九團 摩步十連榮譽稱號：大青山模範守備連（駐於此營區） 車牌號：LZ36   北京市房山區大石窩鎮   https://x.com/JosephWen___/status/1803767874068333008   https://x.com/JosephWen___/status/1783917741847749094 https://x.com/JosephWen___/status/1755606584863113480?s=20 https://twitter.com/JosephWen___/status/1673052927269961728?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -75348,7 +74993,7 @@
       },
       "properties": {
         "名稱": "東部戰區 興化灣火炮訓場",
-        "說明": "福州興化灣江陰港。2023年9月5日，東部戰區微信公眾號發布之報導，搭配福州海事局8月22日之通告顯示，東部戰區陸軍參謀部邊海防處303海防旅（31612部隊）72分隊，2023年8月24到25日7時至20時在此遂行火炮射擊演訓。 2026年7月18日，央視發布之報導，搭配福州海事局7月14日之通告顯示，東部戰區陸軍參謀部邊海防處303海防旅（31612部隊），2023年7月16日1時至18時在此遂行火炮射擊演訓。 車牌號：LD77     https://x.com/JosephWen___/status/2078549523421638880?s=20    https://twitter.com/JosephWen___/status/1699005777195958374?s=20      https://twitter.com/JosephWen___/status/1694585823524794604?s=20   https://www.fj.msa.gov.cn/fjmsacms/cms/html/fjhsjwwwz/2023-08-22/1843444793.html       https://tw.news.yahoo.com/%E7%B9%BC%E6%9D%B1%E9%83%A8%E6%88%B0%E5%8D%80%E5%8F%B0%E7%81%A3%E9%80%B1%E9%81%AD%E8%BB%8D%E6%BC%94%E5%BE%8C-%E4%B8%AD%E5%9C%8B%E5%86%8D%E5%AE%A3%E5%B8%83%E7%A6%8F%E5%BB%BA%E5%A4%96%E6%B5%B7%E5%AF%A6%E5%BD%88%E6%BC%94%E7%BF%92-030947890.html",
+        "說明": "福州興化灣江陰港。2023年9月5日，東部戰區微信公眾號發布之報導，搭配福州海事局8月22日之通告顯示，東部戰區陸軍參謀部邊海防處303海防旅（31612部隊）72分隊，2023年8月24到25日7時至20時在此遂行火炮射擊演訓。 車牌號：LD77      https://twitter.com/JosephWen___/status/1699005777195958374?s=20      https://twitter.com/JosephWen___/status/1694585823524794604?s=20   https://www.fj.msa.gov.cn/fjmsacms/cms/html/fjhsjwwwz/2023-08-22/1843444793.html       https://tw.news.yahoo.com/%E7%B9%BC%E6%9D%B1%E9%83%A8%E6%88%B0%E5%8D%80%E5%8F%B0%E7%81%A3%E9%80%B1%E9%81%AD%E8%BB%8D%E6%BC%94%E5%BE%8C-%E4%B8%AD%E5%9C%8B%E5%86%8D%E5%AE%A3%E5%B8%83%E7%A6%8F%E5%BB%BA%E5%A4%96%E6%B5%B7%E5%AF%A6%E5%BD%88%E6%BC%94%E7%BF%92-030947890.html",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -76004,7 +75649,7 @@
       },
       "properties": {
         "名稱": "瀋陽聯勤保障中心 連山關聯勤保障訓場",
-        "說明": "瀋陽聯勤保障中心 聯勤保障第七旅 32652部隊 車牌號：BB31  遼寧省本溪市本溪滿族自治縣連山關鎮   https://x.com/JosephWen___/status/2057132131147718760?s=20   https://x.com/JosephWen___/status/2016520138137407678?s=20    https://x.com/JosephWen___/status/1787123461846180064    https://x.com/JosephWen___/status/1701610340906402071?s=20   https://tv.cctv.com/2025/02/07/VIDEnU5fr5fzIdzU9RmZIg4r250207.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.6",
+        "說明": "瀋陽聯勤保障中心 聯勤保障第七旅 32652部隊 車牌號：BB31  遼寧省本溪市本溪滿族自治縣連山關鎮   https://x.com/JosephWen___/status/2016520138137407678?s=20    https://x.com/JosephWen___/status/1787123461846180064    https://x.com/JosephWen___/status/1701610340906402071?s=20   https://tv.cctv.com/2025/02/07/VIDEnU5fr5fzIdzU9RmZIg4r250207.shtml?spm=C52346.PQw42etIf8YI.Edvk0IT63y7P.6",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -76256,7 +75901,7 @@
       },
       "properties": {
         "名稱": "中部戰區 黃羊灘訓場",
-        "說明": "河北省張家口市宣化區黃羊灘。 2024年10月20至22日曾在此召開“全軍合成訓練現場會”，張又俠出席並講話。（註：先前2023年6月18至20日曾於天津市武清楊村召開“全軍基礎訓練現場會”。）央視曾於2025年6月3日報導81集團軍重型合成第7旅（32133部隊）6營近日移地至此遂行炮兵實彈射擊考核。於2025年6月23日報導82集團軍重型第6合成旅（66325部隊）3營6連移地至此演訓。\nhttps://x.com/JosephWen___/status/2064740097048916352?s=20  https://x.com/JosephWen___/status/1943347696410202490   https://x.com/JosephWen___/status/1929899325167153262   https://x.com/JosephWen___/status/1848775315432333790  https://x.com/JosephWen___/status/1848754084435865885  https://x.com/JosephWen___/status/1703800882180268254?s=20   https://tv.cctv.com/2024/12/04/VIDEsAF1SpfkYBagoz7G90gH241204.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.2",
+        "說明": "河北省張家口市宣化區黃羊灘。 2024年10月20至22日曾在此召開“全軍合成訓練現場會”，張又俠出席並講話。（註：先前2023年6月18至20日曾於天津市武清楊村召開“全軍基礎訓練現場會”。）央視曾於2025年6月3日報導81集團軍重型合成第7旅（32133部隊）6營近日移地至此遂行炮兵實彈射擊考核。於2025年6月23日報導82集團軍重型第6合成旅（66325部隊）3營6連移地至此演訓。\nhttps://x.com/JosephWen___/status/1943347696410202490   https://x.com/JosephWen___/status/1929899325167153262   https://x.com/JosephWen___/status/1848775315432333790  https://x.com/JosephWen___/status/1848754084435865885  https://x.com/JosephWen___/status/1703800882180268254?s=20   https://tv.cctv.com/2024/12/04/VIDEsAF1SpfkYBagoz7G90gH241204.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.2",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -76419,7 +76064,7 @@
         ]
       },
       "properties": {
-        "名稱": "北部戰區 洮南合同戰術訓練基地 宿營地(一)",
+        "名稱": "北部戰區 洮南合同戰術訓練基地 宿營地",
         "說明": "央視曾於2023年9月22日報導78集團軍重型第8合成旅（71375部隊）炮兵營與防空營至此駐訓。     https://x.com/JosephWen___/status/1705202659341541732?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -76596,7 +76241,7 @@
       },
       "properties": {
         "名稱": "東部戰區 湖濱村營區",
-        "說明": "71集團軍炮兵旅 73101部隊  5營（遠火1營）2連  旅榮譽稱號：太行勁旅  5營（遠火1營）2連榮譽稱號：矢志打贏鋼二連、利劍二連、一等功連  車牌號：LD21  福建省福州市長樂市湖濱村。央視曾於2024年2月15日報導該旅5營（遠火1營）2連PHL-03於春節期間在此開展全要素全流程戰備拉動演練。 央視於2026年5月20日報導顯示，此單位已換裝PHL-191。 https://x.com/JosephWen___/status/2057295102444486962?s=20   https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20   https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://mp.weixin.qq.com/s/hXK86NpH1JSUaS-NlL_v8A          https://mp.weixin.qq.com/s/3yZo5-iYaNBhw1OXAiTF_w?fbclid=IwAR1MdljsvxcUIjHXtkol3DV8qd6mgSsMEgMGt-lNo-52_Isqq1YVOzdYcGE&mibextid=xfxF2i    https://www.bidcenter.com.cn/newscontent-48804959-1.html    https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
+        "說明": "71集團軍炮兵旅 73101部隊  5營（遠火1營）2連  旅榮譽稱號：太行勁旅  5營（遠火1營）2連榮譽稱號：矢志打贏鋼二連、利劍二連、一等功連  車牌號：LD21  福建省福州市長樂市湖濱村。央視曾於2024年2月15日報導該旅5營（遠火1營）2連PHL-03於春節期間在此開展全要素全流程戰備拉動演練。  https://x.com/JosephWen___/status/1994805717103215017?s=20    https://x.com/JosephWen___/status/1826499353319452964   https://x.com/JosephWen___/status/1800912171729322411   https://x.com/JosephWen___/status/1800559617258426875   https://x.com/JosephWen___/status/1763101518541271349?s=20   https://x.com/JosephWen___/status/1758130908148932637?s=20   https://x.com/JosephWen___/status/1748209583989149824?s=20 https://x.com/JosephWen___/status/1717200030770311296?s=20 https://twitter.com/JosephWen___/status/1691853473644687452?s=20 https://mp.weixin.qq.com/s/hXK86NpH1JSUaS-NlL_v8A          https://mp.weixin.qq.com/s/3yZo5-iYaNBhw1OXAiTF_w?fbclid=IwAR1MdljsvxcUIjHXtkol3DV8qd6mgSsMEgMGt-lNo-52_Isqq1YVOzdYcGE&mibextid=xfxF2i    https://www.bidcenter.com.cn/newscontent-48804959-1.html    https://tv.cctv.com/2024/07/25/VIDE6CSjQxV5ERw6SAESHWTN240725.shtml?spm=C53074552346.PAqoOHgVGHZg.0.0",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -76901,7 +76546,7 @@
         ]
       },
       "properties": {
-        "名稱": "東部戰區 尚家崗營區",
+        "名稱": "東部戰區 尚家崗基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -76959,6 +76604,20 @@
       "properties": {
         "名稱": "桂林聯勤保障中心 32554部隊",
         "說明": "桂林聯勤保障中心 32554部隊  雲南省昆明市官渡區雨龍路376號    https://x.com/JosephWen___/status/1827810428950605870   https://www.bidcenter.com.cn/newscontent-204836590-1.html   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2023-11-08&paperNumber=07&articleid=918825   https://mp.weixin.qq.com/s/Y7ZMp-f6Fjl7_iboSkxdnA",
+        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.2766465,
+          25.2917869
+        ]
+      },
+      "properties": {
+        "名稱": "桂林聯勤保障中心 甲山基地",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -77281,7 +76940,7 @@
       },
       "properties": {
         "名稱": "南部戰區 南洞營區",
-        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城、夜襲常勝軍、紅軍旅 某連榮譽稱號：英勇善戰鋼八連 某連榮譽稱號：戰場中樞連 某連榮譽稱號：渡江南進鞏固模範連 某連榮譽稱號：彈無虛發連 某班榮譽稱號：周廣才班  車牌號：LN33  雲南省紅河州開遠市 https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://weibo.com/7495664675/KmAsXgNCG https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
+        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城 車牌號：LN33  雲南省紅河州開遠市 https://x.com/JosephWen___/status/1731288283177750708?s=20   https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://weibo.com/7495664675/KmAsXgNCG https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -77366,7 +77025,7 @@
       },
       "properties": {
         "名稱": "南部戰區 臥龍谷營區",
-        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城、夜襲常勝軍、紅軍旅 某連榮譽稱號：英勇善戰鋼八連 某連榮譽稱號：戰場中樞連 某連榮譽稱號：渡江南進鞏固模範連 某連榮譽稱號：彈無虛發連 某班榮譽稱號：周廣才班  車牌號：LN33  雲南省紅河縣開遠市臥龍谷村   https://x.com/JosephWen___/status/1731288283177750708?s=20    https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://weibo.com/7495664675/KmAsXgNCG https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
+        "說明": "75集團軍山地第37合成旅 77126部隊 榮譽稱號：南疆長城 車牌號：LN33  雲南省紅河縣開遠市臥龍谷村   https://x.com/JosephWen___/status/1731288283177750708?s=20    https://twitter.com/JosephWen___/status/1643215406633725953?s=20 https://weibo.com/7495664675/KmAsXgNCG https://zh.wikipedia.org/zh-tw/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E9%99%86%E5%86%9B%E5%90%88%E6%88%90%E7%AC%AC%E4%B8%89%E5%8D%81%E4%B8%83%E6%97%85",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -77542,7 +77201,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 丹娘鄉訓場",
-        "說明": "央視曾於2023年12月16日報導西藏軍區邊防353團（32169部隊）數量ZSL-92裝甲車機動至此遂行實彈演訓。於2025年7月8日報導同上單位於此組織多火器實彈射擊考核。    https://x.com/JosephWen___/status/1943946395251356036   https://x.com/JosephWen___/status/1736020827345485864?s=20    https://tv.cctv.com/2026/06/28/VIDEKjwiu0b0JQvH4bUOetSU260628.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.5",
+        "說明": "央視曾於2023年12月16日報導西藏軍區邊防353團（32169部隊）數量ZSL-92裝甲車機動至此遂行實彈演訓。於2025年7月8日報導同上單位於此組織多火器實彈射擊考核。    https://x.com/JosephWen___/status/1943946395251356036   https://x.com/JosephWen___/status/1736020827345485864?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -78210,7 +77869,7 @@
       },
       "properties": {
         "名稱": "西藏軍區 麻布熱訓場",
-        "說明": "西藏林芝市米林縣麻布熱村。央視曾於2024年1月15日與2025年7月8日報導西藏軍區邊防353團（32169部隊）於此遂行多火器實彈射擊考核。   https://x.com/JosephWen___/status/1943946395251356036   https://x.com/JosephWen___/status/1747075722169164035?s=20    https://tv.cctv.com/2026/06/28/VIDEKjwiu0b0JQvH4bUOetSU260628.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.5",
+        "說明": "西藏林芝市米林縣麻布熱村。央視曾於2024年1月15日與2025年7月8日報導西藏軍區邊防353團（32169部隊）於此遂行多火器實彈射擊考核。   https://x.com/JosephWen___/status/1943946395251356036   https://x.com/JosephWen___/status/1747075722169164035?s=20",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -79609,8 +79268,8 @@
         ]
       },
       "properties": {
-        "名稱": "新疆軍區 水磨溝營區(一)",
-        "說明": "解放軍陸軍防化第二團  69007部隊  稱號：降魔先鋒團  新疆烏魯木齊水磨溝區五星北路146號     https://x.com/JosephWen___/status/2065254330392060098?s=20   https://weibo.com/7580523612/OAFHinVfW   https://zh.wikipedia.org/zh-tw/%E9%99%86%E5%86%9B%E9%98%B2%E5%8C%96%E7%AC%AC%E4%BA%8C%E5%9B%A2",
+        "名稱": "新疆軍區 水磨溝基地(一)",
+        "說明": "解放軍陸軍防化第二團  69007部隊  稱號：降魔先鋒團  新疆烏魯木齊水磨溝區五星北路146號     https://weibo.com/7580523612/OAFHinVfW   https://zh.wikipedia.org/zh-tw/%E9%99%86%E5%86%9B%E9%98%B2%E5%8C%96%E7%AC%AC%E4%BA%8C%E5%9B%A2",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -81627,7 +81286,7 @@
         ]
       },
       "properties": {
-        "名稱": "西部戰區 伊州營區(北)",
+        "名稱": "西部戰區 伊州營區",
         "說明": "76集團軍中型合成第149旅 77156部隊 榮譽稱號：鐵拳旅 某連榮譽稱號：呂莊英雄連 車牌號：LX15  新疆哈密市伊州區十團  https://x.com/JosephWen___/status/2007836344404599117?s=20    http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-11-22&paperNumber=02&articleid=967445 https://tv.cctv.com/2024/12/11/VIDEIZn1oE0UvPU5u1AW1k7j241211.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
@@ -83179,7 +82838,7 @@
       },
       "properties": {
         "名稱": "東部戰區 蚌埠訓場",
-        "說明": "71集團軍工化旅 31602部隊 榮譽稱號：朱德警衛團、黃崖洞保衛戰英雄團 車牌號：LD25   https://x.com/JosephWen___/status/1866365940356858129   https://x.com/JosephWen___/status/1855288350569341368    https://tv.cctv.com/2026/05/31/VIDEwpk5cMOUTSDOoltCn3KO260531.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.23",
+        "說明": "71集團軍工化旅 31602部隊 榮譽稱號：朱德警衛團、黃崖洞保衛戰英雄團 車牌號：LD25   https://x.com/JosephWen___/status/1866365940356858129   https://x.com/JosephWen___/status/1855288350569341368",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -85004,7 +84663,7 @@
       },
       "properties": {
         "名稱": "陸軍第五綜合訓練基地 車輛訓場",
-        "說明": "陸軍第五綜合訓練基地 68003部隊  車牌號：LX74  甘肅省金昌市永昌縣磨溝    https://x.com/JosephWen___/status/1946898188935569645    https://tv.cctv.com/2026/06/06/VIDEreBMsisn0qO1fLMfmqEy260606.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.4",
+        "說明": "陸軍第五綜合訓練基地 68003部隊  車牌號：LX74  甘肅省金昌市永昌縣磨溝    https://x.com/JosephWen___/status/1946898188935569645",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -85108,8 +84767,8 @@
         ]
       },
       "properties": {
-        "名稱": "北部戰區 九站營區",
-        "說明": "78集團軍工化旅 31692部隊 車牌號：LB25  吉林省吉林市昌邑區工農路。央視曾於2025年7月28日報導78集團軍藉78集團軍中型第115合成旅 （65589部隊）之車輛於此遂行新訓駕駛員實戰化考核。   https://x.com/JosephWen___/status/1950040648926515465   http://www.jleda.gov.cn/zwyw/201707/t20170727_250947.html",
+        "名稱": "北部戰區 九站營區/車輛訓場",
+        "說明": "吉林省吉林市昌邑區工農路。央視曾於2025年7月28日報導78集團軍藉78集團軍中型第115合成旅 （65589部隊）之車輛於此遂行新訓駕駛員實戰化考核。   https://x.com/JosephWen___/status/1950040648926515465",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -85855,7 +85514,7 @@
       },
       "properties": {
         "名稱": "東部戰區 金溪炮訓場 宿營地",
-        "說明": "江西省撫州市金溪縣。自2024年10月9日以來，央視開始出現73集團軍炮兵旅（73146部隊）數次移地此訓場實彈射擊之報導。該旅前往此訓場，多於出發後在惠安黃塘鐵路貨運站裝載，並於鷹潭南站鐵路卸載後實施公路機動。央視曾於2025年11月15日報導73集團軍重型合成第86旅（73127部隊）6營至此遂行實彈演訓。 曾於2026年6月16日報導72集團軍某中型合成旅火力連至此遂行實彈演訓。  https://x.com/JosephWen___/status/1990107504869830873?s=20   https://x.com/JosephWen___/status/1979574523025641637   https://x.com/JosephWen___/status/1979565386376102240     https://tv.cctv.com/2026/06/16/VIDEkvzgCtDz69vXsFmIpEFJ260616.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.7 （27.78406, 116.69061）",
+        "說明": "江西省撫州市金溪縣。自2024年10月9日以來，央視開始出現73集團軍炮兵旅（73146部隊）數次移地此訓場實彈射擊之報導。該旅前往此訓場，多於出發後在惠安黃塘鐵路貨運站裝載，並於鷹潭南站鐵路卸載後實施公路機動。央視曾於2025年11月15日報導73集團軍重型合成第86旅（73127部隊）6營至此遂行炮兵演訓。   https://x.com/JosephWen___/status/1990107504869830873?s=20   https://x.com/JosephWen___/status/1979574523025641637   https://x.com/JosephWen___/status/1979565386376102240",
         "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
       }
     },
@@ -86692,555 +86351,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          112.1444027,
-          31.9500852
-        ]
-      },
-      "properties": {
-        "名稱": "瀋陽聯勤保障中心 喬家衝油料倉庫",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6996684,
-          25.976341
-        ]
-      },
-      "properties": {
-        "名稱": "東部戰區 石壁村遠火陣地",
-        "說明": "71集團軍炮兵旅 73101部隊 5營（遠火1營）2連 旅榮譽稱號：太行勁旅 5營（遠火1營）2連榮譽稱號：矢志打贏鋼二連、利劍二連、一等功連 車牌號：LD21  福建省福州市長樂區仙曇東路。央視於2026年5月20日報導顯示，此單位在此開展訓練，並已換裝PHL-191。    https://x.com/JosephWen___/status/2057295102444486962?s=20",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          109.5377528,
-          40.875025
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 明安訓場",
-        "說明": "內蒙古自治區巴彥淖爾市烏拉特前旗明安鎮",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.8441016,
-          34.4452027
-        ]
-      },
-      "properties": {
-        "名稱": "東部戰區 高港防空訓場",
-        "說明": "https://x.com/sfx_ewss/status/2060450450349183221?s=20",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          93.4896513,
-          42.8850149
-        ]
-      },
-      "properties": {
-        "名稱": "西部戰區 伊州營區(南)",
-        "說明": "76集團軍中型合成第149旅 77156部隊 榮譽稱號：鐵拳旅 某連榮譽稱號：呂莊英雄連 車牌號：LX15  新疆哈密市伊州區八一大道   https://x.com/JosephWen___/status/2007836344404599117?s=20 http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-11-22&paperNumber=02&articleid=967445 https://tv.cctv.com/2024/12/11/VIDEIZn1oE0UvPU5u1AW1k7j241211.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.3",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          107.0168176,
-          26.5805655
-        ]
-      },
-      "properties": {
-        "名稱": "桂林聯勤保障中心 對門寨彈藥庫",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          118.1330271,
-          24.4531281
-        ]
-      },
-      "properties": {
-        "名稱": "東部戰區 東坪山營區(東)",
-        "說明": "東部戰區陸軍直屬 情報偵查第一旅 31616部隊 福建省廈門市東坪山",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.0302933,
-          22.6550083
-        ]
-      },
-      "properties": {
-        "名稱": "南部戰區 山咀頭營區",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          89.1964551,
-          27.9146346
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 堆納鄉訓場",
-        "說明": "西藏日喀則市亞東縣堆納鄉。中國軍號X曾於\n2026年5月30日報導西藏軍區重型合成第54旅（77626部隊）6營1連至此實彈演訓。   https://x.com/JosephWen___/status/2065481937721164097?s=20",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          97.1803145,
-          31.1494292
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 昌都軍分區 機關",
-        "說明": "西藏軍區 昌都軍分區 機關  西藏自治區昌都市卡若區夏通街110號    https://zjt.xizang.gov.cn/xwzx/zbgg/202109/t20210915_261173.html",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          97.1798378,
-          31.1663642
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 昌都軍分區 生產團",
-        "說明": "西藏軍區 昌都軍分區 生產團  77570部隊  車牌號：CS54  西藏昌都市卡若區城關鎮東路16號（野豬壩橋旁）   https://x.com/JosephWen___/status/2065747366125453323?s=20   https://zjt.xizang.gov.cn/xwzx/zbgg/202202/t20220222_285508.html",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.9250344,
-          41.797164
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 呼舒陶來哨所",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          102.828928,
-          42.0965348
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 準陶來哨所",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          101.9020423,
-          42.3869039
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 查布楚仁努如哨所",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          107.5614669,
-          42.4072039
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 甘其毛都邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          107.0628825,
-          42.3060913
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 烏蘭額熱格邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.195329,
-          42.0685189
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 扎敏善德邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.3646135,
-          41.7682527
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 敖勒斯台邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          104.8199931,
-          41.5607959
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 銀根邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          111.5085978,
-          43.4106449
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 格爾楚魯邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          111.9575622,
-          43.9334888
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 伊和寶其邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          116.3246991,
-          45.7274721
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 珠恩嘎達布其邊防連",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          91.7754664,
-          29.2230396
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 山南軍分區 生產團",
-        "說明": "西藏軍區 山南軍分區 生產團  西藏山南地區乃東縣澤當鎮乃東路",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          88.8741557,
-          29.2624336
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 日喀則軍分區 生產團",
-        "說明": "西藏軍區 日喀則軍分區 生產團  西藏日喀則市桑珠孜區體育路",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          95.7561553,
-          29.8618648
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 林芝軍分區 波密生產營",
-        "說明": "西藏軍區 林芝軍分區 波密生產營  西藏林芝市波密縣扎木鎮桑登中路",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.3244906,
-          30.5271855
-        ]
-      },
-      "properties": {
-        "名稱": "中部戰區 曬湖營區",
-        "說明": "不詳",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          122.1481601,
-          45.3860137
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 洮南合同戰術訓練基地 宿營地(二)",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          81.1419472,
-          30.2697975
-        ]
-      },
-      "properties": {
-        "名稱": "新疆軍區 普蘭洞庫",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          116.9764225,
-          28.0825793
-        ]
-      },
-      "properties": {
-        "名稱": "無錫聯勤保障中心 龍虎山彈藥庫(二)",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          115.5576031,
-          27.8788653
-        ]
-      },
-      "properties": {
-        "名稱": "東部戰區 石陂洞庫",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.2761786,
-          25.2915827
-        ]
-      },
-      "properties": {
-        "名稱": "桂林市民兵軍事訓練基地",
-        "說明": "桂林市民兵軍事訓練基地（桂林市民兵高射武器裝備倉庫）廣西桂林市秀峰區甲山路109號",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          118.7859869,
-          32.0550916
-        ]
-      },
-      "properties": {
-        "名稱": "32075部隊",
-        "說明": "32075部隊  江蘇省南京市玄武區進香河路22號‌",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          92.2761121,
-          28.4321831
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 巴當訓場",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          92.1910103,
-          28.4067701
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 果賣訓場",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          92.4686449,
-          28.3945783
-        ]
-      },
-      "properties": {
-        "名稱": "西藏軍區 帕左彈藥庫",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          123.2688211,
-          39.8801985
-        ]
-      },
-      "properties": {
-        "名稱": "北部戰區 黃柏樹營區",
-        "說明": "不詳",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          78.2978936,
-          35.0228009
-        ]
-      },
-      "properties": {
-        "名稱": "新疆軍區 河尾灘前哨",
-        "說明": "https://x.com/sfx_ewss/status/2076999745491599554?s=20",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          78.3421525,
-          35.0240688
-        ]
-      },
-      "properties": {
-        "名稱": "新疆軍區 河尾灘地導陣地",
-        "說明": "裝備：HQ-16   https://x.com/sfx_ewss/status/2077038523199410644?s=20",
-        "layer": "解放軍陸軍、陸軍防空單位、聯勤保障設施、預備役部隊(部分設施為個人推斷)"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           118.2995229,
           29.6955462
         ]
@@ -87261,7 +86371,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十一基地611旅 青陽營區",
+        "名稱": "火箭軍六十一基地611旅 青陽基地",
         "說明": "火箭軍六十一基地611旅  96711部隊 裝備： DF-26（曾先後裝備DF-3A與DF-21A）車牌號：LD91  安徽省池州市青陽縣新河鎮。習近平曾於2024年10月17日視察此單位。\nhttps://x.com/JosephWen___/status/1874855518994641258   https://x.com/JosephWen___/status/1848024964798271677  https://x.com/JosephWen___/status/1848018416764133776   https://x.com/JosephWen___/status/1847643726367350964 https://x.com/JosephWen___/status/1847616233237336486 https://x.com/CSBiggers/status/1882027442170212583   https://x.com/benreuter_IMINT/status/1621808331403706369   http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-02-05&paperNumber=06&articleid=948573",
         "layer": "解放軍火箭軍"
       }
@@ -87292,7 +86402,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十一基地613旅 上饒營區",
-        "說明": "火箭軍六十一基地613旅  96713部隊  裝備： DF-15B (第一個傳統短程彈道導彈部隊)  榮譽稱號：常規導彈第一旅  某營發射三連榮譽稱號： 導彈發射先鋒連  註：此旅發射1營為「高原火箭兵精神」發源單位。  江西省上饒市廣信區羅橋鄉 https://tv.cctv.com/2026/06/20/VIDEs7mNnPvq2F50Y7YWzcLo260620.shtml?spm=C45404.PCHhhgX3efBE.Ev0XVtu8CoWN.202   https://tv.cctv.com/2025/12/24/VIDECT8E4WwfxCwz3qOZtVOO251224.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.21    https://mp.weixin.qq.com/s/z8mUlVOVHLxPEY916Y_yxw   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0     https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-15%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9     http://www.mod.gov.cn/big5/photos/2022-10/20/content_4923918.htm     https://x.com/JosephWen___/status/2005693158597038443?s=20   https://x.com/JosephWen___/status/1982402792032711103   https://x.com/JosephWen___/status/1793862573101887508   https://x.com/JosephWen___/status/1793847081641345026   https://x.com/JosephWen___/status/1769387444259237897?s=20   https://twitter.com/JosephWen___/status/1645287372513501184?s=20  https://twitter.com/JosephWen___/status/1612662136387563521?s=20     https://twitter.com/JosephWen___/status/1610289977283444737?s=20&t=J0JuPRp1RKlUWHK5Kf-trQ  https://twitter.com/JosephWen___/status/1555276727642759169?s=20    https://twitter.com/JosephWen___/status/1555245731333623808?s=20   https://x.com/pir34/status/1431313092219133952   https://twitter.com/benreuter_IMINT/status/1600160151104806914?s=20&t=4Wa1gfCvYToi9J8gfDt9tw",
+        "說明": "火箭軍六十一基地613旅  96713部隊  裝備： DF-15B (第一個傳統短程彈道導彈部隊)  榮譽稱號：常規導彈第一旅  某營發射三連榮譽稱號： 導彈發射先鋒連  註：此旅發射1營為「高原火箭兵精神」發源單位。  江西省上饒市廣信區羅橋鄉 https://tv.cctv.com/2025/12/24/VIDECT8E4WwfxCwz3qOZtVOO251224.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.21    https://mp.weixin.qq.com/s/z8mUlVOVHLxPEY916Y_yxw   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0     https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-15%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9     http://www.mod.gov.cn/big5/photos/2022-10/20/content_4923918.htm     https://x.com/JosephWen___/status/2005693158597038443?s=20   https://x.com/JosephWen___/status/1982402792032711103   https://x.com/JosephWen___/status/1793862573101887508   https://x.com/JosephWen___/status/1793847081641345026   https://x.com/JosephWen___/status/1769387444259237897?s=20   https://twitter.com/JosephWen___/status/1645287372513501184?s=20  https://twitter.com/JosephWen___/status/1612662136387563521?s=20     https://twitter.com/JosephWen___/status/1610289977283444737?s=20&t=J0JuPRp1RKlUWHK5Kf-trQ  https://twitter.com/JosephWen___/status/1555276727642759169?s=20    https://twitter.com/JosephWen___/status/1555245731333623808?s=20   https://x.com/pir34/status/1431313092219133952   https://twitter.com/benreuter_IMINT/status/1600160151104806914?s=20&t=4Wa1gfCvYToi9J8gfDt9tw",
         "layer": "解放軍火箭軍"
       }
     },
@@ -87307,7 +86417,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十一基地614旅 永安營區",
-        "說明": "96714部隊 裝備： DF-11A (第1個東風-11A旅)  發射1營榮譽稱號：導彈發射先鋒營  福建省三明市永安市嶺干村  https://x.com/JosephWen___/status/1766120787336188313?s=20   https://twitter.com/JosephWen___/status/1694735370829877630?s=20    https://twitter.com/JosephWen___/status/1644690141351641094?s=20     https://twitter.com/benreuter_IMINT/status/1600859424004145153?s=20&t=4Wa1gfCvYToi9J8gfDt9tw    https://www.xinhuanet.com/politics/2019-12/02/c_1125299530.htm  https://tv.cctv.com/2026/07/03/VIDEYxeZ8aZbhej8s5wqNzJQ260703.shtml?spm=C52346.PFFUsJDNPMAY.Ecv1YmkHWv7j.10",
+        "說明": "96714部隊 裝備： DF-11A (第1個東風-11A旅)  福建省三明市永安市嶺干村  https://x.com/JosephWen___/status/1766120787336188313?s=20   https://twitter.com/JosephWen___/status/1694735370829877630?s=20    https://twitter.com/JosephWen___/status/1644690141351641094?s=20     https://twitter.com/benreuter_IMINT/status/1600859424004145153?s=20&t=4Wa1gfCvYToi9J8gfDt9tw    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0  https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-11%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
     },
@@ -87412,7 +86522,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十二基地623旅 柳州基地",
-        "說明": "火箭軍六十二基地623旅  96723部隊  裝備：DF-10A(長劍-10改型) (第 1 個東風-10A 旅)  車牌號：TF-55(?)xxx  廣西柳州市魚峰區冠東路     https://x.com/JosephWen___/status/2069113588359528551?s=20   https://x.com/JosephWen___/status/1778309866861596915    https://x.com/JosephWen___/status/1750920800696492130?s=20   https://twitter.com/JosephWen___/status/1626115274561978368?s=20    https://tv.cctv.com/2025/11/27/VIDE1owmq07xnAhQB6GpqbM3251127.shtml?spm=C28340.PlFTqGe6Zk8M.S70924.44    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%BA%8C%E5%9F%BA%E5%9C%B0  https://zh.wikipedia.org/wiki/%E9%95%BF%E5%89%91-10%E5%AF%BC%E5%BC%B9",
+        "說明": "96723部隊 裝備：DF-10A(長劍-10改型) (第 1 個東風-10A 旅)  車牌號：TF-55(?)xxx  廣西柳州市魚峰區冠東路     https://x.com/JosephWen___/status/1778309866861596915    https://x.com/JosephWen___/status/1750920800696492130?s=20   https://twitter.com/JosephWen___/status/1626115274561978368?s=20    https://tv.cctv.com/2025/11/27/VIDE1owmq07xnAhQB6GpqbM3251127.shtml?spm=C28340.PlFTqGe6Zk8M.S70924.44    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%BA%8C%E5%9F%BA%E5%9C%B0  https://zh.wikipedia.org/wiki/%E9%95%BF%E5%89%91-10%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
     },
@@ -87456,7 +86566,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十二基地626旅 清遠營區",
+        "名稱": "火箭軍六十二基地626旅 清遠基地",
         "說明": "96726部隊 裝備：DF-26(有核)  廣東省清遠市清城區羊咩寮   https://twitter.com/JosephWen___/status/1678349057176252416?s=20    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%BA%8C%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-26%E4%B8%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
@@ -87561,7 +86671,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十三基地635旅 宜春營區",
+        "名稱": "火箭軍六十三基地635旅 宜春基地",
         "說明": "96735部隊 裝備：DF-10(長劍-10改型) (第 2個東風-10旅)   江西省宜春市袁州區工業園 https://twitter.com/JosephWen___/status/1677247794745311233?s=20     http://www.81.cn/szb_223187/szbxq/index.html?paperName=jfjb&paperDate=2025-02-10&paperNumber=01&articleid=948907   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%89%E5%9F%BA%E5%9C%B0   https://zh.wikipedia.org/wiki/%E9%95%BF%E5%89%91-10%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
@@ -87606,8 +86716,8 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十四基地641旅 韓城營區",
-        "說明": "96741部隊 車牌號：JZ90 裝備：DF-31A(有核)(第 2 個東風-31旅) 陝西省渭南市韓城市 https://x.com/JosephWen___/status/2054523259840794713?s=20 https://twitter.com/benreuter_IMINT/status/1652689784496594946?s=20    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E5%9B%9B%E5%9F%BA%E5%9C%B0   https://zh.wikipedia.org/wiki/%E6%9D%B1%E9%A2%A8-31%E6%B4%B2%E9%9A%9B%E5%BD%88%E9%81%93%E5%B0%8E%E5%BD%88",
+        "名稱": "火箭軍六十四基地641旅 韓城基地",
+        "說明": "96741部隊 裝備：DF-31A(有核)(第 2 個東風-31旅)  https://twitter.com/benreuter_IMINT/status/1652689784496594946?s=20    https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E5%9B%9B%E5%9F%BA%E5%9C%B0   https://zh.wikipedia.org/wiki/%E6%9D%B1%E9%A2%A8-31%E6%B4%B2%E9%9A%9B%E5%BD%88%E9%81%93%E5%B0%8E%E5%BD%88",
         "layer": "解放軍火箭軍"
       }
     },
@@ -88026,7 +87136,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十五基地651旅 赤峰基地",
-        "說明": "96751部隊 裝備:DF-41(有無核不詳)、DF-61。   https://x.com/JosephWen___/status/1705972490793889899?s=20  https://x.com/benreuter_IMINT/status/2053828438436225030?s=20   https://x.com/nuwangzi/status/1946103169215348996    https://x.com/roderick_s_lee/status/1475885536254599172?s=20    https://twitter.com/nuwangzi/status/1526612429442060288/photo/1       https://twitter.com/Chopsyturvey/status/1526842699537473536",
+        "說明": "96751部隊 裝備:DF-41(有無核不詳)。https://x.com/JosephWen___/status/1705972490793889899?s=20  https://x.com/nuwangzi/status/1946103169215348996    https://x.com/roderick_s_lee/status/1475885536254599172?s=20    https://twitter.com/nuwangzi/status/1526612429442060288/photo/1       https://twitter.com/Chopsyturvey/status/1526842699537473536",
         "layer": "解放軍火箭軍"
       }
     },
@@ -88663,7 +87773,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍 清鎮營區",
+        "名稱": "火箭軍 清鎮基地",
         "layer": "解放軍火箭軍"
       }
     },
@@ -88780,7 +87890,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十五基地652旅 吉林基地",
-        "說明": "96752部隊  裝備：DF-41   https://x.com/JosephWen___/status/1712176413355495835?s=20   https://x.com/pir34/status/2055977178563584075   https://x.com/benreuter_IMINT/status/1800890048185081876    https://nonproliferation.org/peoples-liberation-army-rocket-force-order-of-battle-2023/     https://www.tandfonline.com/doi/epdf/10.1080/00963402.2023.2178713?needAccess=true     https://twitter.com/pir34/status/1525473049297952769/photo/1    https://twitter.com/benreuter_IMINT/status/1614272295765164033?s=20&t=4Wa1gfCvYToi9J8gfDt9tw",
+        "說明": "96752部隊  裝備：DF-41   https://x.com/JosephWen___/status/1712176413355495835?s=20   https://x.com/benreuter_IMINT/status/1800890048185081876    https://nonproliferation.org/peoples-liberation-army-rocket-force-order-of-battle-2023/     https://www.tandfonline.com/doi/epdf/10.1080/00963402.2023.2178713?needAccess=true     https://twitter.com/pir34/status/1525473049297952769/photo/1    https://twitter.com/benreuter_IMINT/status/1614272295765164033?s=20&t=4Wa1gfCvYToi9J8gfDt9tw",
         "layer": "解放軍火箭軍"
       }
     },
@@ -89076,7 +88186,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十一基地613旅 寧德營區",
-        "說明": "火箭軍六十一基地613旅（96713部隊）裝備： DF-15B (第一個傳統短程彈\n道導彈部隊)   福建省寧德市福安市井頭岩  註：該旅曾於2022年8月4日於此射擊DF-15B以回應時任美國眾議院議長裴洛西訪台。   https://x.com/JosephWen___/status/2005693158597038443?s=20   https://x.com/JosephWen___/status/1793847081641345026   https://tv.cctv.com/2026/07/04/VIDE02sYBzl8qfBz9yETPPXc260704.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.12   https://weibo.com/7483054836/NfhuEeG1b    https://tv.cctv.com/2022/08/04/VIDEiKCxjfnYhsZ6vTMSVqU4220804.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.16       https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-15%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9",
+        "說明": "火箭軍六十一基地613旅（96713部隊）裝備： DF-15B (第一個傳統短程彈\n道導彈部隊)   福建省寧德市福安市井頭岩  註：該旅曾於2022年8月4日於此射擊DF-15B以回應時任美國眾議院議長裴洛西訪台。   https://x.com/JosephWen___/status/2005693158597038443?s=20   https://x.com/JosephWen___/status/1793847081641345026   https://weibo.com/7483054836/NfhuEeG1b    https://tv.cctv.com/2022/08/04/VIDEiKCxjfnYhsZ6vTMSVqU4220804.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.16       https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-15%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
     },
@@ -89195,7 +88305,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十一基地618旅 南昌營區",
+        "名稱": "火箭軍六十一基地618旅 南昌基地",
         "說明": "96718部隊  江西省南昌市南昌縣崗前村   https://x.com/benreuter_IMINT/status/1869442844450332674   https://x.com/ljsxank/status/1558837442937257984?s=20    https://twitter.com/benreuter_IMINT/status/1558842848925175810?s=20&t=h2qeGs3MqbQ-leGpq6iAlw   https://www.facebook.com/groups/1039896299354539/permalink/5767886509888804/?mibextid=Nif5oz",
         "layer": "解放軍火箭軍"
       }
@@ -90094,7 +89204,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十六基地 訓練團",
-        "說明": "火箭軍六十六基地 訓練團  96861部隊  車牌號：JZ92  河南省洛陽市宜陽縣尋村鄉   https://x.com/JosephWen___/status/2059274123516539263?s=20    https://x.com/JosephWen___/status/1950391924562809237   https://x.com/JosephWen___/status/1840059168805531947   https://x.com/JosephWen___/status/1796201921856033232   https://x.com/isekaimint/status/1571467055068594178   https://www.airuniversity.af.edu/Portals/10/CASI/documents/Research/PLARF/2022-10-24%20PLARF%20Organization.pdf",
+        "說明": "火箭軍六十六基地 訓練團  96861部隊  車牌號：JZ92  河南省洛陽市宜陽縣尋村鄉   https://x.com/JosephWen___/status/1950391924562809237   https://x.com/JosephWen___/status/1840059168805531947   https://x.com/JosephWen___/status/1796201921856033232   https://x.com/isekaimint/status/1571467055068594178   https://www.airuniversity.af.edu/Portals/10/CASI/documents/Research/PLARF/2022-10-24%20PLARF%20Organization.pdf",
         "layer": "解放軍火箭軍"
       }
     },
@@ -91309,7 +90419,7 @@
       },
       "properties": {
         "名稱": "火箭軍第六十六基地第661旅 三門峽基地",
-        "說明": "火箭軍六十六基地661旅  96761部隊  裝備：DF-5B（有核）  榮譽稱號：東風第一旅（中國第一支地地戰略導彈部隊） 河南省三門峽市陝州區張灣鄉                   https://x.com/JosephWen___/status/2072504746443940126?s=20   https://x.com/JosephWen___/status/1821601254768042241       https://www.youtube.com/watch?v=3ZbHMK_FQko    https://x.com/nuwangzi/status/1915652263198052748             https://www.youtube.com/watch?v=3ZbHMK_FQko&t=79s   https://twitter.com/benreuter_IMINT/status/1616820359906435074?s=20&t=saaCpj1-ysUtmv5vV8VE4w",
+        "說明": "火箭軍六十六基地661旅  96761部隊  裝備：DF-5B（有核）  榮譽稱號：東風第一旅（中國第一支地地戰略導彈部隊） 河南省三門峽市陝州區張灣鄉                   https://x.com/JosephWen___/status/1821601254768042241      https://x.com/nuwangzi/status/1915652263198052748             https://www.youtube.com/watch?v=3ZbHMK_FQko&t=79s   https://twitter.com/benreuter_IMINT/status/1616820359906435074?s=20&t=saaCpj1-ysUtmv5vV8VE4w",
         "layer": "解放軍火箭軍"
       }
     },
@@ -91323,8 +90433,8 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍 若羌試驗場/靶場",
-        "說明": "https://x.com/type36512/status/2073747656279748800?s=20   https://tv.cctv.com/2026/07/02/VIDEUJ4EYvTmAF7gxJLI9RFM260702.shtml   https://twitter.com/Cengiz_Karablut/status/1590986358293934081?s=20&t=saaCpj1-ysUtmv5vV8VE4w",
+        "名稱": "火箭軍 若羌試驗場/訓場",
+        "說明": "https://twitter.com/Cengiz_Karablut/status/1590986358293934081?s=20&t=saaCpj1-ysUtmv5vV8VE4w",
         "layer": "解放軍火箭軍"
       }
     },
@@ -91574,7 +90684,7 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十一基地616旅 贛州營區",
+        "名稱": "火箭軍六十一基地616旅 贛州基地",
         "說明": "96716部隊 裝備：DF-15(第 2 個東風-15 旅)、DF-17  江西省贛州市章貢區水西鎮   https://x.com/dex_eve/status/2007934554980708372?s=20   https://twitter.com/benreuter_IMINT/status/1684167630846820354?s=20    https://twitter.com/JacobBogle/status/1635673526119137284?s=20     https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E4%B8%80%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-15%E7%9F%AD%E7%A8%8B%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9 https://zh.wikipedia.org/wiki/%E4%B8%9C%E9%A3%8E-17%E9%AB%98%E8%B6%85%E9%9F%B3%E9%80%9F%E5%BC%B9%E9%81%93%E5%AF%BC%E5%BC%B9",
         "layer": "解放軍火箭軍"
       }
@@ -91590,7 +90700,7 @@
       },
       "properties": {
         "名稱": "火箭軍六十一基地613旅 大悲山訓場",
-        "說明": "火箭軍六十一基地613旅  96713部隊 裝備： DF-15B (第一個傳統短程彈\n道導彈部隊) 旅長：任洋  “導彈發射先鋒連”所在單位。   浙江省衢州市江山大悲山村   https://x.com/JosephWen___/status/2067534648734101904?s=20   https://x.com/JosephWen___/status/1982402792032711103    https://twitter.com/isekaimint/status/1636756066753978371?s=20    http://www.plapic.com.cn/jfjhb/wqhg/2020/202003yk/yp_212206/9782318.html?fbclid=IwAR2ZI7ff5T6uIh4g73LO_waRj6X3Q6wdNFswRRagTWpFgWq-qkJBdefIaJ4",
+        "說明": "火箭軍六十一基地613旅  96713部隊 裝備： DF-15B (第一個傳統短程彈\n道導彈部隊) 旅長：任洋  “導彈發射先鋒連”所在單位。   浙江省衢州市江山大悲山村   https://x.com/JosephWen___/status/1982402792032711103    https://twitter.com/isekaimint/status/1636756066753978371?s=20    http://www.plapic.com.cn/jfjhb/wqhg/2020/202003yk/yp_212206/9782318.html?fbclid=IwAR2ZI7ff5T6uIh4g73LO_waRj6X3Q6wdNFswRRagTWpFgWq-qkJBdefIaJ4",
         "layer": "解放軍火箭軍"
       }
     },
@@ -92301,8 +91411,8 @@
         ]
       },
       "properties": {
-        "名稱": "火箭軍六十四基地641旅 芝川營區",
-        "說明": "96741部隊  車牌號：JZ90  裝備：DF-31A(有核)(第 2 個東風-31旅)  陝西省渭南市韓城市堡安村       https://x.com/JosephWen___/status/2054523259840794713?s=20   https://twitter.com/benreuter_IMINT/status/1652689784496594946?s=20   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E5%9B%9B%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E6%9D%B1%E9%A2%A8-31%E6%B4%B2%E9%9A%9B%E5%BD%88%E9%81%93%E5%B0%8E%E5%BD%88",
+        "名稱": "火箭軍六十四基地641旅 芝川基地",
+        "說明": "96741部隊 裝備：DF-31A(有核)(第 2 個東風-31旅) https://twitter.com/benreuter_IMINT/status/1652689784496594946?s=20   https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E7%AC%AC%E5%85%AD%E5%8D%81%E5%9B%9B%E5%9F%BA%E5%9C%B0 https://zh.wikipedia.org/wiki/%E6%9D%B1%E9%A2%A8-31%E6%B4%B2%E9%9A%9B%E5%BD%88%E9%81%93%E5%B0%8E%E5%BD%88",
         "layer": "解放軍火箭軍"
       }
     },
@@ -93597,7 +92707,7 @@
       },
       "properties": {
         "名稱": "火箭軍工程大學",
-        "說明": "代碼：91034    https://x.com/JosephWen___/status/2074803856383639626?s=20   https://twitter.com/nuwangzi/status/1631330725487157254?s=20 https://tv.cctv.com/2026/07/05/VIDEgjmnLRYJaZ8V5QpqLZY1260705.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.16   https://www.airuniversity.af.edu/Portals/10/CASI/documents/Research/Other-Topics/2020-06-11%20PLA%20Academic_Institutions.pdf     https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E5%B7%A5%E7%A8%8B%E5%A4%A7%E5%AD%A6",
+        "說明": "代碼：91034    https://twitter.com/nuwangzi/status/1631330725487157254?s=20 https://www.airuniversity.af.edu/Portals/10/CASI/documents/Research/Other-Topics/2020-06-11%20PLA%20Academic_Institutions.pdf     https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E4%BA%BA%E6%B0%91%E8%A7%A3%E6%94%BE%E5%86%9B%E7%81%AB%E7%AE%AD%E5%86%9B%E5%B7%A5%E7%A8%8B%E5%A4%A7%E5%AD%A6",
         "layer": "解放軍軍事院校、教育單位"
       }
     },
@@ -93986,7 +93096,7 @@
       },
       "properties": {
         "名稱": "空軍預警學院 黄陂校區(黄陂士官學校)",
-        "說明": "湖北省武漢市黃陂區武湖街道強軍路3號    https://x.com/JosephWen___/status/2071859433588879700?s=20   https://tv.cctv.com/2025/06/16/VIDEtNsynt3uRc7cvSXKBXGU250616.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.17",
+        "說明": "湖北省武漢市黃陂區武湖街道強軍路3號    https://tv.cctv.com/2025/06/16/VIDEtNsynt3uRc7cvSXKBXGU250616.shtml?spm=C52346.PiumOrlYLNUM.E0VXtwLj8YU7.17",
         "layer": "解放軍軍事院校、教育單位"
       }
     },
@@ -94700,8 +93810,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          108.8273762,
-          34.2848083
+          108.8270758,
+          34.2849102
         ]
       },
       "properties": {
@@ -95097,21 +94207,6 @@
       "properties": {
         "名稱": "國防科技大學 試驗訓練基地(西)",
         "說明": "陝西省西安市長安區王曲街道光明路甲字5號   https://zhidao.baidu.com/question/381828552424884964.html",
-        "layer": "解放軍軍事院校、教育單位"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          108.4554591,
-          34.064953
-        ]
-      },
-      "properties": {
-        "名稱": "武裝警察部隊工程大學 訓練基地",
-        "說明": "https://aistudy.baidu.com/site/wjzsorv8/8cd47d9a-7797-42f3-9306-b902ded71161?qaId=14067133&categoryLv1=%E6%95%99%E8%82%B2%E5%9F%B9%E8%AE%AD&efs=1&ch=54&srcid=10014&source=natural&category=%E6%9C%AC%E7%A7%91&eduFrom=136&botSourceType=46",
         "layer": "解放軍軍事院校、教育單位"
       }
     },

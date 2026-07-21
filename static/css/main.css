@@ -1,8 +1,101 @@
 /* ========================================
+   設計 Token（Apple 風格設計系統）
+   僅新增變數層，不更動既有 class/id 名稱與 HTML 結構。
+   ======================================== */
+
+:root {
+  /* 品牌強調色（沿用既有藍色系） */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-active: #1d4ed8;
+  --gradient-accent: linear-gradient(135deg, #3b82f6, #2563eb);
+  --gradient-accent-hover: linear-gradient(135deg, #2563eb, #1d4ed8);
+
+  /* 語意色：危險／成功／警示／強調底色／遮罩 */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-fill: rgba(239, 68, 68, 0.12);
+  --color-success: #16a34a;
+  --color-warning-fill: rgba(234, 88, 12, 0.12);
+  --color-warning-border: rgba(234, 88, 12, 0.3);
+  --color-warning-text: #c2410c;
+  --color-accent-fill: rgba(59, 130, 246, 0.12);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+
+  /* 表面／文字色（淺色模式預設值） */
+  --color-surface: rgba(255, 255, 255, 0.95);
+  --color-surface-solid: #ffffff;
+  --color-fill-secondary: rgba(0, 0, 0, 0.05);
+  --color-fill-primary: rgba(0, 0, 0, 0.08);
+  --color-label: #0f172a;
+  --color-label-secondary: #64748b;
+  --color-separator: #e2e8f0;
+  --color-fill-tertiary: #f1f5f9;
+  --color-scroll-thumb: #cbd5e1;
+  --color-scroll-thumb-hover: #94a3b8;
+  --color-panel-border: rgba(255, 255, 255, 0.4);
+
+  /* 8pt 間距系統 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* 圓角尺度（取代原本 19 種雜亂數值） */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* 陰影層級 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  /* 動畫曲線：macOS/iOS 常見的彈簧感 easing */
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-decelerate: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* 毛玻璃（vibrancy）強度 */
+  --blur-panel: 20px;
+  --blur-menu: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-danger: #f87171;
+    --color-danger-hover: #ef4444;
+    --color-danger-fill: rgba(248, 113, 113, 0.16);
+    --color-success: #4ade80;
+    --color-warning-fill: rgba(251, 146, 60, 0.16);
+    --color-warning-border: rgba(251, 146, 60, 0.35);
+    --color-warning-text: #fb923c;
+    --color-accent-fill: rgba(96, 165, 250, 0.18);
+    --color-overlay: rgba(0, 0, 0, 0.7);
+
+    --color-surface: rgba(30, 32, 40, 0.85);
+    --color-surface-solid: #1e2028;
+    --color-fill-secondary: rgba(255, 255, 255, 0.08);
+    --color-fill-primary: rgba(255, 255, 255, 0.12);
+    --color-label: #f1f5f9;
+    --color-label-secondary: #94a3b8;
+    --color-separator: #3a3d47;
+    --color-fill-tertiary: #262933;
+    --color-scroll-thumb: #454955;
+    --color-scroll-thumb-hover: #5c6170;
+    --color-panel-border: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* ========================================
    基礎樣式與原生 APP 體驗優化
    ======================================== */
 
-html, body, #map { 
+html, body, #map {
   height: 100%; 
   margin: 0; 
   padding: 0;
@@ -86,7 +179,8 @@ input, textarea, [contenteditable="true"] {
 /* 頂部提醒樣式（RWD） */
 .top-notice {
     position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 10px); /* 與頂部保持約5-10px距離並考慮瀏海區 */
+    /* 搜尋動態島固定佔用頂部置中位置，提示需往下錯開避免重疊 */
+    top: calc(env(safe-area-inset-top, 0px) + 62px);
     left: 50%;
     transform: translate(-50%, -20px); /* 初始在視口上方一點點 */
     background: rgba(75, 85, 99, 0.95); /* 灰底 */
@@ -96,7 +190,7 @@ input, textarea, [contenteditable="true"] {
     padding: 8px 12px;
     font-size: 14px;
     line-height: 1.35;
-    border-radius: 12px; /* 矩形圓角 */
+    border-radius: var(--radius-md); /* 矩形圓角 */
     border: 1px solid rgba(255,255,255,0.12);
     box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
     max-width: min(520px, 92vw); /* 不滿版 */
@@ -122,17 +216,18 @@ input, textarea, [contenteditable="true"] {
   .top-notice {
     font-size: 13px;
     padding: 10px 12px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
   }
 }
 
 /* 優化 Popup 樣式 */
 .leaflet-popup-content-wrapper {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    backdrop-filter: blur(10px);
+    background: var(--color-surface);
+    backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-panel-border);
 }
 
 .leaflet-popup-pane {
@@ -143,7 +238,7 @@ input, textarea, [contenteditable="true"] {
     font-size: 14px;
     line-height: 1.5;
     margin: 16px 20px;
-    color: #1e293b;
+    color: var(--color-label);
     max-height: 500px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -155,24 +250,24 @@ input, textarea, [contenteditable="true"] {
 }
 
 .leaflet-popup-content::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
+    background: var(--color-fill-tertiary);
+    border-radius: var(--radius-xs);
 }
 
 .leaflet-popup-content::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
+    background: var(--color-scroll-thumb);
+    border-radius: var(--radius-xs);
     transition: background 0.2s ease;
 }
 
 .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-scroll-thumb-hover);
 }
 
 .leaflet-popup-tip {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--color-surface-solid);
+    border: 1px solid var(--color-panel-border);
+    box-shadow: var(--shadow-sm);
 }
 
 .popup-header {
@@ -180,7 +275,7 @@ input, textarea, [contenteditable="true"] {
     align-items: center;
     margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--color-separator);
 }
 
 .popup-icon {
@@ -193,21 +288,21 @@ input, textarea, [contenteditable="true"] {
 .popup-title {
     font-weight: 600;
     font-size: 16px;
-    color: #0f172a;
+    color: var(--color-label);
     margin: 0;
 }
 
 .shape-popup-header {
     margin-bottom: 12px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--color-separator);
 }
 
 .shape-popup-kicker {
     margin-bottom: 4px;
     font-size: 11px;
     font-weight: 700;
-    color: #dc2626;
+    color: var(--color-danger-hover);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -216,15 +311,15 @@ input, textarea, [contenteditable="true"] {
     margin-top: 6px;
     font-size: 13px;
     font-weight: 600;
-    color: #475569;
+    color: var(--color-label-secondary);
 }
 
 .shape-popup-description {
     margin: 0 0 12px;
     padding: 10px 12px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #fff7ed, #ffedd5);
-    color: #7c2d12;
+    border-radius: var(--radius-sm);
+    background: var(--color-warning-fill);
+    color: var(--color-warning-text);
     font-size: 13px;
     line-height: 1.6;
 }
@@ -239,7 +334,7 @@ input, textarea, [contenteditable="true"] {
 }
 
 .popup-field-label {
-    color: #64748b;
+    color: var(--color-label-secondary);
     font-size: 12px;
     font-weight: 700;
     line-height: 1.5;
@@ -248,7 +343,7 @@ input, textarea, [contenteditable="true"] {
 }
 
 .popup-field-value {
-    color: #0f172a;
+    color: var(--color-label);
     min-width: 0;
     line-height: 1.65;
     white-space: normal;
@@ -260,13 +355,13 @@ input, textarea, [contenteditable="true"] {
     gap: 6px;
     margin-top: 12px;
     padding: 12px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    background: var(--color-fill-tertiary);
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-md);
 }
 
 .popup-field-multiline .popup-field-label {
-    color: #475569;
+    color: var(--color-label-secondary);
 }
 
 .popup-field-multiline .popup-field-value {
@@ -279,10 +374,17 @@ input, textarea, [contenteditable="true"] {
     width: fit-content;
     max-width: 100%;
     padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(226, 232, 240, 0.7);
+    border-radius: var(--radius-full);
+    background: var(--color-fill-secondary);
+    color: var(--field-accent, var(--color-label));
     font-size: 12px;
     line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+    .popup-field-badge {
+        color: var(--field-accent-dark, var(--color-label));
+    }
 }
 
 .ais-vessel-marker {
@@ -333,22 +435,35 @@ input, textarea, [contenteditable="true"] {
 }
 
 .popup-distance {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    background: var(--color-accent-fill);
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     margin: 8px 0;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid var(--color-accent);
+    color: var(--color-label);
+}
+
+.popup-distance-alert {
+    background: var(--color-danger-fill);
+    border: 2px solid var(--color-danger);
+    border-left: 4px solid var(--color-danger);
+    animation: subtle-pulse 2s infinite;
+}
+
+.popup-distance-alert-value {
+    color: var(--color-danger);
+    font-weight: 700;
 }
 
 .popup-links {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-separator);
 }
 
 .popup-links-title {
     font-size: 12px;
-    color: #64748b;
+    color: var(--color-label-secondary);
     font-weight: 600;
     margin-bottom: 8px;
     text-transform: uppercase;
@@ -358,7 +473,7 @@ input, textarea, [contenteditable="true"] {
 .popup-actions {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-separator);
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -367,8 +482,8 @@ input, textarea, [contenteditable="true"] {
 /* Shape popup AI 判斷折疊區塊 */
 .shape-ai-block {
     margin: 10px 0;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
@@ -376,7 +491,7 @@ input, textarea, [contenteditable="true"] {
     padding: 8px 12px;
     font-weight: 600;
     font-size: 13px;
-    color: #0f172a;
+    color: var(--color-label);
     cursor: pointer;
     user-select: none;
     list-style: none;
@@ -403,8 +518,8 @@ input, textarea, [contenteditable="true"] {
     padding: 0 12px 10px;
     font-size: 13px;
     line-height: 1.6;
-    color: #0f172a;
-    border-top: 1px solid #e2e8f0;
+    color: var(--color-label);
+    border-top: 1px solid var(--color-separator);
     white-space: pre-line;
 }
 
@@ -413,14 +528,14 @@ input, textarea, [contenteditable="true"] {
 .equipment-info {
     margin: 15px 0;
     padding: 12px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    background: var(--color-fill-tertiary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-separator);
 }
 
 .equipment-info h4 {
     margin: 0 0 12px 0;
-    color: #1e293b;
+    color: var(--color-label);
     font-size: 16px;
     font-weight: 600;
     display: flex;
@@ -432,15 +547,15 @@ input, textarea, [contenteditable="true"] {
 .equipment-item {
     margin-bottom: 12px;
     padding: 10px;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: var(--color-surface-solid);
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
 }
 
 .equipment-item:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     transform: translateY(-1px);
 }
 
@@ -455,20 +570,20 @@ input, textarea, [contenteditable="true"] {
 }
 
 .equipment-item h5 a {
-    color: #3b82f6;
+    color: var(--color-accent);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .equipment-item h5 a:hover {
-    color: #1d4ed8;
+    color: var(--color-accent-active);
     text-decoration: underline;
 }
 
 .equipment-item p {
     margin: 6px 0;
     font-size: 12px;
-    color: #6b7280;
+    color: var(--color-label-secondary);
     line-height: 1.4;
 }
 
@@ -476,35 +591,110 @@ input, textarea, [contenteditable="true"] {
     max-width: 180px;
     height: auto;
     cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-separator);
     transition: all 0.2s ease;
 }
 
 .equipment-images img:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
 }
+
+.equipment-fallback-note {
+    color: var(--color-label-secondary);
+    font-size: 12px;
+}
+
+.equipment-fallback-warning {
+    color: var(--color-danger-hover);
+}
+
+.equipment-fallback-success {
+    color: var(--color-success);
+}
+
+.equipment-loading {
+    text-align: center;
+    padding: 20px;
+    color: var(--color-label-secondary);
+    line-height: 1.4;
+}
+
+/* 裝備圖片 Lightbox（桌面版點擊圖片放大檢視） */
+.image-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-overlay);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    cursor: pointer;
+    animation: fadeIn 0.2s ease;
+}
+
+.image-lightbox-img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    cursor: default;
+}
+
+.image-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-panel-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+    color: var(--color-label);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s var(--ease-spring), background-color 0.2s ease;
+}
+
+.image-lightbox-close:hover {
+    background: var(--color-fill-primary);
+}
+
+.image-lightbox-close:active {
+    transform: scale(0.9);
+}
+
 .link-btn {
     display: inline-block;
     margin: 4px 6px 4px 0;
     padding: 4px 8px;
-    border-radius: 6px;
-    background: #f3f4f6;
-    color: #374151;
+    border-radius: var(--radius-sm);
+    background: var(--color-fill-tertiary);
+    color: var(--color-label);
     text-decoration: none;
     font-size: 12px;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid #d1d5db;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-separator);
     white-space: nowrap;
 }
-.link-btn:hover { 
-    background: #e5e7eb; 
-    color: #1f2937;
+.link-btn:hover {
+    background: var(--color-fill-secondary);
     transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    border-color: #9ca3af;
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-scroll-thumb);
 }
 
 /* 背景遮罩 */
@@ -532,11 +722,13 @@ input, textarea, [contenteditable="true"] {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: var(--color-surface);
+    backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
     padding: 18px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-panel-border);
     z-index: 1500;
     min-width: 320px;
     max-width: 380px;
@@ -545,7 +737,7 @@ input, textarea, [contenteditable="true"] {
     overflow-x: visible;
     box-sizing: border-box;
     /* 桌面版動畫過渡 */
-    transition: transform 0.25s ease, opacity 0.25s ease;
+    transition: transform 0.25s var(--ease-decelerate), opacity 0.25s var(--ease-decelerate);
 }
 
 /* 桌面版控制面板滾動條樣式 */
@@ -554,18 +746,18 @@ input, textarea, [contenteditable="true"] {
 }
 
 .control-panel::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
+    background: var(--color-fill-tertiary);
+    border-radius: var(--radius-xs);
 }
 
 .control-panel::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
+    background: var(--color-scroll-thumb);
+    border-radius: var(--radius-xs);
     transition: background 0.2s ease;
 }
 
 .control-panel::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-scroll-thumb-hover);
 }
 
 .control-title {
@@ -588,11 +780,96 @@ input, textarea, [contenteditable="true"] {
     font-weight: 500;
 }
 
+/* ========================================
+   控制面板分組（iOS 設定 App 風格的「分組列表」）
+   ======================================== */
+.settings-section {
+    margin-bottom: 16px;
+}
+
+.settings-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-label-secondary);
+    margin: 0 0 8px 2px;
+}
+
+.settings-group {
+    background: var(--color-fill-tertiary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.settings-group > .input-group {
+    padding: 10px 12px;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--color-separator);
+}
+
+.settings-group > .input-group:last-child {
+    border-bottom: none;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-separator);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-row-label {
+    font-size: 14px;
+    color: var(--color-label);
+}
+
+/* iOS 風格開關 */
+.ios-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 46px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-fill-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease-standard);
+}
+
+.ios-switch::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s var(--ease-spring);
+}
+
+.ios-switch.active {
+    background: var(--color-accent);
+}
+
+.ios-switch.active::before {
+    transform: translateX(20px);
+}
+
 .input-field {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
     transition: border-color 0.2s ease;
     box-sizing: border-box;
@@ -641,17 +918,6 @@ select.input-field:hover {
   border-color: #ef4444 !important;
   background: #ef4444 !important;
 }
-/* PolylineMeasure 常見類名（若版本相符即會生效，否則忽略） */
-.polyline-measure-path,
-.polyline-measure-tempLine,
-.polyline-measure-fixedLine {
-  stroke: #ef4444 !important;
-}
-.polyline-measure-vertex {
-  background: #ef4444 !important;
-  border-color: #ef4444 !important;
-}
-
 /* 零距離標記動畫效果 */
 @keyframes pulse {
     0% {
@@ -699,95 +965,170 @@ select.input-field:hover {
 .btn {
     padding: 8px 16px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 590;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s var(--ease-standard), opacity 0.2s var(--ease-standard), transform 0.15s var(--ease-spring);
     margin-right: 8px;
     margin-bottom: 8px;
 }
 
+.btn:active {
+    transform: scale(0.96);
+}
+
 .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: var(--color-accent);
     color: white;
     border: none;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    background: var(--color-accent-hover);
+}
+
+.btn-primary:active {
+    background: var(--color-accent-active);
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    color: #475569;
-    border: 1px solid #cbd5e1;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: var(--color-fill-secondary);
+    color: var(--color-label);
+    border: none;
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    background: var(--color-fill-primary);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
+    background: var(--color-danger-fill);
+    color: var(--color-danger-hover);
     border: none;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:hover {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    background: var(--color-danger);
+    color: white;
 }
 
 .info-panel {
-    background: #f3f4f6;
+    background: var(--color-fill-tertiary);
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 12px;
-    color: #4b5563;
+    color: var(--color-label-secondary);
     margin-top: 10px;
+    border: 1px solid var(--color-separator);
 }
 
-/* 搜尋元件樣式 */
-.search-container {
+/* ========================================
+   搜尋動態島（.search-island）
+   固定深色毛玻璃、不隨淺色/深色模式切換——比照真實 iOS 動態島恆定深色的觀感
+   ======================================== */
+.search-island {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2500;
+    background: rgba(30, 30, 40, 0.85);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: min(420px, calc(100vw - 20px));
+    overflow: hidden;
+    transition: border-radius 0.35s var(--ease-spring), max-width 0.35s var(--ease-spring),
+        background-color 0.2s ease;
+}
+
+.search-island.expanded {
+    border-radius: var(--radius-lg);
+    width: min(420px, calc(100vw - 20px));
+}
+
+.search-island-compact {
     display: flex;
-    gap: 6px;
     align-items: center;
-}
-
-.search-input {
-    flex: 1;
-}
-
-.btn-search {
-    flex-shrink: 0;
-    padding: 8px 14px;
-    margin: 0;
+    gap: 8px;
+    padding: 11px 20px;
+    background: none;
+    border: none;
+    color: #f1f5f9;
+    font-size: 14px;
+    cursor: pointer;
     white-space: nowrap;
+    width: 100%;
+}
+
+.search-island-compact-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-island-expanded {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+}
+
+.search-island.expanded .search-island-compact {
+    display: none;
+}
+
+.search-island.expanded .search-island-expanded {
+    display: flex;
+}
+
+.search-island-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-island-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f1f5f9;
+    font-size: 15px;
+    min-width: 0;
+}
+
+.search-island-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search-island-clear {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-island-clear:active {
+    transform: scale(0.9);
 }
 
 .search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    max-height: 300px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    max-height: min(50vh, 320px);
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 2000;
-    margin-top: 4px;
     scroll-behavior: smooth;
 }
 
@@ -796,23 +1137,22 @@ select.input-field:hover {
 }
 
 .search-results::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
+    background: transparent;
 }
 
 .search-results::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-xs);
 }
 
 .search-results::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .search-result-item {
-    padding: 10px 12px;
+    padding: 10px 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: background 0.2s ease;
 }
 
@@ -822,22 +1162,20 @@ select.input-field:hover {
 
 .search-result-item:hover,
 .search-result-item.selected {
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .search-result-item.selected {
-    background: #eff6ff;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid var(--color-accent);
 }
 
 .search-result-item.nominatim-result {
-    background: #fefce8;
     border-left: 2px solid #fbbf24;
 }
 
 .search-result-item.nominatim-result:hover,
 .search-result-item.nominatim-result.selected {
-    background: #fef3c7;
+    background: rgba(251, 191, 36, 0.12);
 }
 
 .search-source-badge {
@@ -848,35 +1186,35 @@ select.input-field:hover {
 
 .search-result-name {
     font-weight: 600;
-    color: #1f2937;
+    color: #f1f5f9;
     font-size: 13px;
     margin-bottom: 4px;
 }
 
 .search-result-layer {
     font-size: 11px;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.6);
     margin-bottom: 2px;
 }
 
 .search-result-coords {
     font-size: 10px;
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.45);
     font-family: monospace;
 }
 
 .search-highlight {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(251, 191, 36, 0.35);
+    color: #fef3c7;
     font-weight: 600;
     padding: 0 2px;
-    border-radius: 2px;
+    border-radius: var(--radius-xs);
 }
 
 .search-no-results {
     padding: 20px;
     text-align: center;
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.5);
     font-size: 13px;
     line-height: 1.6;
 }
@@ -884,7 +1222,7 @@ select.input-field:hover {
 .search-loading {
     padding: 20px;
     text-align: center;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.6);
     font-size: 13px;
     display: flex;
     align-items: center;
@@ -896,8 +1234,8 @@ select.input-field:hover {
     content: '';
     width: 14px;
     height: 14px;
-    border: 2px solid #e5e7eb;
-    border-top-color: #3b82f6;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--color-accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -908,17 +1246,8 @@ select.input-field:hover {
 
 /* 手機版搜尋優化 */
 @media (max-width: 768px) {
-    .search-container {
-        gap: 4px;
-    }
-
-    .btn-search {
-        padding: 6px 10px;
-        font-size: 11px;
-    }
-
     .search-results {
-        max-height: 200px;
+        max-height: 45vh;
     }
 
     .search-result-item {
@@ -946,7 +1275,7 @@ select.input-field:hover {
     transform: translate(-50%, -50%);
     background: rgba(255, 255, 255, 0.95);
     padding: 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     z-index: 2000;
     text-align: center;
@@ -967,39 +1296,41 @@ select.input-field:hover {
     100% { transform: rotate(360deg); }
 }
 
-/* 隱藏控制面板的按鈕（統一樣式） */
+/* 隱藏控制面板的按鈕（統一樣式，與 control-panel 同一套毛玻璃語言） */
 .toggle-panel {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
+    background: var(--color-surface);
+    backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+    border: 1px solid var(--color-panel-border);
     padding: 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     z-index: 1600;
     font-size: 18px;
-    transition: opacity 0.15s ease, transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: opacity 0.15s ease, transform 0.15s var(--ease-spring), background-color 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #1e293b;
+    color: var(--color-label);
 }
 
 .toggle-panel i {
     font-size: 20px;
     line-height: 1;
-    color: #1e293b;
+    color: var(--color-label);
     transition: color 0.2s ease;
 }
 
 .toggle-panel:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
 }
 
-.toggle-panel:hover i {
-    color: #0f172a;
+.toggle-panel:active {
+    transform: scale(0.94);
 }
 
 /* 當面板展開時，桌面版按鈕立即隱藏避免重疊 */
@@ -1022,45 +1353,19 @@ select.input-field:hover {
     pointer-events: none;
 }
 
-/* 手機版固定搜尋列 */
-.mobile-search-bar {
-    display: none; /* 桌面版隱藏 */
-}
-
+/* 手機版開啟面板按鈕（搜尋已獨立為置頂置中的 .search-island，不再與此按鈕同一個容器） */
 @media (max-width: 768px) {
-    .mobile-search-bar {
-        display: block;
+    .toggle-panel.toggle-panel-mobile {
         position: fixed;
         top: 10px;
         left: 10px;
-        right: 50px;
-        width: auto;
-        max-width: 300px;
         z-index: 1400;
-        /* 完全透明背景 */
-        background: transparent;
-        padding: 0;
-        border: none;
-        box-shadow: none;
-    }
-
-    .mobile-search-container {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        position: relative;
-    }
-
-    /* 手機版按鈕樣式（統一使用 .toggle-panel 加 .toggle-panel-mobile） */
-    .toggle-panel.toggle-panel-mobile {
-        position: static;
-        flex-shrink: 0;
         padding: 8px;
         background: rgba(40, 40, 60, 0.7);
         backdrop-filter: blur(12px) saturate(150%);
         -webkit-backdrop-filter: blur(12px) saturate(150%);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         font-size: 16px;
         cursor: pointer;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -1071,7 +1376,6 @@ select.input-field:hover {
         align-items: center;
         justify-content: center;
         color: #f1f5f9;
-        z-index: auto;
     }
 
     .toggle-panel.toggle-panel-mobile i {
@@ -1096,125 +1400,6 @@ select.input-field:hover {
         opacity: 1;
         pointer-events: auto;
         transform: none;
-    }
-
-    .mobile-search-input-wrapper {
-        flex: 1;
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .mobile-search-input {
-        flex: 1;
-        padding: 11px 38px 11px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        font-size: 15px;
-        background: rgba(40, 40, 60, 0.7);
-        backdrop-filter: blur(12px) saturate(150%);
-        -webkit-backdrop-filter: blur(12px) saturate(150%);
-        box-sizing: border-box;
-        transition: all 0.2s ease;
-        color: #f1f5f9;
-        font-weight: 400;
-    }
-    
-    .mobile-search-input::placeholder {
-        color: rgba(255, 255, 255, 0.6);
-    }
-
-    .mobile-search-input:focus {
-        outline: none;
-        border-color: rgba(59, 130, 246, 0.5);
-        background: rgba(50, 50, 70, 0.8);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-    }
-
-    .mobile-clear-btn {
-        position: absolute;
-        right: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 28px;
-        height: 28px;
-        background: rgba(255, 255, 255, 0.15);
-        border: none;
-        border-radius: 50%;
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.7);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        padding: 0;
-    }
-
-    .mobile-clear-btn:active {
-        transform: translateY(-50%) scale(0.9);
-        background: rgba(107, 114, 128, 0.25);
-    }
-
-    .mobile-search-results {
-        position: fixed;
-        top: 66px;
-        left: 10px;
-        right: 50px;
-        width: auto;
-        max-width: 300px;
-        background: white;
-        border: 1px solid #d1d5db;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        max-height: calc(100vh - 160px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        z-index: 1350; /* 低於控制面板 */
-        scroll-behavior: smooth;
-        animation: slideDown 0.2s ease-out;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .mobile-search-results::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .mobile-search-results::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
-    }
-
-    .mobile-search-results::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-    }
-
-    .mobile-search-results::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-
-    /* 隱藏桌面版搜尋（在控制面板內的） */
-    .control-panel .search-container,
-    .control-panel #searchInput,
-    .control-panel #searchResults,
-    .control-panel .btn-search {
-        display: none !important;
-    }
-
-    /* 隱藏整個搜尋地點的 input-group */
-    .control-panel .input-group:has(.search-container) {
-        display: none !important;
     }
 
     /* 備用方案：直接隱藏第一個 input-group（如果瀏覽器不支援 :has()） */
@@ -1246,12 +1431,13 @@ select.input-field:hover {
     padding: 16px;
     padding-bottom: 24px;
     box-sizing: border-box;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
-    backdrop-filter: blur(12px);
+    background: var(--color-surface);
+    backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
     /* 與搜尋列相同的圓角和邊框 */
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-panel-border);
 }
 
 /* Leaflet 控制項：與自家控制面板與行動裝置的協調 */
@@ -1300,57 +1486,65 @@ select.input-field:hover {
     .control-panel .control-title {
     font-size: 18px;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--color-label);
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--color-separator);
     display: flex;
     align-items: center;
     justify-content: space-between;
     }
-    
+
     .control-panel .control-title::before {
     content: '';
     display: inline-block;
     width: 4px;
     height: 20px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    border-radius: 2px;
+    background: var(--gradient-accent);
+    border-radius: var(--radius-xs);
     margin-right: 8px;
     }
-    
-    /* 手機版輸入組優化 */
+
+    /* 手機版輸入組優化（.settings-group 內的 .input-group 已有自己的排版，這裡只補色彩 token 化） */
     .control-panel .input-group {
     margin-bottom: 16px;
-    background: white;
+    background: var(--color-surface-solid);
     padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-separator);
+    box-shadow: var(--shadow-sm);
     }
-    
+
+    .control-panel .settings-group > .input-group {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 0;
+    }
+
     .control-panel .input-label {
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--color-label-secondary);
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     }
-    
+
     .control-panel .input-field {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    background: var(--color-fill-tertiary);
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
     padding: 10px 12px;
     font-size: 14px;
+    color: var(--color-label);
     transition: all 0.2s ease;
     }
-    
+
     .control-panel .input-field:focus {
-    background: white;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: var(--color-surface-solid);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-fill);
     }
     
     /* 手機版按鈕組區域 */
@@ -1359,7 +1553,7 @@ select.input-field:hover {
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     margin-bottom: 10px;
     margin-right: 0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -1389,7 +1583,7 @@ select.input-field:hover {
     }
     
     .control-panel .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: var(--gradient-accent);
     border: none;
     color: white;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
@@ -1424,7 +1618,7 @@ select.input-field:hover {
     color: #1e40af;
     font-size: 11px;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     margin-bottom: 12px;
     text-align: center;
     font-weight: 500;
@@ -1458,12 +1652,12 @@ select.input-field:hover {
     }
     
     .control-panel::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
+    background: var(--color-scroll-thumb);
+    border-radius: var(--radius-xs);
     }
     
     .control-panel::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-scroll-thumb-hover);
     }
     
     /* 手機版覆蓋桌面版滾動條樣式 */
@@ -1472,41 +1666,40 @@ select.input-field:hover {
     }
     
     .leaflet-popup-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 2px;
+    background: var(--color-fill-tertiary);
+    border-radius: var(--radius-xs);
     }
-    
+
     .leaflet-popup-content::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 2px;
+    background: var(--color-scroll-thumb);
+    border-radius: var(--radius-xs);
     }
-    
+
     .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--color-scroll-thumb-hover);
     }
-    
+
     .leaflet-popup-pane {
     z-index: 10050;
     }
 
     /* 確保手機版關閉按鈕可見且可點擊 */
     .leaflet-popup-close-button {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: var(--color-surface-solid) !important;
     border-radius: 50% !important;
     width: 32px !important;
     height: 32px !important;
     line-height: 30px !important;
     font-size: 18px !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+    color: var(--color-label) !important;
+    border: 1px solid var(--color-separator) !important;
+    box-shadow: var(--shadow-sm) !important;
     z-index: 1000 !important;
     margin: -16px -16px 0 0 !important;
     }
-    
+
     .leaflet-popup-close-button:hover {
-    background: rgba(255, 255, 255, 1) !important;
-    color: #ff4444 !important;
+    color: var(--color-danger-hover) !important;
     transform: scale(1.1) !important;
     }
     
@@ -1598,22 +1791,22 @@ select.input-field:hover {
     
     /* 手機版下拉選單按鈕優化 */
     .control-panel .dropdown-toggle {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    background: var(--color-surface-solid);
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
     padding: 12px;
     font-size: 14px;
     transition: all 0.2s ease;
     }
 
     .control-panel .dropdown-toggle:active {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: var(--color-fill-tertiary);
+    border-color: var(--color-scroll-thumb);
     }
 
     .control-panel .dropdown-option label {
     padding: 12px 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     }
 
     .control-panel .dropdown-option input[type="checkbox"] {
@@ -1624,23 +1817,23 @@ select.input-field:hover {
     .control-panel .dropdown-option span {
     font-size: 14px;
     font-weight: 500;
-    color: #475569;
+    color: var(--color-label-secondary);
     }
 
     .control-panel .btn-dropdown-action {
     padding: 10px 14px;
     font-size: 13px;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     }
     
     .info-panel {
     padding: 10px 14px;
     font-size: 12px;
     margin-top: 12px;
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    background: var(--color-fill-tertiary);
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
     }
     
     /* 極小螢幕優化 */
@@ -1656,16 +1849,6 @@ select.input-field:hover {
     top: 5px;
     width: calc(100vw - 50px);
     max-width: 400px;
-    }
-    
-    .mobile-search-bar {
-    left: 5px;
-    right: 40px;
-    }
-    
-    .mobile-search-results {
-    left: 5px;
-    right: 40px;
     }
     
     .toggle-panel {
@@ -1687,31 +1870,37 @@ select.input-field:hover {
 .dropdown-toggle {
   width: 100%;
   padding: 10px 12px;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  background: var(--color-surface-solid);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
-  color: #374151;
-  transition: all 0.2s ease;
+  color: var(--color-label);
+  transition: border-color 0.2s var(--ease-standard), background 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard);
 }
 
 .dropdown-toggle:hover {
-  border-color: #3b82f6;
-  background: #f9fafb;
+  border-color: var(--color-accent);
+  background: var(--color-fill-tertiary);
+}
+
+.dropdown-toggle:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .dropdown-toggle:active {
-  background: #f3f4f6;
+  background: var(--color-fill-secondary);
 }
 
 .dropdown-arrow {
   font-size: 12px;
   transition: transform 0.2s ease;
-  color: #6b7280;
+  color: var(--color-label-secondary);
 }
 
 .dropdown-toggle.active .dropdown-arrow {
@@ -1721,22 +1910,24 @@ select.input-field:hover {
 /* 桌面版：下拉選單使用 fixed 定位，可超出面板 */
 .dropdown-menu {
   position: fixed;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   z-index: 2000;
   max-height: 360px;
   min-width: 280px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: dropdownSlideIn 0.2s ease-out;
+  animation: dropdownSlideIn 0.18s var(--ease-decelerate);
 }
 
 /* 向上顯示的選單 */
 .dropdown-menu.show-above {
-  animation: dropdownSlideUp 0.2s ease-out;
+  animation: dropdownSlideUp 0.18s var(--ease-decelerate);
 }
 
 @keyframes dropdownSlideIn {
@@ -1773,16 +1964,16 @@ select.input-field:hover {
 }
 
 .dropdown-content::-webkit-scrollbar-track {
-  background: #f3f4f6;
+  background: var(--color-fill-tertiary);
 }
 
 .dropdown-content::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
+  background: var(--color-scroll-thumb);
+  border-radius: var(--radius-xs);
 }
 
 .dropdown-content::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--color-scroll-thumb-hover);
 }
 
 .dropdown-option {
@@ -1794,13 +1985,13 @@ select.input-field:hover {
   align-items: center;
   padding: 10px 8px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
   user-select: none;
 }
 
 .dropdown-option label:hover {
-  background: #f3f4f6;
+  background: var(--color-fill-secondary);
   transform: translateX(2px);
 }
 
@@ -1810,13 +2001,13 @@ select.input-field:hover {
   margin-right: 10px;
   cursor: pointer;
   flex-shrink: 0;
-  accent-color: #3b82f6;
+  accent-color: var(--color-accent);
 }
 
 .dropdown-option span {
   flex: 1;
   font-size: 14px;
-  color: #374151;
+  color: var(--color-label);
 }
 
 .dropdown-option.is-loading label,
@@ -1827,27 +2018,27 @@ select.input-field:hover {
 }
 
 .dropdown-option.is-loading label {
-  background: linear-gradient(90deg, #eff6ff, #dbeafe);
-  border: 1px solid #93c5fd;
+  background: var(--color-accent-fill);
+  border: 1px solid var(--color-accent);
 }
 
 .dropdown-option.is-loading label::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  background: linear-gradient(90deg, transparent, var(--color-fill-primary), transparent);
   transform: translateX(-100%);
   animation: osm-option-sweep 1.2s ease-in-out infinite;
 }
 
 .dropdown-option.is-success label {
-  background: linear-gradient(90deg, #ecfdf5, #d1fae5);
-  border: 1px solid #6ee7b7;
+  background: rgba(22, 163, 74, 0.14);
+  border: 1px solid var(--color-success);
 }
 
 .dropdown-option.is-error label {
-  background: linear-gradient(90deg, #fef2f2, #fee2e2);
-  border: 1px solid #fca5a5;
+  background: var(--color-danger-fill);
+  border: 1px solid var(--color-danger);
 }
 
 .dropdown-option[data-detail] label {
@@ -1865,15 +2056,15 @@ select.input-field:hover {
 }
 
 .dropdown-option.is-loading label::before {
-  color: #1d4ed8;
+  color: var(--color-accent-hover);
 }
 
 .dropdown-option.is-success label::before {
-  color: #047857;
+  color: var(--color-success);
 }
 
 .dropdown-option.is-error label::before {
-  color: #b91c1c;
+  color: var(--color-danger-hover);
 }
 
 @keyframes osm-option-sweep {
@@ -1882,32 +2073,32 @@ select.input-field:hover {
 }
 
 .dropdown-actions {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-separator);
   padding: 8px 12px;
-  background: #f9fafb;
+  background: var(--color-fill-tertiary);
 }
 
 .btn-dropdown-action {
   width: 100%;
   padding: 8px 12px;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  background: var(--color-surface-solid);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-label-secondary);
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .btn-dropdown-action:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-  color: #374151;
+  background: var(--color-fill-tertiary);
+  border-color: var(--color-scroll-thumb);
+  color: var(--color-label);
 }
 
 .btn-dropdown-action:active {
-  background: #e5e7eb;
+  background: var(--color-fill-secondary);
 }
 
 /* 手機版：下拉選單展開為內聯區塊 */
@@ -1939,8 +2130,8 @@ select.input-field:hover {
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   left: 50%;
   transform: translate(-50%, -20px);
-  background: rgba(255, 255, 255, 0.96);
-  color: #111827;
+  background: var(--color-surface);
+  color: var(--color-label);
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -1948,15 +2139,15 @@ select.input-field:hover {
   padding: 10px 14px;
   font-size: 14px;
   line-height: 1.35;
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-panel-border);
+  box-shadow: var(--shadow-lg);
   max-width: min(420px, 90vw);
   z-index: 3000;
   opacity: 0;
   transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
   pointer-events: none;
 }
 
@@ -1967,9 +2158,9 @@ select.input-field:hover {
   height: 16px;
   margin: 0;
   flex: 0 0 16px;
-  border-radius: 999px;
-  border: 2px solid #d1d5db;
-  border-top-color: #111827;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-separator);
+  border-top-color: var(--color-label);
   animation: osm-notice-spin 0.9s linear infinite;
 }
 
@@ -1991,7 +2182,7 @@ select.input-field:hover {
   .osm-notice {
     font-size: 13px;
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     max-width: min(360px, 88vw);
   }
 }
@@ -2021,7 +2212,7 @@ select.input-field:hover {
 
 /* OSM Popup 樣式增強 */
 .osm-feature-popup .leaflet-popup-content-wrapper {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid var(--color-accent);
 }
 
 .osm-popup h3 {
@@ -2062,7 +2253,7 @@ select.input-field:hover {
 .changelog-link {
   cursor: pointer;
   font-size: 13px;
-  color: #d32f2f;
+  color: var(--color-danger-hover);
   font-weight: 500;
   white-space: nowrap;
   transition: opacity 0.2s, color 0.2s;
@@ -2073,7 +2264,7 @@ select.input-field:hover {
 }
 
 .changelog-link:hover {
-  color: #b71c1c;
+  color: var(--color-danger);
   opacity: 0.8;
 }
 
@@ -2084,7 +2275,7 @@ select.input-field:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--color-overlay);
   z-index: 10000;
   align-items: center;
   justify-content: center;
@@ -2101,15 +2292,18 @@ select.input-field:hover {
 }
 
 .changelog-content {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: var(--color-surface);
+  backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.35s var(--ease-spring);
 }
 
 @keyframes slideIn {
@@ -2128,21 +2322,21 @@ select.input-field:hover {
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .changelog-header h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--color-label);
 }
 
 .changelog-close {
   background: none;
   border: none;
   font-size: 24px;
-  color: #666;
+  color: var(--color-label-secondary);
   cursor: pointer;
   padding: 0;
   width: 30px;
@@ -2155,8 +2349,8 @@ select.input-field:hover {
 }
 
 .changelog-close:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--color-fill-secondary);
+  color: var(--color-label);
 }
 
 .changelog-body {
@@ -2168,7 +2362,7 @@ select.input-field:hover {
 .changelog-item {
   margin-bottom: 16px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-separator);
   line-height: 1.6;
 }
 
@@ -2180,14 +2374,14 @@ select.input-field:hover {
 
 .changelog-date {
   font-weight: 600;
-  color: #d32f2f;
+  color: var(--color-danger-hover);
   display: block;
   margin-bottom: 4px;
   font-size: 14px;
 }
 
 .changelog-desc {
-  color: #555;
+  color: var(--color-label-secondary);
   font-size: 14px;
   display: block;
 }
@@ -2268,7 +2462,7 @@ select.input-field:hover {
 .pwa-install-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -2304,7 +2498,7 @@ select.input-field:hover {
 
 .pwa-install-btn {
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -2314,13 +2508,13 @@ select.input-field:hover {
 }
 
 .pwa-install-btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--gradient-accent);
   color: white;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
 }
 
 .pwa-install-btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: var(--gradient-accent-hover);
   transform: translateY(-1px);
 }
 
@@ -2349,7 +2543,7 @@ select.input-field:hover {
   width: calc(100% - 32px);
   max-width: 380px;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 9999;
   opacity: 0;
@@ -2404,7 +2598,7 @@ select.input-field:hover {
 .pwa-ios-icon {
   width: 56px;
   height: 56px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
@@ -2434,7 +2628,7 @@ select.input-field:hover {
   margin-bottom: 20px;
   background: #f8fafc;
   padding: 16px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid #e2e8f0;
 }
 
@@ -2451,7 +2645,7 @@ select.input-field:hover {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--gradient-accent);
   color: white;
   border-radius: 50%;
   font-size: 13px;
@@ -2484,7 +2678,7 @@ select.input-field:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
 }
 
@@ -2533,7 +2727,7 @@ select.input-field:hover {
   padding: 14px;
   background: transparent;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 15px;
   font-weight: 500;
   color: #64748b;
@@ -2551,7 +2745,7 @@ select.input-field:hover {
   margin: 0;
   padding: 12px;
   background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 13px;
   color: #1e40af;
   text-align: center;
@@ -2567,7 +2761,7 @@ select.input-field:hover {
   max-width: 420px;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: white;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -2620,7 +2814,7 @@ select.input-field:hover {
 .pwa-update-btn {
   flex: 1;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -2658,7 +2852,7 @@ select.input-field:hover {
   background: rgba(30, 41, 59, 0.95);
   color: white;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 500;
   z-index: 10002;
@@ -2684,7 +2878,7 @@ select.input-field:hover {
   width: calc(100% - 32px);
   max-width: 400px;
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   z-index: 10003;
   opacity: 0;
@@ -2749,10 +2943,10 @@ select.input-field:hover {
 .pwa-notification-dismiss {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--gradient-accent);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -2760,7 +2954,7 @@ select.input-field:hover {
 }
 
 .pwa-notification-dismiss:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: var(--gradient-accent-hover);
 }
 
 /* 手機版 PWA 樣式調整 */
@@ -2780,7 +2974,7 @@ select.input-field:hover {
   .pwa-install-icon {
     width: 44px;
     height: 44px;
-    border-radius: 11px;
+    border-radius: var(--radius-md);
   }
 
   .pwa-install-text strong {
@@ -2800,7 +2994,7 @@ select.input-field:hover {
     padding: 14px;
     text-align: center;
     font-size: 15px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
   }
 
   .pwa-ios-guide {
@@ -2816,7 +3010,7 @@ select.input-field:hover {
   .pwa-ios-icon {
     width: 50px;
     height: 50px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .pwa-ios-header h3 {
@@ -2883,7 +3077,7 @@ select.input-field:hover {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
     font-size: 14px;
     padding: 12px 18px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 }
 
@@ -2898,7 +3092,7 @@ select.input-field:hover {
     max-width: 600px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
     margin: 0 auto;
     bottom: max(20px, env(safe-area-inset-bottom));
   }
@@ -2916,13 +3110,13 @@ select.input-field:hover {
     display: none !important;
   }
   
-  /* 頂部提醒位置調整（考慮狀態欄背景） */
+  /* 頂部提醒位置調整（考慮狀態欄背景，需避開搜尋動態島） */
   .top-notice {
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    top: calc(env(safe-area-inset-top, 0px) + 62px);
   }
 
-  /* 手機版搜尋列調整 */
-  .mobile-search-bar {
+  /* 搜尋動態島位置調整 */
+  .search-island {
     top: calc(env(safe-area-inset-top, 0px) + 10px);
   }
 
@@ -2950,7 +3144,7 @@ select.input-field:hover {
 /* iOS PWA 全螢幕模式特殊處理 */
 @media (display-mode: standalone) and (max-width: 768px) {
   /* 確保手機版 APP 體驗最佳 */
-  .mobile-search-bar {
+  .search-island {
     top: calc(env(safe-area-inset-top, 0px) + 8px);
   }
 
@@ -3018,7 +3212,7 @@ select.input-field:hover {
   text-decoration: none !important;
   background: rgba(255, 255, 255, 0.9) !important;
   color: #f59e0b !important;
-  border-radius: 8px !important;
+  border-radius: var(--radius-sm) !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
   transition: all 0.2s ease !important;
@@ -3027,6 +3221,11 @@ select.input-field:hover {
 .notes-control-btn.is-off {
   color: #64748b !important;
   background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 沒有任何筆記時，隱藏「顯示/隱藏筆記圖層」按鈕（無筆記可切換） */
+.notes-control-btn.is-hidden {
+  display: none !important;
 }
 
 .notes-control-btn svg {
@@ -3048,11 +3247,61 @@ select.input-field:hover {
     color: #fbbf24 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
   }
-  
+
   .notes-control-btn:hover {
     background: rgba(245, 158, 11, 0.25) !important;
     color: #fcd34d !important;
   }
+}
+
+/* ========================================
+   OSINT 工具浮動工具列（分享目前畫面／衛星過境預測／周邊航空動態）
+   視覺語言比照 .notes-control-*，但用中性色以區別於筆記的琥珀色
+   ======================================== */
+.osint-toolbar {
+  margin-bottom: 10px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.osint-toolbar-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.osint-toolbar-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 34px !important;
+  height: 34px !important;
+  text-decoration: none !important;
+  background: var(--color-surface) !important;
+  backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
+  color: var(--color-label-secondary) !important;
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--color-panel-border) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s var(--ease-spring), box-shadow 0.2s ease !important;
+}
+
+.osint-toolbar-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.osint-toolbar-btn:hover {
+  background: var(--color-fill-primary) !important;
+  color: var(--color-accent) !important;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md) !important;
+}
+
+.osint-toolbar-btn:active {
+  transform: scale(0.94);
 }
 
 /* 筆記對話框覆蓋層 */
@@ -3062,7 +3311,7 @@ select.input-field:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--color-overlay);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -3075,15 +3324,18 @@ select.input-field:hover {
 
 /* 筆記對話框 */
 .note-dialog {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: var(--color-surface);
+  backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 560px;
   max-height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.3s var(--ease-spring);
 }
 
 .note-dialog-large {
@@ -3106,25 +3358,24 @@ select.input-field:hover {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .note-dialog-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-label);
 }
 
 .note-dialog-close {
   width: 32px;
   height: 32px;
-  border: 1px solid #dbe2ea;
-  background: #f8fafc;
+  border: none;
+  background: var(--color-fill-secondary);
   border-radius: 50%;
   font-size: 20px;
-  color: #475569;
+  color: var(--color-label-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3133,17 +3384,15 @@ select.input-field:hover {
 }
 
 .note-dialog-close:hover {
-  background: #eef2f7;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: var(--color-fill-primary);
+  color: var(--color-label);
 }
 
 .note-dialog-toolbar {
   display: flex;
   gap: 8px;
   padding: 12px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border-bottom: 1px solid var(--color-separator);
   flex-wrap: wrap;
 }
 
@@ -3151,23 +3400,22 @@ select.input-field:hover {
   padding: 20px;
   overflow-y: auto;
   flex: 1;
-  background: #ffffff;
 }
 
 .note-dialog-feature {
-  background: #f8fafc;
+  background: var(--color-fill-tertiary);
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-bottom: 16px;
   font-size: 14px;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  color: var(--color-label-secondary);
+  border: 1px solid var(--color-separator);
 }
 
 .note-dialog-feature-shape {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #9a3412;
+  background: var(--color-warning-fill);
+  border-color: var(--color-warning-border);
+  color: var(--color-warning-text);
 }
 
 .note-input-group {
@@ -3178,36 +3426,36 @@ select.input-field:hover {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: var(--color-label-secondary);
   margin-bottom: 6px;
 }
 
 .note-input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
   font-size: 15px;
-  color: #0f172a;
-  background: #ffffff;
+  color: var(--color-label);
+  background: var(--color-surface-solid);
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .note-input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 0 3px var(--color-accent-fill);
 }
 
 .note-textarea {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
   font-size: 15px;
-  color: #0f172a;
-  background: #ffffff;
+  color: var(--color-label);
+  background: var(--color-surface-solid);
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
@@ -3217,13 +3465,13 @@ select.input-field:hover {
 
 .note-textarea:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 0 3px var(--color-accent-fill);
 }
 
 .note-dialog-info {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-label-secondary);
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
@@ -3233,8 +3481,7 @@ select.input-field:hover {
   display: flex;
   gap: 10px;
   padding: 16px 20px;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border-top: 1px solid var(--color-separator);
   border-radius: 0 0 16px 16px;
 }
 
@@ -3242,7 +3489,7 @@ select.input-field:hover {
 .note-btn {
   padding: 10px 18px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -3259,38 +3506,37 @@ select.input-field:hover {
 }
 
 .note-btn-primary {
-  background: #2563eb;
+  background: var(--color-accent);
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: var(--color-accent);
   flex: 1;
   box-shadow: none;
 }
 
 .note-btn-primary:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .note-btn-primary-shape {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .note-btn-primary-shape:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .note-btn-secondary {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #cbd5e1;
+  background: var(--color-fill-secondary);
+  color: var(--color-label);
+  border: 1px solid transparent;
   flex: 1;
 }
 
 .note-btn-secondary:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--color-fill-primary);
 }
 
 .note-btn-secondary:disabled {
@@ -3299,27 +3545,27 @@ select.input-field:hover {
 }
 
 .note-btn-danger {
-  background: #ffffff;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  background: var(--color-danger-fill);
+  color: var(--color-danger-hover);
+  border: 1px solid transparent;
 }
 
 .note-btn-danger:hover {
-  background: #fef2f2;
-  border-color: #fca5a5;
+  background: var(--color-danger);
+  color: white;
 }
 
 /* 雲端同步按鈕 */
 .note-btn-cloud {
-  background: #2563eb;
+  background: var(--color-accent);
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: var(--color-accent);
   box-shadow: none;
 }
 
 .note-btn-cloud:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 /* 筆記列表 */
@@ -3334,13 +3580,13 @@ select.input-field:hover {
 }
 
 .notes-list-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
+  background: var(--color-fill-tertiary);
+  border-radius: var(--radius-xs);
 }
 
 .notes-list-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: var(--color-scroll-thumb);
+  border-radius: var(--radius-xs);
 }
 
 .notes-list-item {
@@ -3348,16 +3594,16 @@ select.input-field:hover {
   align-items: flex-start;
   gap: 12px;
   padding: 14px;
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--color-surface-solid);
+  border-radius: var(--radius-md);
   margin-bottom: 10px;
   transition: all 0.2s ease;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-separator);
 }
 
 .notes-list-item:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: var(--color-fill-tertiary);
+  border-color: var(--color-scroll-thumb);
 }
 
 .notes-list-item:last-child {
@@ -3372,10 +3618,10 @@ select.input-field:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
+  background: var(--color-fill-tertiary);
+  color: var(--color-label-secondary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-full);
 }
 
 .notes-list-item-content {
@@ -3385,7 +3631,7 @@ select.input-field:hover {
 
 .notes-list-item-title {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-label);
   font-size: 14px;
   margin-bottom: 4px;
   white-space: nowrap;
@@ -3395,7 +3641,7 @@ select.input-field:hover {
 
 .notes-list-item-preview {
   font-size: 13px;
-  color: #475569;
+  color: var(--color-label-secondary);
   margin-bottom: 6px;
   line-height: 1.4;
   display: -webkit-box;
@@ -3408,7 +3654,7 @@ select.input-field:hover {
   display: flex;
   gap: 10px;
   font-size: 11px;
-  color: #64748b;
+  color: var(--color-label-secondary);
   flex-wrap: wrap;
 }
 
@@ -3416,19 +3662,19 @@ select.input-field:hover {
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 600;
 }
 
 .notes-list-item-visibility.is-visible {
-  background: #ecfeff;
-  color: #0f766e;
+  background: var(--color-accent-fill);
+  color: var(--color-accent);
 }
 
 .notes-list-item-visibility.is-hidden {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--color-fill-tertiary);
+  color: var(--color-label-secondary);
 }
 
 .notes-list-item-actions {
@@ -3454,9 +3700,9 @@ select.input-field:hover {
   flex-direction: column;
   gap: 6px;
   padding: 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  background: #f8fafc;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+  background: var(--color-fill-tertiary);
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
@@ -3468,27 +3714,27 @@ select.input-field:hover {
 }
 
 .note-choice-card:hover {
-  border-color: #94a3b8;
-  background: #f1f5f9;
+  border-color: var(--color-scroll-thumb-hover);
+  background: var(--color-fill-secondary);
 }
 
 .note-choice-card.is-selected {
-  border-color: #2563eb;
-  background: #eff6ff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: var(--color-accent-hover);
+  background: var(--color-accent-fill);
+  box-shadow: 0 0 0 3px var(--color-accent-fill);
   transform: translateY(-1px);
 }
 
 .note-choice-title {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-label);
 }
 
 .note-choice-desc {
   font-size: 12px;
   line-height: 1.5;
-  color: #475569;
+  color: var(--color-label-secondary);
 }
 
 .note-geometry-toolbar {
@@ -3501,7 +3747,7 @@ select.input-field:hover {
 
 .note-geometry-summary {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-label-secondary);
 }
 
 .note-geometry-list {
@@ -3515,16 +3761,16 @@ select.input-field:hover {
   align-items: flex-start;
   gap: 10px;
   padding: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  background: #f8fafc;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+  background: var(--color-fill-tertiary);
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .note-geometry-item.is-selected {
   border-color: #0891b2;
-  background: #ecfeff;
+  background: rgba(8, 145, 178, 0.12);
   box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.14);
 }
 
@@ -3543,20 +3789,20 @@ select.input-field:hover {
 .note-geometry-item-title {
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-label);
 }
 
 .note-geometry-item-type {
   font-size: 12px;
-  color: #475569;
+  color: var(--color-label-secondary);
 }
 
 .note-choice-card.is-selected .note-choice-title {
-  color: #1d4ed8;
+  color: var(--color-accent-hover);
 }
 
 .note-choice-card.is-selected .note-choice-desc {
-  color: #1e40af;
+  color: var(--color-accent-hover);
 }
 
 /* 筆記列表圖標按鈕 */
@@ -3567,18 +3813,18 @@ select.input-field:hover {
   width: 28px;
   height: 28px;
   padding: 0;
-  background: #ffffff;
-  border: 1px solid #dbe2ea;
-  border-radius: 6px;
-  color: #475569;
+  background: var(--color-surface-solid);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-sm);
+  color: var(--color-label-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .note-icon-btn:hover {
-  background: #f8fafc;
-  color: #0f172a;
-  border-color: #94a3b8;
+  background: var(--color-fill-tertiary);
+  color: var(--color-label);
+  border-color: var(--color-scroll-thumb-hover);
 }
 
 .note-icon-btn:active {
@@ -3586,217 +3832,393 @@ select.input-field:hover {
 }
 
 .note-icon-btn-danger {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .note-icon-btn-danger:hover {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #dc2626;
-}
-
-@media (prefers-color-scheme: dark) {
-  .note-dialog-header {
-    background: #ffffff;
-    border-bottom-color: #e2e8f0;
-  }
-
-  .note-dialog-header h3 {
-    color: #0f172a;
-  }
-
-  .note-dialog-toolbar,
-  .note-dialog-footer {
-    background: #f8fafc;
-    border-color: #e2e8f0;
-  }
-
-  .note-dialog-body {
-    background: #ffffff;
-  }
-
-  .note-dialog-feature {
-    background: #f8fafc;
-    border-color: #e2e8f0;
-    color: #334155;
-  }
-
-  .note-dialog-feature-shape {
-    background: #fff7ed;
-    border-color: #fed7aa;
-    color: #9a3412;
-  }
-
-  .note-input,
-  .note-textarea {
-    background: #ffffff;
-    border-color: #cbd5e1;
-    color: #0f172a;
-  }
-
-  .note-input:focus,
-  .note-textarea:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-  }
-
-  .note-input-group label,
-  .note-dialog-info {
-    color: #64748b;
-  }
-
-  .note-btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-    border-color: #2563eb;
-  }
-
-  .note-btn-primary:hover {
-    background: #1d4ed8;
-    border-color: #1d4ed8;
-  }
-
-  .note-btn-secondary {
-    background: #ffffff;
-    color: #334155;
-    border-color: #cbd5e1;
-  }
-
-  .note-btn-secondary:hover {
-    background: #f8fafc;
-    border-color: #94a3b8;
-  }
-
-  .note-btn-danger {
-    background: #ffffff;
-    color: #b91c1c;
-    border-color: #fecaca;
-  }
-
-  .note-btn-danger:hover {
-    background: #fef2f2;
-    border-color: #fca5a5;
-  }
-
-  .notes-list-item {
-    background: #ffffff;
-    border-color: #e2e8f0;
-  }
-
-  .notes-list-item:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-  }
-
-  .notes-list-item-type {
-    background: #f1f5f9;
-    border-color: #e2e8f0;
-    color: #475569;
-  }
-
-  .notes-list-item-title {
-    color: #0f172a;
-  }
-
-  .notes-list-item-preview,
-  .notes-list-item-meta {
-    color: #64748b;
-  }
-
-  .note-icon-btn {
-    background: #ffffff;
-    border-color: #dbe2ea;
-    color: #475569;
-  }
-  
-  .note-icon-btn:hover {
-    background: #f8fafc;
-    color: #0f172a;
-    border-color: #94a3b8;
-  }
-  
-  .note-icon-btn-danger {
-    color: #ef4444;
-  }
-  
-  .note-icon-btn-danger:hover {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #dc2626;
-  }
-
-  .notes-list-item-visibility.is-visible {
-    background: rgba(8, 145, 178, 0.2);
-    color: #67e8f9;
-  }
-
-  .notes-list-item-visibility.is-hidden {
-    background: rgba(100, 116, 139, 0.3);
-    color: #cbd5e1;
-  }
-
-  .note-choice-card {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-  }
-
-  .note-choice-card:hover {
-    background: #f1f5f9;
-    border-color: #94a3b8;
-  }
-
-  .note-choice-card.is-selected {
-    background: #eff6ff;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-  }
-
-  .note-choice-title {
-    color: #0f172a;
-  }
-
-  .note-choice-desc {
-    color: #475569;
-  }
-
-  .note-choice-card.is-selected .note-choice-title {
-    color: #1d4ed8;
-  }
-
-  .note-choice-card.is-selected .note-choice-desc {
-    color: #1e40af;
-  }
-
-  .note-geometry-summary {
-    color: #64748b;
-  }
-
-  .note-geometry-item {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-  }
-
-  .note-geometry-item.is-selected {
-    background: #ecfeff;
-    border-color: #0891b2;
-    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.14);
-  }
-
-  .note-geometry-item-title {
-    color: #0f172a;
-  }
-
-  .note-geometry-item-type {
-    color: #475569;
-  }
+  background: var(--color-danger-fill);
+  border-color: var(--color-danger-fill);
+  color: var(--color-danger-hover);
 }
 
 .notes-list-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #9ca3af;
+  color: var(--color-label-secondary);
   font-size: 15px;
   line-height: 1.6;
+}
+
+/* ========================================
+   衛星過境預測 / 周邊航空動態（軍事 OSINT 外部資料圖層）
+   ======================================== */
+
+/* 這兩個功能的重點是「對照地圖上的位置」，改成不遮擋地圖的側欄樣式：
+   桌面靠右側浮動、手機靠底部浮動，背景透明可穿透點擊，地圖全程可見/可互動 */
+.osint-side-panel {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.osint-side-panel .note-dialog {
+  pointer-events: auto;
+  max-height: calc(100vh - 32px);
+}
+
+@media (max-width: 768px) {
+  .osint-side-panel .note-dialog {
+    max-height: 60vh;
+  }
+}
+
+.osint-preset-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 12px;
+}
+
+.osint-preset-chip {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-separator);
+  background: var(--color-fill-tertiary);
+  color: var(--color-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.osint-preset-chip:hover {
+  background: var(--color-fill-secondary);
+  color: var(--color-label);
+}
+
+.osint-preset-chip.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.sat-pass-category-list,
+.adsb-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.sat-pass-disclaimer,
+.adsb-disclaimer {
+  background: var(--color-warning-fill);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.sat-pass-results,
+.adsb-results {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.sat-pass-empty,
+.adsb-empty {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--color-label-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sat-pass-item,
+.adsb-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--color-fill-tertiary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+}
+
+.sat-pass-item {
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sat-pass-item:hover {
+  border-color: var(--color-accent);
+}
+
+.sat-pass-item.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-fill);
+}
+
+.sat-pass-item-actions,
+.adsb-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.sat-pass-item-hint {
+  font-size: 11px;
+  color: var(--color-label-secondary);
+  opacity: 0.8;
+}
+
+.sat-pass-item-wiki,
+.adsb-item-wiki {
+  margin-top: 6px;
+}
+
+.sat-pass-item-main,
+.adsb-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sat-pass-item-name,
+.adsb-item-callsign {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-label);
+}
+
+.sat-pass-item-category,
+.adsb-item-type {
+  font-size: 12px;
+  color: var(--color-label-secondary);
+}
+
+.sat-pass-item-detail,
+.adsb-item-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--color-label-secondary);
+}
+
+.adsb-item-military-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-fill);
+  color: var(--color-warning-text);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.popup-header .adsb-item-military-badge {
+  margin-left: 8px;
+}
+
+.adsb-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.adsb-toolbar .note-btn {
+  flex: none;
+}
+
+/* ==========================================================
+   OSINT 維基百科查詢卡片（衛星過境 / ADS-B 共用）
+   Apple 風格：細分節標籤 + 卡片式圖文並排 + 系統風格活動指示器
+   ========================================================== */
+.osint-wiki-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-separator);
+}
+
+.osint-wiki-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-label-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.osint-wiki-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 2px;
+  color: var(--color-label-secondary);
+  font-size: 13px;
+}
+
+.osint-spinner {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-fill-secondary);
+  border-top-color: var(--color-accent);
+  animation: spin 0.8s linear infinite;
+}
+
+.osint-wiki-empty {
+  padding: 8px 2px;
+  color: var(--color-label-secondary);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.osint-wiki-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  background: var(--color-fill-tertiary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-md);
+  animation: osintWikiCardIn 0.28s var(--ease-spring);
+}
+
+@keyframes osintWikiCardIn {
+  from { opacity: 0; transform: translateY(3px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.osint-wiki-card-media {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-fill-secondary);
+}
+
+.osint-wiki-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.osint-wiki-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.osint-wiki-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-label);
+  margin-bottom: 3px;
+  line-height: 1.35;
+}
+
+.osint-wiki-card-desc {
+  font-size: 12px;
+  color: var(--color-label-secondary);
+  line-height: 1.5;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.osint-wiki-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.osint-wiki-card-link:hover {
+  text-decoration: underline;
+}
+
+.osint-wiki-card-link::after {
+  content: '›';
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* 地圖上依航向旋轉的飛機圖示（比照 ais_snapshot.js 的旋轉手法） */
+.adsb-plane-marker {
+  background: transparent;
+  border: 0;
+}
+
+.adsb-plane-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  transform: rotate(var(--adsb-heading, 0deg));
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+/* 衛星過境查詢中心點標記：明顯的脈動圖釘，取代原本又小又無說明的圓點 */
+.sat-query-marker-wrapper {
+  background: transparent;
+  border: 0;
+}
+
+.sat-query-marker {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sat-query-marker::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #8b5cf6;
+  animation: satQueryPulse 1.8s ease-out infinite;
+}
+
+.sat-query-marker-icon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  background: #8b5cf6;
+  border: 2px solid white;
+  border-radius: 50%;
+  padding: 3px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes satQueryPulse {
+  0% { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
 }
 
 /* Popup 內筆記按鈕 - 跟一般 link-btn 樣式一致 */
@@ -3806,7 +4228,7 @@ select.input-field:hover {
 
 /* 筆記 Popup 樣式 */
 .note-popup .leaflet-popup-content-wrapper {
-  border-left: 4px solid #2563eb;
+  border-left: 4px solid var(--color-accent-hover);
 }
 
 .note-popup-content {
@@ -3819,16 +4241,16 @@ select.input-field:hover {
   justify-content: space-between;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .note-type-badge {
   font-size: 12px;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: var(--color-accent);
+  background: var(--color-accent-fill);
+  border: 1px solid transparent;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-weight: 600;
 }
 
@@ -3840,42 +4262,40 @@ select.input-field:hover {
 .note-popup-actions .note-btn {
   padding: 4px 8px;
   font-size: 12px;
-  background: #ffffff;
-  border: 1px solid #dbe2ea;
-  color: #334155;
+  background: var(--color-fill-secondary);
+  border: 1px solid transparent;
+  color: var(--color-label);
 }
 
 .note-popup-actions .note-btn:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--color-fill-primary);
 }
 
 .note-popup-actions .note-btn-delete:hover {
-  background: #fee2e2;
-  color: #dc2626;
-  border-color: #fecaca;
+  background: var(--color-danger-fill);
+  color: var(--color-danger-hover);
 }
 
 .note-popup-title {
   margin: 0 0 8px 0;
   font-size: 16px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-label);
 }
 
 .note-feature-name {
   font-size: 12px;
-  color: #475569;
+  color: var(--color-label-secondary);
   margin-bottom: 10px;
   padding: 6px 10px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: var(--color-fill-tertiary);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-sm);
 }
 
 .note-popup-body {
   font-size: 14px;
-  color: #334155;
+  color: var(--color-label);
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
@@ -3887,9 +4307,9 @@ select.input-field:hover {
   flex-wrap: wrap;
   gap: 10px;
   font-size: 11px;
-  color: #64748b;
+  color: var(--color-label-secondary);
   padding-top: 10px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-separator);
 }
 
 /* 筆記 Toast */
@@ -3901,7 +4321,7 @@ select.input-field:hover {
   background: rgba(30, 41, 59, 0.95);
   color: white;
   padding: 12px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 500;
   z-index: 10002;
@@ -4019,7 +4439,7 @@ select.input-field:hover {
 .drawing-popup strong {
   display: block;
   font-size: 15px;
-  color: #1e293b;
+  color: var(--color-label);
   margin-bottom: 6px;
 }
 
@@ -4058,7 +4478,8 @@ select.input-field:hover {
 
 /* 改善觸控體驗 */
 .note-btn,
-.notes-control-btn {
+.notes-control-btn,
+.osint-toolbar-btn {
   /* 增加點擊區域 */
   min-height: 44px;
   /* 移除觸控延遲 */
@@ -4125,59 +4546,50 @@ select.input-field:hover {
   }
 }
 
-/* 深色模式下的 Drawing Popup 樣式 */
-@media (prefers-color-scheme: dark) {
-  .drawing-popup strong {
-    color: #f1f5f9;
-  }
-}
-
-
 /* ========================================
    圖層切換按鈕樣式
    ======================================== */
 
+/* iOS/macOS 風格 segmented control */
 .layer-toggle-group {
   display: flex;
-  gap: 8px;
+  gap: 2px;
   margin-top: 4px;
+  padding: 3px;
+  background: var(--color-fill-tertiary);
+  border-radius: var(--radius-sm);
 }
 
 .layer-toggle-btn {
   flex: 1;
   padding: 6px 10px;
-  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  background: transparent;
+  color: var(--color-label-secondary);
+  border: none;
+  border-radius: var(--radius-xs);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s var(--ease-standard), color 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard);
+  box-shadow: none;
 }
 
 .layer-toggle-btn:hover {
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background: var(--color-fill-secondary);
 }
 
 .layer-toggle-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: scale(0.97);
 }
 
 .layer-toggle-btn.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  background: var(--color-surface-solid);
+  color: var(--color-label);
+  box-shadow: var(--shadow-sm);
 }
 
 .layer-toggle-btn.active:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background: var(--color-surface-solid);
 }
 
 /* 手機版優化 */
@@ -4186,32 +4598,6 @@ select.input-field:hover {
     padding: 8px 6px;
     font-size: 11px;
   }
-}
-
-/* 操作按鈕自適應 2 欄排列 */
-.action-btn-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.action-btn-grid .btn {
-  margin: 0;
-  width: 100%;
-}
-
-/* btn-secondary active 狀態（圖層切換按鈕啟用） */
-.btn-secondary.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border-color: #2563eb;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
-}
-
-.btn-secondary.active:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.45);
 }
 
 /* 移除 Leaflet 形狀點擊時的瀏覽器預設 focus 邊框 */
@@ -4223,7 +4609,7 @@ select.input-field:hover {
 .shape-hover-tooltip {
   background: rgba(15, 23, 42, 0.92);
   border: 1px solid rgba(239, 68, 68, 0.6);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: #f1f5f9;
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 12px;
@@ -4236,21 +4622,73 @@ select.input-field:hover {
 }
 
 /* 深色模式 */
+/* .layer-toggle-btn 深色模式已由 :root 的 --color-fill-tertiary / --color-surface-solid /
+   --color-label(-secondary) token 自動處理，見檔案開頭設計 token 區塊，此處不需再覆蓋。 */
+
+/* ========================================
+   深色模式補完：控制面板／搜尋／下拉選單／變更日誌
+   （桌面與手機共用同一批 class，故此處集中覆蓋一次即可）
+   ======================================== */
 @media (prefers-color-scheme: dark) {
-  .layer-toggle-btn {
-    background: linear-gradient(135deg, #2d3748, #1a202c);
-    color: #e2e8f0;
-    border-color: #4a5568;
+  .control-title {
+    color: var(--color-label);
   }
 
-  .layer-toggle-btn:hover {
-    background: linear-gradient(135deg, #1a202c, #0f1419);
-    border-color: #718096;
+  .input-label {
+    color: var(--color-label-secondary);
   }
 
-  .layer-toggle-btn.active {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    border-color: #2563eb;
+  .input-field,
+  .note-input,
+  input.input-field,
+  select.input-field {
+    background: var(--color-surface-solid);
+    border-color: #454955;
+    color: var(--color-label);
+  }
+
+  select.input-field {
+    background: var(--color-surface-solid);
+  }
+
+  .input-field::placeholder {
+    color: #6b7280;
+  }
+
+  .search-result-item:hover,
+  .search-result-item.selected {
+    background: var(--color-fill-tertiary);
+  }
+
+  .search-result-item.selected {
+    background: rgba(59, 130, 246, 0.15);
+    border-left-color: var(--color-accent);
+  }
+
+  .search-result-item.nominatim-result {
+    background: rgba(251, 191, 36, 0.1);
+    border-left-color: #fbbf24;
+  }
+
+  .search-result-item.nominatim-result:hover,
+  .search-result-item.nominatim-result.selected {
+    background: rgba(251, 191, 36, 0.18);
+  }
+
+  .search-result-name {
+    color: var(--color-label);
+  }
+
+  .search-result-layer {
+    color: var(--color-label-secondary);
+  }
+
+  .search-result-coords {
+    color: #6b7280;
+  }
+
+  .search-highlight {
+    background: rgba(251, 191, 36, 0.35);
+    color: var(--color-label);
   }
 }

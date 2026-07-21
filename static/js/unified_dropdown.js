@@ -153,7 +153,7 @@ function updateLayerCount() {
   } else if (count === 1) {
     const layer = Array.from(selectedLayers)[0];
     // 顯示簡短名稱
-    const shortName = layer.replace('解放軍', '').replace('及設施', '').replace('、', '/');
+    const shortName = toDisplayLayerName(layer).replace('及設施', '').replace('、', '/');
     el.textContent = shortName.length > 15 ? shortName.substring(0, 15) + '...' : shortName;
   } else {
     el.textContent = `已選 ${count} 項`;

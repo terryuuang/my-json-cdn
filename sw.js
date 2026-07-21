@@ -1,6 +1,6 @@
 /**
  * Service Worker - APEINTEL ATLAS PWA
- * 版本：v0.3.6
+ * 版本：v0.4.0
  * 功能：快取管理、離線支援、自動更新
  * 
  * ============================================
@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.3.6';
+const APP_VERSION = '0.4.0';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -61,7 +61,13 @@ const CORE_ASSETS = [
   '/favicon.ico',
   '/.well-known/web-app-origin-association',
   '/static/css/main.css',
-  '/static/js/main.js',
+  '/static/js/map_state.js',
+  '/static/js/geo_shapes.js',
+  '/static/js/map_init.js',
+  '/static/js/markers_render.js',
+  '/static/js/panel_ui.js',
+  '/static/js/location_search.js',
+  '/static/js/bootstrap.js',
   '/static/js/equipment_parser.js',
   '/static/js/search_utils.js',
   '/static/js/shape_utils.js',
@@ -72,7 +78,10 @@ const CORE_ASSETS = [
   '/static/js/adiz.js',
   '/static/js/maritime_zones.js',
   '/static/js/submarine_cable.js',
+  '/static/js/ais_snapshot.js',
   '/static/js/pwa.js',
+  '/static/js/satellite_pass.js',
+  '/static/js/adsb_traffic.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
   '/static/assets/APEINTEL ATLAS_512x512.png'
 ];
@@ -83,10 +92,9 @@ const CDN_ASSETS = [
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css',
   'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js',
-  'https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.css',
-  'https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.min.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js'
+  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js',
+  'https://cdn.jsdelivr.net/npm/satellite.js@5/dist/satellite.min.js'
 ];
 
 // ============================================

@@ -16,6 +16,7 @@ let notesDB = null;
 let notesLayerGroup = null;
 let notesLayerVisible = true;
 let notesVisibilityControlBtn = null;
+let notesCount = 0; // 目前筆記總數，用於決定「顯示/隱藏筆記圖層」按鈕是否需要出現
 
 // ============================================
 // 初始化 IndexedDB
@@ -240,12 +241,14 @@ function initNotesLayer(map) {
 // 重新整理筆記圖層
 async function refreshNotesLayer() {
   if (!notesLayerGroup) return;
-  
+
+  const notes = await getAllNotes();
+  notesCount = notes.length;
+  updateNotesControlVisibility();
+
   notesLayerGroup.clearLayers();
   if (!notesLayerVisible) return;
 
-  const notes = await getAllNotes();
-  
   notes.forEach(note => {
     if (Number.isFinite(note.lat) && Number.isFinite(note.lng) && note.isVisible !== false) {
       // 根據幾何類型繪製不同圖形
@@ -1092,7 +1095,8 @@ function addNotesControlToMap(map) {
       });
 
       updateNotesVisibilityControl();
-      
+      updateNotesControlVisibility();
+
       return container;
     }
   });
@@ -1418,6 +1422,12 @@ function updateNotesVisibilityControl() {
         <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
         <path d="M1 1l22 22"/>
       </svg>`;
+}
+
+// 沒有任何筆記時，「顯示/隱藏筆記圖層」按鈕沒有作用對象，直接隱藏該按鈕
+function updateNotesControlVisibility() {
+  if (!notesVisibilityControlBtn) return;
+  notesVisibilityControlBtn.classList.toggle('is-hidden', notesCount === 0);
 }
 
 function setNotesLayerVisibility(isVisible, options = {}) {

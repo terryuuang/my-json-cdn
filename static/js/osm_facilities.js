@@ -125,19 +125,27 @@ const ICON_CLASSES = {
 
 const overpassCache = new Map();
 const CACHE_TIME = 30 * 60 * 1000; // 30 分鐘
+const OVERPASS_LOCALSTORAGE_PREFIX = 'overpassCache:';
+const OVERPASS_ATTEMPT_TIMEOUT_MS = 15000; // 個別端點逾時（原 35s 太久，端點掛掉時使用者要等非常久才會切換）
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.private.coffee/api/interpreter'
 ];
 
+// 將 bbox 量化到約 111 公尺網格，讓「小幅平移地圖後再查詢同一設施類型」也能命中快取，
+// 大幅降低重複打 Overpass 的機會（也是免費公共服務常常 429 的主因之一）
+function roundBboxForCache(value) {
+  return Math.round(value * 1000) / 1000;
+}
+
 function buildOverpassQuery(facilityType, bounds) {
   const def = FACILITY_TYPES[facilityType];
   const bbox = {
-    south: bounds.getSouth ? bounds.getSouth() : bounds.south,
-    west: bounds.getWest ? bounds.getWest() : bounds.west,
-    north: bounds.getNorth ? bounds.getNorth() : bounds.north,
-    east: bounds.getEast ? bounds.getEast() : bounds.east
+    south: roundBboxForCache(bounds.getSouth ? bounds.getSouth() : bounds.south),
+    west: roundBboxForCache(bounds.getWest ? bounds.getWest() : bounds.west),
+    north: roundBboxForCache(bounds.getNorth ? bounds.getNorth() : bounds.north),
+    east: roundBboxForCache(bounds.getEast ? bounds.getEast() : bounds.east)
   };
 
   const parts = [];
@@ -151,23 +159,81 @@ function buildOverpassQuery(facilityType, bounds) {
   return `[out:json][timeout:25];(${parts.join('\n')});out body;>;out skel qt;`;
 }
 
+// 讀取 localStorage 中的持久化快取（跨分頁載入/重新整理仍有效，減少重複打 API）
+function readOverpassPersistentCache(cacheKey) {
+  try {
+    const raw = localStorage.getItem(OVERPASS_LOCALSTORAGE_PREFIX + cacheKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || Date.now() - parsed.time > CACHE_TIME) return null;
+    return parsed.data;
+  } catch (_) {
+    return null;
+  }
+}
+
+function writeOverpassPersistentCache(cacheKey, data) {
+  try {
+    localStorage.setItem(OVERPASS_LOCALSTORAGE_PREFIX + cacheKey, JSON.stringify({ time: Date.now(), data }));
+  } catch (_) {
+    // localStorage 已滿或不可用（例如無痕模式）時靜默忽略
+  }
+}
+
+// 限制同時對 Overpass 發送的請求數量：使用者快速連續勾選多個設施類型時，
+// 避免瞬間打出一堆平行請求增加被公開服務判定為濫用/觸發 429 的機率
+const MAX_CONCURRENT_OVERPASS_REQUESTS = 2;
+let activeOverpassRequests = 0;
+const overpassWaitQueue = [];
+
+function acquireOverpassSlot() {
+  if (activeOverpassRequests < MAX_CONCURRENT_OVERPASS_REQUESTS) {
+    activeOverpassRequests++;
+    return Promise.resolve();
+  }
+  return new Promise(resolve => overpassWaitQueue.push(resolve)).then(() => {
+    activeOverpassRequests++;
+  });
+}
+
+function releaseOverpassSlot() {
+  activeOverpassRequests--;
+  const next = overpassWaitQueue.shift();
+  if (next) next();
+}
+
 async function queryOverpass(query, useCache = true) {
   const cacheKey = query;
-  if (useCache && overpassCache.has(cacheKey)) {
-    const cached = overpassCache.get(cacheKey);
-    if (Date.now() - cached.time < CACHE_TIME) {
-      return cached.data;
+  if (useCache) {
+    const memCached = overpassCache.get(cacheKey);
+    if (memCached && Date.now() - memCached.time < CACHE_TIME) {
+      return memCached.data;
     }
     overpassCache.delete(cacheKey);
+
+    const persisted = readOverpassPersistentCache(cacheKey);
+    if (persisted) {
+      overpassCache.set(cacheKey, { data: persisted, time: Date.now() });
+      return persisted;
+    }
   }
 
+  await acquireOverpassSlot();
+  try {
+    return await performOverpassRequest(query, cacheKey, useCache);
+  } finally {
+    releaseOverpassSlot();
+  }
+}
+
+async function performOverpassRequest(query, cacheKey, useCache) {
   let lastError = null;
   const requestBody = new URLSearchParams({ data: query }).toString();
 
   for (const endpoint of OVERPASS_ENDPOINTS) {
     for (let attempt = 0; attempt < 2; attempt++) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 35000);
+      const timeoutId = setTimeout(() => controller.abort(), OVERPASS_ATTEMPT_TIMEOUT_MS);
 
       try {
         const response = await fetch(endpoint, {
@@ -195,6 +261,7 @@ async function queryOverpass(query, useCache = true) {
         const data = await response.json();
         if (useCache) {
           overpassCache.set(cacheKey, { data, time: Date.now() });
+          writeOverpassPersistentCache(cacheKey, data);
         }
         return data;
       } catch (error) {
@@ -381,7 +448,9 @@ function createPopup(feature, type) {
     });
   }
 
-  return `<div class="osm-popup" style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}${noteButtonHtml ? `<div class="popup-actions">${noteButtonHtml}</div>` : ''}</div>`;
+  const osintButtonsHtml = (lat && lon) ? `<a href="#" class="link-btn" onclick="openSatellitePassPanelFromEl(this);return false;" data-lat="${lat}" data-lng="${lon}" data-label="${escapeAttr(displayName)}">衛星過境預測</a><a href="#" class="link-btn" onclick="openAdsbTrafficPanelFromEl(this);return false;" data-lat="${lat}" data-lng="${lon}" data-label="${escapeAttr(displayName)}">周邊航空動態</a>` : '';
+
+  return `<div class="osm-popup" style="min-width:250px"><h3 style="margin:0 0 10px 0;color:${def.color};font-size:16px;display:flex;align-items:center"><i class="bi ${iconClass}" style="font-size:20px;margin-right:6px;"></i>${displayName}</h3><div style="margin:10px 0;font-size:13px">${props.name ? `<div><strong>名稱:</strong> ${displayName}</div>` : ''}${displayOperator ? `<div><strong>運營者:</strong> ${displayOperator}</div>` : ''}</div><div style="margin:10px 0;padding-top:10px;border-top:1px solid #ddd;font-size:12px;color:#666"><div><strong>來源:</strong> OpenStreetMap</div><div><strong>ID:</strong> ${props.osmType}/${props.osmId}</div></div>${lat && lon ? `<div style="margin-top:12px;display:flex;gap:8px"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="flex:1;padding:8px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">Google Maps</a><a href="https://www.openstreetmap.org/${props.osmType}/${props.osmId}" target="_blank" style="flex:1;padding:8px;background:#7ebc6f;color:white;text-decoration:none;border-radius:4px;text-align:center;font-size:12px">OSM</a></div>` : ''}${(noteButtonHtml || osintButtonsHtml) ? `<div class="popup-actions">${noteButtonHtml}${osintButtonsHtml}</div>` : ''}</div>`;
 }
 
 // 渲染圖層到地圖

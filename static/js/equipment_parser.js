@@ -10,9 +10,11 @@ class EquipmentParser {
     // 清理裝備名稱的正則表達式
     this.cleanupRegex = /[\s\u3000]+/g; // 移除多餘空白和全形空白
     
-    // 快取機制
+    // 快取機制：記憶體 Map 為第一層（同一頁面內最快），並寫入 localStorage 做第二層，
+    // 讓快取能跨頁面重新整理存活，減少重複的 Wikipedia 請求
     this.cache = new Map();
     this.cacheExpiry = 30 * 60 * 1000; // 30分鐘快取
+    this.storagePrefix = 'equipmentCache:';
     
     // 效能限制
     this.maxEquipmentItems = this.isMobileDevice() ? 3 : 5; // 手機版最多3個，桌面版5個裝備項目
@@ -31,6 +33,100 @@ class EquipmentParser {
       'Y-20': { type: '大型運輸機', country: '中國' },
       'KJ-500': { type: '預警機', country: '中國' }
     };
+  }
+
+  // 用 MediaWiki 搜尋 API 找出最接近的條目標題（CORS 開放，免金鑰）。
+  // 用於補救「名稱跟維基百科實際標題有落差」的情況（例如 SENTINEL-6A 的實際標題是
+  // 「Sentinel-6 Michael Freilich」、BOEING 787-9 Dreamliner 的實際標題是「Boeing 787 Dreamliner」），
+  // 讓衛星/機型這類非固定格式名稱也能查到摘要，而不是直接判定「查無資料」。
+  async searchWikipediaTitle(query) {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+    try {
+      const response = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data?.query?.search?.[0]?.title || null;
+    } catch (_) {
+      return null;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  // 用 MediaWiki 的「重新導向」機制找同義詞/別名的正確條目標題（CORS 開放，免金鑰）。
+  // 這是維基百科官方定義的別名對照表（例如「HQ-9」重定向到實際條目），比全文搜尋更精準、
+  // 也更快；優先於 searchWikipediaTitle 的全文搜尋使用，找不到重定向才退回全文搜尋。
+  async resolveWikipediaRedirect(query) {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(query)}&redirects=1&format=json&origin=*`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+    try {
+      const response = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
+      if (!response.ok) return null;
+      const data = await response.json();
+      const pages = data?.query?.pages || {};
+      const page = Object.values(pages)[0];
+      if (page && !('missing' in page) && page.title) return page.title;
+      return null;
+    } catch (_) {
+      return null;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  // 從文字中找出已經內嵌的維基百科連結（例如 GeoJSON 說明欄位裡的參考連結），
+  // 直接用連結本身的標題查摘要——不需要再搜尋比對，因為連結本身就是最精準的來源
+  extractWikipediaLinksFromText(text) {
+    if (!text) return [];
+    const regex = /https?:\/\/([a-z]{2,3})\.wikipedia\.org\/wiki\/([^\s<>"'）)\]]+)/gi;
+    const results = [];
+    const seen = new Set();
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      const lang = match[1].toLowerCase();
+      let title = match[2];
+      try { title = decodeURIComponent(title); } catch (_) { /* 保留原始字串 */ }
+      title = title.replace(/_/g, ' ').replace(/#.*$/, '');
+      const key = `${lang}:${title}`;
+      if (seen.has(key) || !title) continue;
+      seen.add(key);
+      results.push({ lang, title });
+    }
+    return results.slice(0, 2); // 最多顯示 2 則，避免內容過長
+  }
+
+  // 依語言別+標題直接查摘要（標題來自已存在的維基百科連結，保證有效，不需要同義詞比對）
+  async fetchPageSummaryByLangTitle(lang, title) {
+    const cacheKey = `wikilink:${lang}:${title}`;
+    const cached = this.getCachedResult(cacheKey);
+    if (cached) return cached;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+    try {
+      const response = await fetch(
+        `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
+        { signal: controller.signal, headers: { 'Accept': 'application/json' } }
+      );
+      if (!response.ok) return null;
+      const data = await response.json();
+      if (data.type === 'Internal error') return null;
+      const result = {
+        title: data.title || title,
+        description: this.truncateDescription(data.description || data.extract),
+        thumbnail: data.thumbnail?.source || null,
+        wikipediaUrl: data.content_urls?.desktop?.page || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`
+      };
+      this.setCachedResult(cacheKey, result);
+      return result;
+    } catch (_) {
+      return null;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   // 檢測是否為手機設備
@@ -87,21 +183,37 @@ class EquipmentParser {
     return result;
   }
 
-  // 檢查快取
+  // 檢查快取（先查記憶體，未命中再查 localStorage）
   getCachedResult(key) {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
       return cached.data;
     }
+    try {
+      const raw = localStorage.getItem(this.storagePrefix + key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Date.now() - parsed.timestamp < this.cacheExpiry) {
+          this.cache.set(key, parsed);
+          return parsed.data;
+        }
+        localStorage.removeItem(this.storagePrefix + key);
+      }
+    } catch (_) {
+      // localStorage 不可用（例如私密瀏覽模式）或資料損毀，退回僅記憶體快取
+    }
     return null;
   }
 
-  // 設置快取
+  // 設置快取（同時寫入記憶體與 localStorage）
   setCachedResult(key, data) {
-    this.cache.set(key, {
-      data: data,
-      timestamp: Date.now()
-    });
+    const entry = { data, timestamp: Date.now() };
+    this.cache.set(key, entry);
+    try {
+      localStorage.setItem(this.storagePrefix + key, JSON.stringify(entry));
+    } catch (_) {
+      // 儲存空間已滿或不可用時，仍保留記憶體快取供本次頁面使用
+    }
   }
 
   // 查詢維基百科API獲取武器資訊
@@ -140,30 +252,63 @@ class EquipmentParser {
       let response = null;
       let data = null;
       
-      // 嘗試不同的API端點
+      // 嘗試不同的API端點（若遇到 429/502/503/504 這類暫時性錯誤，短暫等待後重試一次，
+      // 避免單次流量高峰或短暫限流就整個查詢失敗）
       for (const url of proxyUrls) {
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
-          
-          response = await fetch(url, {
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json',
-              'User-Agent': 'EquipmentParser/1.0'
+          let attempt = 0;
+          while (attempt < 2) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+
+            response = await fetch(url, {
+              signal: controller.signal,
+              headers: { 'Accept': 'application/json' }
+            });
+
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              data = await response.json();
+              break;
             }
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            data = await response.json();
+            // 若為 404，先試「重定向」解析同義詞/別名的正確標題（精準、快），
+            // 找不到重定向再用全文搜尋找最接近的條目標題（較廣、較模糊）；
+            // 補救名稱跟維基百科實際標題有落差的情況（例如型號含子版本後綴）；
+            // 兩者都找不到才視為「可訪問但無結果」
+            if (response.status === 404) {
+              let resolvedTitle = await this.resolveWikipediaRedirect(nameForApi);
+              if (!resolvedTitle || resolvedTitle === nameForApi) {
+                resolvedTitle = await this.searchWikipediaTitle(nameForApi);
+              }
+              if (resolvedTitle && resolvedTitle !== nameForApi) {
+                const retryController = new AbortController();
+                const retryTimeoutId = setTimeout(() => retryController.abort(), this.requestTimeout);
+                try {
+                  const retryResponse = await fetch(
+                    `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(resolvedTitle)}`,
+                    { signal: retryController.signal, headers: { 'Accept': 'application/json' } }
+                  );
+                  if (retryResponse.ok) {
+                    data = await retryResponse.json();
+                  }
+                } catch (_) {
+                  // 忽略，走到下面回傳 null
+                } finally {
+                  clearTimeout(retryTimeoutId);
+                }
+              }
+              if (data) break;
+              return null;
+            }
+            if ([429, 502, 503, 504].includes(response.status) && attempt === 0) {
+              await new Promise(resolve => setTimeout(resolve, 700));
+              attempt++;
+              continue;
+            }
             break;
           }
-          // 若為 404，代表可訪問但無該條目 → 回傳 null（不作為端點失效）
-          if (response.status === 404) {
-            return null;
-          }
+          if (data) break;
         } catch (error) {
           // 網路波動或暫時性失敗，改由後續端點或離線資料處理
           
@@ -315,13 +460,7 @@ class EquipmentParser {
       return `
         <div class="equipment-info">
           <h4>裝備資訊</h4>
-          <div class="equipment-loading" style="
-            text-align: center; 
-            padding: 20px; 
-            color: #666;
-            font-size: ${isMobile ? '11px' : '13px'};
-            line-height: 1.4;
-          ">
+          <div class="equipment-loading" style="font-size: ${isMobile ? '11px' : '13px'};">
             ${loadingText}
           </div>
         </div>
@@ -340,13 +479,13 @@ class EquipmentParser {
       let fallbackLabel = '';
       if (equipment.fallback) {
         if (equipment.localData) {
-          fallbackLabel = this.isMobileDevice() ? 
-            ' <small style="color: #4ade80;">✓ 離線資料</small>' : 
-            ' <small style="color: #4ade80;">✓ 基本資訊</small>';
+          fallbackLabel = this.isMobileDevice() ?
+            ' <small class="equipment-fallback-success">✓ 離線資料</small>' :
+            ' <small class="equipment-fallback-success">✓ 基本資訊</small>';
         } else {
-          fallbackLabel = this.isMobileDevice() ? 
-            ' <small style="color: #f87171;">⚠ 網路問題</small>' : 
-            ' <small style="color: #888;">(離線模式)</small>';
+          fallbackLabel = this.isMobileDevice() ?
+            ' <small class="equipment-fallback-warning">⚠ 網路問題</small>' :
+            ' <small class="equipment-fallback-note">(離線模式)</small>';
         }
       }
       
@@ -359,7 +498,7 @@ class EquipmentParser {
             }
             ${fallbackLabel}
           </h5>
-          ${equipment.description ? `<p style="${equipment.fallback ? 'color: #666; font-size: 12px;' : ''}">${equipment.description}</p>` : ''}
+          ${equipment.description ? `<p class="${equipment.fallback ? 'equipment-fallback-note' : ''}">${equipment.description}</p>` : ''}
           ${equipment.thumbnail ? this.generateImageHTML(equipment) : ''}
         </div>
       `;
@@ -396,47 +535,37 @@ class EquipmentParser {
       // 手機版：直接開啟新頁面
       window.open(imageUrl, '_blank');
     } else {
-      // 桌面版：建立模態視窗
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-        cursor: pointer;
-      `;
-      
+      // 桌面版：建立模態視窗（樣式統一由 .image-lightbox-* class 提供）
+      const overlay = document.createElement('div');
+      overlay.className = 'image-lightbox-overlay';
+
       const img = document.createElement('img');
+      img.className = 'image-lightbox-img';
       img.src = imageUrl;
       img.alt = title;
-      img.style.cssText = `
-        max-width: 90%;
-        max-height: 90%;
-        object-fit: contain;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      `;
-      
-      modal.appendChild(img);
-      document.body.appendChild(modal);
-      
-      // 點擊關閉
-      modal.addEventListener('click', () => {
-        document.body.removeChild(modal);
-      });
-      
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'image-lightbox-close';
+      closeBtn.type = 'button';
+      closeBtn.setAttribute('aria-label', '關閉');
+      closeBtn.innerHTML = '&times;';
+
+      overlay.appendChild(img);
+      overlay.appendChild(closeBtn);
+      document.body.appendChild(overlay);
+
+      const close = () => {
+        document.body.removeChild(overlay);
+        document.removeEventListener('keydown', escHandler);
+      };
+
+      // 點擊背景或關閉按鈕關閉（點圖片本身不關閉）
+      overlay.addEventListener('click', close);
+      img.addEventListener('click', (e) => e.stopPropagation());
+
       // ESC 鍵關閉
       const escHandler = (e) => {
-        if (e.key === 'Escape') {
-          document.body.removeChild(modal);
-          document.removeEventListener('keydown', escHandler);
-        }
+        if (e.key === 'Escape') close();
       };
       document.addEventListener('keydown', escHandler);
     }
