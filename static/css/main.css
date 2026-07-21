@@ -234,6 +234,15 @@ input, textarea, [contenteditable="true"] {
     z-index: 10050;
 }
 
+/* Popup 開啟期間，讓地圖容器整體浮到搜尋動態島／控制面板／手機版選單按鈕之上，
+   避免這些固定定位的輔助按鈕（z-index 屬於 body 層級的獨立堆疊上下文）擋住 popup。
+   .leaflet-map-pane 因平移時套用 CSS transform 而自成堆疊上下文，
+   popup-pane 內部再高的 z-index 也無法穿透到 #map 外部的兄弟元素之上，
+   因此需要讓 #map 本身取得夠高的 z-index 才能讓 popup 顯示在最上層。 */
+.leaflet-container.popup-elevated {
+    z-index: 3600;
+}
+
 .leaflet-popup-content {
     font-size: 14px;
     line-height: 1.5;
@@ -1039,15 +1048,76 @@ select.input-field:hover {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    max-width: min(420px, calc(100vw - 20px));
+    /* 這個 max-width 是最終安全上限，必須 >= 下面 .expanded / .island-wide 用到的最大值，
+       否則會把展開寬度悄悄夾住（width 與 max-width 同時存在時取兩者較小值） */
+    max-width: min(560px, calc(100vw - 20px));
     overflow: hidden;
-    transition: border-radius 0.35s var(--ease-spring), max-width 0.35s var(--ease-spring),
-        background-color 0.2s ease;
+    /* width 也要納入 transition：展開/收合時由 JS 鎖定舊寬度再放開（見 location_search.js
+       lockIslandWidth/releaseIslandWidthNextFrame），讓寬高圓角同時以同一條 spring 曲線變形，
+       而不是像原本 width 突然跳一格的生硬切換 */
+    transition: width 0.4s var(--ease-spring), border-radius 0.35s var(--ease-spring),
+        max-width 0.35s var(--ease-spring), background-color 0.2s ease;
 }
 
+/* 展開時的寬度：calc(100vw - 20px) 這段是手機安全網——螢幕比目標寬度窄時自動改用「螢幕寬度減
+   20px 邊界」，min() 會取兩者較小值，所以手機版永遠不會超出螢幕，不需要另外寫 media query */
 .search-island.expanded {
     border-radius: var(--radius-lg);
-    width: min(420px, calc(100vw - 20px));
+    width: min(460px, calc(100vw - 20px));
+}
+
+/* 內容比較多時（目前是查到百科摘要卡片，未來可能還有其他附加資訊）再進一步加寬，
+   讓縮圖/摘要文字有更多空間，避免每次都固定佔用最大寬度顯得笨重；
+   由 location_search.js 依內容動態加上/移除 .island-wide */
+.search-island.expanded.island-wide {
+    width: min(560px, calc(100vw - 20px));
+}
+
+/* 桌面滑鼠 hover 的輕微視覺回饋（比照 Dock/選單列靠近時的手感），
+   在 150ms hover 展開延遲觸發前先給一點「快要展開了」的提示；
+   只在有滑鼠的裝置生效，避免觸控裝置長按誤觸發樣式殘留 */
+@media (hover: hover) and (pointer: fine) {
+    .search-island:not(.expanded):hover {
+        background: rgba(40, 40, 55, 0.92);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+}
+
+/* 外層裁切框：固定寬度上限 + overflow:hidden，超出的文字交給內層 .island-label-text 用跑馬燈滑出來，
+   而不是像原本的 text-overflow:ellipsis 直接截斷——天氣提示常常比「搜尋地點」長很多，
+   截斷會讓 OSINT 判讀提示（起霧/強風等）整段看不到 */
+.search-island-compact-label {
+    display: inline-block;
+    overflow: hidden;
+    max-width: min(200px, 46vw);
+    vertical-align: bottom;
+    transition: opacity 0.18s ease;
+}
+
+.search-island-compact-label.island-label-fade {
+    opacity: 0;
+}
+
+/* 內層實際文字：靜態時原地顯示；.marquee 時由 JS 依文字長度算好距離/時間，
+   用 --marquee-distance 這個 CSS 變數驅動同一條動畫，滑動速度固定，不會因為文字長短而變快變慢 */
+.island-label-text {
+    display: inline-block;
+    white-space: nowrap;
+    will-change: transform;
+}
+
+/* 開頭/結尾停頓改用 animation-delay + JS 端的 onSettled setTimeout 控制（見 osint_weather.js），
+   不寫死在 keyframe 百分比裡——因為總時長會依文字長度變動，若停頓用固定百分比表示，
+   算出來的絕對毫秒數會跟著總時長跑掉，達不到「頭尾都停頓固定時間」的效果 */
+.island-label-text.marquee {
+    animation-name: islandLabelMarquee;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes islandLabelMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(var(--marquee-distance, 0px)); }
 }
 
 .search-island-compact {
@@ -1062,11 +1132,6 @@ select.input-field:hover {
     cursor: pointer;
     white-space: nowrap;
     width: 100%;
-}
-
-.search-island-compact-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .search-island-expanded {
@@ -1125,11 +1190,19 @@ select.input-field:hover {
 }
 
 .search-results {
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    max-height: min(50vh, 320px);
+    border-top: 1px solid transparent;
+    max-height: 0;
+    opacity: 0;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    transition: max-height 0.35s var(--ease-spring), opacity 0.25s ease, border-color 0.25s ease;
+}
+
+.search-results.show {
+    border-top-color: rgba(255, 255, 255, 0.12);
+    max-height: min(50vh, 320px);
+    opacity: 1;
 }
 
 .search-results::-webkit-scrollbar {
@@ -1244,9 +1317,140 @@ select.input-field:hover {
     to { transform: rotate(360deg); }
 }
 
+/* 搜尋骨架屏：取代純文字「搜尋中...」，展開瞬間先給出結果卡片的輪廓，比純轉圈圈更有內容感 */
+.search-skeleton {
+    padding: 10px 16px;
+}
+
+.search-skeleton-row {
+    height: 13px;
+    border-radius: var(--radius-xs);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.15) 37%, rgba(255, 255, 255, 0.06) 63%);
+    background-size: 400% 100%;
+    animation: searchSkeletonShimmer 1.4s ease infinite;
+    margin-bottom: 10px;
+}
+
+.search-skeleton-row:last-child {
+    width: 55%;
+    margin-bottom: 0;
+}
+
+@keyframes searchSkeletonShimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+/* ==========================================================
+   動態島搜尋的百科結果卡片（OSINT 專有名詞查詢，Wikipedia 摘要）
+   跟 .osint-wiki-card 用途相同，但改用島本身固定深色的 rgba 調色盤，
+   避免直接沿用 var(--color-*) 在淺色模式下配島的深色玻璃背景時對比度不足
+   ========================================================== */
+.search-wiki-section {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.search-wiki-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+}
+
+.search-wiki-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 2px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12.5px;
+}
+
+.search-wiki-spinner {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #60a5fa;
+    animation: spin 0.8s linear infinite;
+}
+
+.search-wiki-card {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    animation: osintWikiCardIn 0.28s var(--ease-spring);
+}
+
+.search-wiki-card-media {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.search-wiki-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.search-wiki-card-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.search-wiki-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 3px;
+    line-height: 1.35;
+}
+
+.search-wiki-card-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.search-wiki-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #60a5fa;
+}
+
+.search-wiki-card-link::after {
+    content: '›';
+    font-size: 13px;
+    line-height: 1;
+}
+
 /* 手機版搜尋優化 */
 @media (max-width: 768px) {
-    .search-results {
+    /* 需要跟 .show 同時出現才會贏過桌面版 .search-results.show 的 50vh（class 數量相同時後宣告者勝出，
+       但寫成 .search-results.show 讓意圖更明確，避免未來誤刪 .show 又忘記這裡的依賴關係） */
+    .search-results.show {
         max-height: 45vh;
     }
 

@@ -37,25 +37,65 @@ if (isMobileDevice()) {
 // ==========================================================
 
 let searchRequestId = 0;
+let wikiRequestId = 0;
+
+// 展開/收合動態島前，先把目前實際寬度鎖成 inline style，
+// 讓 class 切換後的目標寬度（CSS .expanded 規則）能跟這個鎖定值之間跑 transition，
+// 而不是直接從 width:auto 跳過去（auto 沒辦法平滑動畫）
+function lockIslandWidth(island) {
+  const currentWidth = island.getBoundingClientRect().width;
+  island.style.width = `${currentWidth}px`;
+  void island.offsetWidth; // 強制 reflow，確保鎖定寬度已經套用到畫面上
+}
+
+// 用兩次 requestAnimationFrame 才放開鎖定的寬度：第一次只是排入下一輪繪製，
+// 瀏覽器不保證這時候上一步的 reflow 真的已經定案；等到第二次 rAF 才放開，
+// 才能穩定觸發 width 從鎖定值→目標值的 transition（單次 rAF 在部分瀏覽器會直接跳過動畫）
+function releaseIslandWidthNextFrame(island) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      island.style.width = '';
+    });
+  });
+}
 
 // 展開/收合動態島
-function expandSearchIsland() {
+// focusInput 預設為 true（點擊/鍵盤觸發都應該直接把游標放進輸入框）；
+// 桌面版滑鼠 hover 展開時傳 false——單純「移過去瞄一眼」不該搶走輸入焦點，
+// 這跟真正想輸入而點擊/觸控展開的意圖不同
+function expandSearchIsland({ focusInput = true } = {}) {
   const island = document.getElementById('searchIsland');
-  if (!island) return;
+  if (!island || island.classList.contains('expanded')) return;
+  lockIslandWidth(island);
   island.classList.add('expanded');
-  const input = document.getElementById('searchInput');
-  if (input) input.focus();
+  releaseIslandWidthNextFrame(island);
+  if (focusInput) {
+    const input = document.getElementById('searchInput');
+    if (input) input.focus();
+  }
 }
 
 function collapseSearchIsland() {
   const island = document.getElementById('searchIsland');
-  if (!island) return;
-  island.classList.remove('expanded');
+  if (island && island.classList.contains('expanded')) {
+    lockIslandWidth(island);
+    island.classList.remove('expanded');
+    releaseIslandWidthNextFrame(island);
+  }
   const results = document.getElementById('searchResults');
-  if (results) results.style.display = 'none';
+  if (results) results.classList.remove('show');
   const input = document.getElementById('searchInput');
   if (input) input.blur();
 }
+
+// 骨架屏載入畫面：取代純文字「搜尋中...」，展開瞬間先給出結果卡片輪廓
+const SEARCH_SKELETON_HTML = `
+  <div class="search-skeleton">
+    <div class="search-skeleton-row"></div>
+    <div class="search-skeleton-row"></div>
+    <div class="search-skeleton-row"></div>
+  </div>
+`;
 
 // 執行搜尋
 async function performSearch() {
@@ -65,21 +105,23 @@ async function performSearch() {
   const query = searchInput.value.trim();
 
   if (!query) {
-    searchResults.style.display = 'none';
+    searchResults.classList.remove('show');
     return;
   }
 
   if (!window.searchUtils) {
     console.error('[Map] Search utils 未載入');
     searchResults.innerHTML = '<div class="search-no-results">搜尋功能載入中，請稍後再試...</div>';
-    searchResults.style.display = 'block';
+    searchResults.classList.add('show');
     return;
   }
 
   const currentRequestId = ++searchRequestId;
 
-  searchResults.innerHTML = '<div class="search-loading">搜尋中...</div>';
-  searchResults.style.display = 'block';
+  searchResults.innerHTML = SEARCH_SKELETON_HTML;
+  searchResults.classList.add('show');
+  // 新查詢一律先收回加寬狀態，等百科卡片真的查到才重新加寬，避免沿用上一次查詢的寬度
+  document.getElementById('searchIsland')?.classList.remove('island-wide');
 
   try {
     // 使用混合搜尋：本地 GeoJSON + Nominatim API
@@ -92,6 +134,8 @@ async function performSearch() {
 
     if (currentRequestId === searchRequestId) {
       displaySearchResults(results, query);
+      // 百科查詢跟地點結果並行、各自獨立顯示狀態，不會拖慢地點結果的呈現速度
+      fetchAndRenderWikiSummary(query, currentRequestId);
     }
   } catch (error) {
     console.error('[Map] 搜尋錯誤:', error);
@@ -101,13 +145,71 @@ async function performSearch() {
   }
 }
 
+// 查詢並顯示專有名詞的維基百科摘要（OSINT 用途：地名/單位/人名等查詢時順便附上百科簡介）
+// 跟地點結果各自獨立一個 request id，避免使用者連續輸入時，較慢回來的百科結果蓋掉最新查詢
+async function fetchAndRenderWikiSummary(query, searchId) {
+  const searchResults = document.getElementById('searchResults');
+  if (!searchResults || !window.equipmentParser || query.length < 2) return;
+
+  const currentWikiId = ++wikiRequestId;
+  const isStale = () => searchId !== searchRequestId || currentWikiId !== wikiRequestId;
+
+  const renderSection = (innerHtml) => {
+    if (isStale()) return;
+    let section = searchResults.querySelector('.search-wiki-section');
+    if (!section) {
+      section = document.createElement('div');
+      section.className = 'search-wiki-section';
+      searchResults.appendChild(section);
+    }
+    section.innerHTML = `<div class="search-wiki-section-label">百科</div>${innerHtml}`;
+  };
+
+  renderSection(`<div class="search-wiki-loading"><span class="search-wiki-spinner"></span>正在查詢維基百科...</div>`);
+
+  try {
+    const info = await window.equipmentParser.fetchGenericSummary(query, 'zh');
+    if (isStale()) return;
+
+    if (!info) {
+      // 查無資料時直接移除區塊，不佔用空間顯示「查無資料」（地點搜尋為主，百科只是加值資訊）
+      const section = searchResults.querySelector('.search-wiki-section');
+      if (section) section.remove();
+      return;
+    }
+
+    const mediaHtml = info.thumbnail
+      ? `<div class="search-wiki-card-media"><img src="${info.thumbnail}" alt="${escapeHtml(info.title || query)}" loading="lazy"></div>`
+      : '';
+    const linkHtml = info.wikipediaUrl
+      ? `<a href="${info.wikipediaUrl}" target="_blank" rel="noopener noreferrer" class="search-wiki-card-link">維基百科原文</a>`
+      : '';
+    renderSection(`
+      <div class="search-wiki-card">
+        ${mediaHtml}
+        <div class="search-wiki-card-body">
+          <div class="search-wiki-card-title">${escapeHtml(info.title || query)}</div>
+          <div class="search-wiki-card-desc">${escapeHtml(info.description || '（無簡介）')}</div>
+          ${linkHtml}
+        </div>
+      </div>
+    `);
+    // 百科卡片內容比純地點清單多（縮圖+摘要），查到才加寬，讓島隨內容量自適應而不是每次都佔滿最大寬度
+    document.getElementById('searchIsland')?.classList.add('island-wide');
+  } catch (_) {
+    if (isStale()) return;
+    const section = searchResults.querySelector('.search-wiki-section');
+    if (section) section.remove();
+  }
+}
+
 // 顯示搜尋結果
 function displaySearchResults(results, query) {
   const searchResults = document.getElementById('searchResults');
 
   if (!results || results.length === 0) {
     searchResults.innerHTML = '<div class="search-no-results">找不到相關地點</div>';
-    searchResults.style.display = 'block';
+    searchResults.classList.add('show');
     return;
   }
 
@@ -139,7 +241,7 @@ function displaySearchResults(results, query) {
   });
 
   searchResults.innerHTML = html;
-  searchResults.style.display = 'block';
+  searchResults.classList.add('show');
 
   // 保存結果供選擇使用
   window.currentSearchResults = results;
@@ -192,7 +294,34 @@ function setupSearchIsland() {
   let searchTimeout;
   let selectedResultIndex = -1;
 
-  trigger?.addEventListener('click', expandSearchIsland);
+  trigger?.addEventListener('click', () => expandSearchIsland());
+
+  // 桌面滑鼠 hover 展開，比照 macOS 選單列／Dock 靠近即放大的手感——
+  // 觸控裝置沒有真正的 hover 概念（長按會被誤判成 hover），用 (hover:hover) + (pointer:fine)
+  // 限定只在滑鼠桌機生效，手機/平板仍維持原本的點擊展開
+  const supportsHoverExpand = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (supportsHoverExpand) {
+    let hoverExpandTimer = null;
+    let hoverCollapseTimer = null;
+
+    island.addEventListener('mouseenter', () => {
+      clearTimeout(hoverCollapseTimer);
+      // 短暫延遲：滑鼠快速掃過去不應該觸發展開，只有「停留」才算有意圖
+      hoverExpandTimer = setTimeout(() => {
+        if (!island.classList.contains('expanded')) expandSearchIsland({ focusInput: false });
+      }, 150);
+    });
+
+    island.addEventListener('mouseleave', () => {
+      clearTimeout(hoverExpandTimer);
+      // 使用者已經點進輸入框打字的話，滑鼠移開不該把正在輸入的搜尋收合掉，
+      // 這時只保留原本的 Escape／點擊外部收合
+      if (document.activeElement === searchInput) return;
+      hoverCollapseTimer = setTimeout(() => {
+        if (document.activeElement !== searchInput) collapseSearchIsland();
+      }, 350);
+    });
+  }
 
   searchInput.addEventListener('input', function () {
     clearTimeout(searchTimeout);
@@ -202,7 +331,7 @@ function setupSearchIsland() {
     if (clearBtn) clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
 
     if (!query) {
-      document.getElementById('searchResults').style.display = 'none';
+      document.getElementById('searchResults').classList.remove('show');
       return;
     }
 
@@ -244,7 +373,7 @@ function setupSearchIsland() {
   clearBtn?.addEventListener('click', () => {
     searchInput.value = '';
     clearBtn.style.display = 'none';
-    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('searchResults').classList.remove('show');
     searchInput.focus();
   });
 

@@ -39,8 +39,9 @@ class EquipmentParser {
   // 用於補救「名稱跟維基百科實際標題有落差」的情況（例如 SENTINEL-6A 的實際標題是
   // 「Sentinel-6 Michael Freilich」、BOEING 787-9 Dreamliner 的實際標題是「Boeing 787 Dreamliner」），
   // 讓衛星/機型這類非固定格式名稱也能查到摘要，而不是直接判定「查無資料」。
-  async searchWikipediaTitle(query) {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`;
+  // lang 參數供動態島搜尋的通用百科查詢（fetchGenericSummary）重用，預設仍為英文維基（武器查詢原用法）。
+  async searchWikipediaTitle(query, lang = 'en') {
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
     try {
@@ -58,8 +59,8 @@ class EquipmentParser {
   // 用 MediaWiki 的「重新導向」機制找同義詞/別名的正確條目標題（CORS 開放，免金鑰）。
   // 這是維基百科官方定義的別名對照表（例如「HQ-9」重定向到實際條目），比全文搜尋更精準、
   // 也更快；優先於 searchWikipediaTitle 的全文搜尋使用，找不到重定向才退回全文搜尋。
-  async resolveWikipediaRedirect(query) {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(query)}&redirects=1&format=json&origin=*`;
+  async resolveWikipediaRedirect(query, lang = 'en') {
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(query)}&redirects=1&format=json&origin=*`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
     try {
@@ -126,6 +127,31 @@ class EquipmentParser {
       return null;
     } finally {
       clearTimeout(timeoutId);
+    }
+  }
+
+  // 通用（非武器專用）維基百科摘要查詢：給動態島搜尋的專有名詞/百科結果使用。
+  // 跟 fetchWeaponInfo 不同之處：不做武器型號名稱正規化（紅旗/鷹擊轉英文代碼等），
+  // 單純把使用者輸入的查詢字串（例如地名、單位名、人名）直接拿去解析維基百科條目，
+  // 預設查中文維基（zh.wikipedia.org），找不到重定向就退回全文搜尋找最接近的條目。
+  async fetchGenericSummary(query, lang = 'zh') {
+    const trimmed = (query || '').trim();
+    if (!trimmed) return null;
+
+    const cacheKey = `generic:${lang}:${trimmed}`;
+    const cached = this.getCachedResult(cacheKey);
+    if (cached) return cached;
+
+    try {
+      let title = await this.resolveWikipediaRedirect(trimmed, lang);
+      if (!title) title = await this.searchWikipediaTitle(trimmed, lang);
+      if (!title) return null;
+
+      const result = await this.fetchPageSummaryByLangTitle(lang, title);
+      if (result) this.setCachedResult(cacheKey, result);
+      return result;
+    } catch (_) {
+      return null;
     }
   }
 

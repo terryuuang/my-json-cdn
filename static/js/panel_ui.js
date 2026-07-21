@@ -142,6 +142,11 @@ function togglePanel() {
   const panel = document.getElementById('controlPanel');
   const toggleBtn = document.querySelector('.toggle-panel:not(.toggle-panel-mobile)');
 
+  // 面板開啟時關閉目前的 popup，避免地圖因 popup-elevated 提升的 z-index 蓋住剛開啟的面板
+  if (window.map && typeof window.map.closePopup === 'function') {
+    window.map.closePopup();
+  }
+
   if (isMobileDevice()) {
     // 手機版使用 show-mobile class
     panel.classList.toggle('show-mobile');

@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.4.0';
+const APP_VERSION = '0.4.1';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -82,6 +82,7 @@ const CORE_ASSETS = [
   '/static/js/pwa.js',
   '/static/js/satellite_pass.js',
   '/static/js/adsb_traffic.js',
+  '/static/js/osint_weather.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
   '/static/assets/APEINTEL ATLAS_512x512.png'
 ];

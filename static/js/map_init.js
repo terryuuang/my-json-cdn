@@ -124,6 +124,15 @@ if (currentBaseLayer === 'air') {
     closeControlPanel();
   });
 
+  // Popup 開啟時，將地圖容器暫時提升 z-index，避免被搜尋動態島／控制面板／
+  // 手機版選單按鈕等固定定位的浮動 UI 遮住（見 main.css .popup-elevated 註解）
+  map.on('popupopen', function () {
+    map.getContainer().classList.add('popup-elevated');
+  });
+  map.on('popupclose', function () {
+    map.getContainer().classList.remove('popup-elevated');
+  });
+
   // 初始化禁航區圖層（繪圖工具延後至地圖資料載入後初始化，加速首次渲染）
   try { nfzLayerGroup.addTo(map); } catch (_) {}
 }

@@ -93,6 +93,7 @@ try {
       if (window.MaritimeZones) window.MaritimeZones.init(map, { visible: hasAisSnapshot });
       if (window.SubmarineCable) window.SubmarineCable.init(map);
       if (typeof initOsintToolbar === 'function') initOsintToolbar(map);
+      if (window.OsintWeather) window.OsintWeather.init();
     });
     
     const endTime = performance.now();
