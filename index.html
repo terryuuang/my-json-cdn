@@ -109,8 +109,21 @@
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
   <link rel="stylesheet" href="static/css/main.css">
-  <!-- Cloudflare Web Analytics -->
-  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "5b392e97823e4d9ba21b3d8419d6ce62"}'></script>
+  <!-- Cloudflare Web Analytics（僅正式環境載入：beacon 的 token 綁定正式網域，
+       本機開發時的 origin 一定不符，載入只會產生無意義的 CORS 錯誤訊息） -->
+  <script>
+    (function () {
+      var h = location.hostname;
+      var isLocalDev = h === 'localhost' || h === '127.0.0.1' || h === '' ||
+        /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
+      if (isLocalDev) return;
+      var s = document.createElement('script');
+      s.defer = true;
+      s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+      s.setAttribute('data-cf-beacon', '{"token": "5b392e97823e4d9ba21b3d8419d6ce62"}');
+      document.head.appendChild(s);
+    })();
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-N28FEYH43D"></script>
   <script>
@@ -167,17 +180,17 @@
       <div class="settings-section-title">搜尋與定位</div>
       <div class="settings-group">
         <div class="input-group">
-          <label class="input-label">緯度 (Latitude)</label>
+          <label class="input-label" for="latInput">緯度 (Latitude)</label>
           <input type="number" id="latInput" class="input-field" step="any" placeholder="例如: 31.9424765">
         </div>
 
         <div class="input-group">
-          <label class="input-label">經度 (Longitude)</label>
+          <label class="input-label" for="lngInput">經度 (Longitude)</label>
           <input type="number" id="lngInput" class="input-field" step="any" placeholder="例如: 120.2903877">
         </div>
 
         <div class="input-group">
-          <label class="input-label">搜尋半徑 (公里)</label>
+          <label class="input-label" for="radiusInput">搜尋半徑 (公里)</label>
           <input type="number" id="radiusInput" class="input-field" value="50" min="1" max="500" step="5">
         </div>
 
@@ -192,9 +205,9 @@
       <div class="settings-section-title">圖層篩選</div>
       <div class="settings-group">
         <div class="input-group">
-          <label class="input-label">單位篩選</label>
+          <label class="input-label" for="layerDropdownToggle">單位篩選</label>
           <div class="unified-dropdown">
-            <button type="button" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇圖層">
+            <button type="button" id="layerDropdownToggle" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇圖層">
               <span id="layerSelectedCount">顯示全部分層</span>
               <span class="dropdown-arrow">▼</span>
             </button>
@@ -239,9 +252,9 @@
 
         <!-- OSM 公共設施圖層選擇 (改用統一樣式) -->
         <div class="input-group">
-          <label class="input-label">公共設施</label>
+          <label class="input-label" for="osmDropdownToggle">公共設施</label>
           <div class="unified-dropdown">
-            <button type="button" class="dropdown-toggle" onclick="toggleOSMDropdown()" aria-label="選擇公共設施圖層">
+            <button type="button" id="osmDropdownToggle" class="dropdown-toggle" onclick="toggleOSMDropdown()" aria-label="選擇公共設施圖層">
               <span id="osmSelectedCount">選擇設施類型</span>
               <span class="dropdown-arrow">▼</span>
             </button>
@@ -304,7 +317,7 @@
         </div>
 
         <div class="input-group">
-          <label class="input-label">底圖圖層</label>
+          <span class="input-label">底圖圖層</span>
           <div class="layer-toggle-group">
             <button type="button" class="layer-toggle-btn active" data-layer="sea" onclick="switchBaseLayer('sea')">
               Google（海域）

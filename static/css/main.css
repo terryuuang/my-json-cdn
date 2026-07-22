@@ -1360,6 +1360,12 @@ select.input-field:hover {
     margin-bottom: 8px;
 }
 
+.search-wiki-empty {
+    padding: 8px 2px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12.5px;
+}
+
 .search-wiki-loading {
     display: flex;
     align-items: center;
@@ -1444,6 +1450,56 @@ select.input-field:hover {
     content: '›';
     font-size: 13px;
     line-height: 1;
+}
+
+/* 消歧義候選清單：查太籠統跳出多個同名條目時，直接列前 3 個讓使用者自己選，不盲猜 */
+.search-wiki-disambig {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: osintWikiCardIn 0.28s var(--ease-spring);
+}
+
+.search-wiki-disambig-hint {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0 2px 2px;
+}
+
+.search-wiki-disambig-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    color: #f1f5f9;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.search-wiki-disambig-item:hover,
+.search-wiki-disambig-item:active {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.search-wiki-disambig-title {
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-wiki-disambig-arrow {
+    flex-shrink: 0;
+    font-size: 15px;
+    color: #60a5fa;
 }
 
 /* 手機版搜尋優化 */
@@ -1547,6 +1603,15 @@ select.input-field:hover {
 @media (max-width: 768px) {
     /* 手機版隱藏原本的齒輪按鈕，改用搜尋列內的 */
     .toggle-panel:not(.toggle-panel-mobile) {
+        display: none;
+    }
+}
+
+/* 桌面版隱藏手機版開啟面板按鈕：此按鈕僅由下方 max-width:768px 媒體查詢賦予樣式並顯示，
+   桌面寬度下若不隱藏，會與 .control-panel 同時定位在 top:10/left:10，且 z-index 較高，
+   導致展開控制面板時被這顆按鈕壓在上面（蓋住面板標題角落） */
+@media (min-width: 769px) {
+    .toggle-panel.toggle-panel-mobile {
         display: none;
     }
 }
@@ -3533,6 +3598,7 @@ select.input-field:hover {
   -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
   border: 1px solid var(--color-panel-border);
   border-radius: var(--radius-lg);
+  overflow: hidden;
   box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 560px;
@@ -3592,6 +3658,38 @@ select.input-field:hover {
   color: var(--color-label);
 }
 
+.note-dialog-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.note-dialog-minimize {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-fill-secondary);
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--color-label-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease, transform 0.25s var(--ease-spring);
+}
+
+.note-dialog-minimize:hover {
+  background: var(--color-fill-primary);
+  color: var(--color-label);
+}
+
+.note-dialog.minimized .note-dialog-minimize {
+  transform: rotate(180deg);
+}
+
 .note-dialog-toolbar {
   display: flex;
   gap: 8px;
@@ -3626,7 +3724,8 @@ select.input-field:hover {
   margin-bottom: 16px;
 }
 
-.note-input-group label {
+.note-input-group label,
+.note-input-group-title {
   display: block;
   font-size: 13px;
   font-weight: 600;
@@ -4074,8 +4173,28 @@ select.input-field:hover {
 
 @media (max-width: 768px) {
   .osint-side-panel .note-dialog {
-    max-height: 60vh;
+    /* 手機版預設高度收斂（原本 60vh 幾乎佔滿螢幕下半，使用者一看到就想點叉叉關閉，
+       連帶清空查詢結果）。想看更多結果時仍可用標題列的縮小/展開鈕自行調整，
+       不需要一開始就把地圖蓋掉一大半 */
+    max-height: 42vh;
   }
+}
+
+/* 縮小模式：僅保留標題列，內容/頁尾整個收起但不銷毀 DOM，
+   查詢結果、輪詢計時器都還在，展開時原地恢復——比起直接叉掉面板，
+   更適合「先看一眼地圖、待會兒再看列表」的操作習慣。桌面/手機共用同一套邏輯 */
+.osint-side-panel .note-dialog.minimized {
+  max-height: none;
+}
+
+.osint-side-panel .note-dialog.minimized .note-dialog-body,
+.osint-side-panel .note-dialog.minimized .note-dialog-footer {
+  display: none;
+}
+
+.osint-side-panel .note-dialog.minimized .note-dialog-header {
+  border-bottom: none;
+  cursor: pointer;
 }
 
 .osint-preset-chip-list {
@@ -4135,6 +4254,43 @@ select.input-field:hover {
   gap: 8px;
   max-height: 340px;
   overflow-y: auto;
+}
+
+/* Apple 風格細滾動軸：細長圓角、透明軌道，滾動清單/對話框本體共用同一套視覺語言
+   （比照 .control-panel 既有的滾動軸處理，這裡額外補上 note-dialog-body，
+   因為原本這兩顆清單跟對話框本體都還在用瀏覽器預設樣式，跟其餘玻璃感 UI 不搭） */
+.note-dialog-body::-webkit-scrollbar,
+.adsb-results::-webkit-scrollbar,
+.sat-pass-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.note-dialog-body::-webkit-scrollbar-track,
+.adsb-results::-webkit-scrollbar-track,
+.sat-pass-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.note-dialog-body::-webkit-scrollbar-thumb,
+.adsb-results::-webkit-scrollbar-thumb,
+.sat-pass-results::-webkit-scrollbar-thumb {
+  background: var(--color-scroll-thumb);
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s ease;
+}
+
+.note-dialog-body::-webkit-scrollbar-thumb:hover,
+.adsb-results::-webkit-scrollbar-thumb:hover,
+.sat-pass-results::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scroll-thumb-hover);
+}
+
+.note-dialog-body,
+.adsb-results,
+.sat-pass-results {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll-thumb) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sat-pass-empty,

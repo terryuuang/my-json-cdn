@@ -119,12 +119,59 @@ class EquipmentParser {
         title: data.title || title,
         description: this.truncateDescription(data.description || data.extract),
         thumbnail: data.thumbnail?.source || null,
-        wikipediaUrl: data.content_urls?.desktop?.page || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`
+        wikipediaUrl: data.content_urls?.desktop?.page || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`,
+        // 消歧義頁（例如查詢過於籠統，同名條目不只一個）沒有實際摘要可用，
+        // type 讓呼叫方（fetchGenericSummary）決定要不要改抓候選條目清單
+        type: data.type || null
       };
-      this.setCachedResult(cacheKey, result);
+      // 消歧義頁本身不快取為「正常結果」，避免之後誤用它的（無意義）description/thumbnail
+      if (result.type !== 'disambiguation') this.setCachedResult(cacheKey, result);
       return result;
     } catch (_) {
       return null;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  // 消歧義頁的候選條目：抓該頁面內連往其他條目（namespace 0）的前 N 個連結，
+  // 供動態島搜尋直接列出候選讓使用者自己挑，比起「盲猜第一個」更不會選錯。
+  // 消歧義頁列出的連結常混有「紅字連結」（條目實際不存在/已刪除，點進去只會 404）
+  // 或本身又連到另一個消歧義頁（點進去摘要沒意義），兩者都不該被當成候選，
+  // 所以抓多一點原始連結後，用第二次查詢確認哪些是「真的有摘要可看的條目」再篩前 limit 個
+  async fetchDisambiguationCandidates(lang, title, limit = 3) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+    try {
+      const linksUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&prop=links&titles=${encodeURIComponent(title)}&plnamespace=0&pllimit=20&format=json&origin=*`;
+      const linksResp = await fetch(linksUrl, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
+      if (!linksResp.ok) return [];
+      const linksData = await linksResp.json();
+      const linkPage = Object.values(linksData?.query?.pages || {})[0];
+      const rawTitles = (linkPage?.links || [])
+        .map(l => l.title)
+        .filter(t => t && !/(消歧義|disambiguation)/i.test(t));
+      if (rawTitles.length === 0) return [];
+
+      const checkUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${rawTitles.map(t => encodeURIComponent(t)).join('|')}&prop=pageprops&format=json&origin=*`;
+      const checkResp = await fetch(checkUrl, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
+      if (!checkResp.ok) return [];
+      const checkData = await checkResp.json();
+      const validTitles = new Set(
+        Object.values(checkData?.query?.pages || {})
+          .filter(p => !('missing' in p) && !(p.pageprops && 'disambiguation' in p.pageprops))
+          .map(p => p.title)
+      );
+
+      return rawTitles
+        .filter(t => validTitles.has(t))
+        .slice(0, limit)
+        .map(t => ({
+          title: t,
+          wikipediaUrl: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, '_'))}`
+        }));
+    } catch (_) {
+      return [];
     } finally {
       clearTimeout(timeoutId);
     }
@@ -134,6 +181,7 @@ class EquipmentParser {
   // 跟 fetchWeaponInfo 不同之處：不做武器型號名稱正規化（紅旗/鷹擊轉英文代碼等），
   // 單純把使用者輸入的查詢字串（例如地名、單位名、人名）直接拿去解析維基百科條目，
   // 預設查中文維基（zh.wikipedia.org），找不到重定向就退回全文搜尋找最接近的條目。
+  // 查到消歧義頁時不盲猜，改回傳前 3 個候選條目讓使用者自己選（見 fetchDisambiguationCandidates）。
   async fetchGenericSummary(query, lang = 'zh') {
     const trimmed = (query || '').trim();
     if (!trimmed) return null;
@@ -147,8 +195,17 @@ class EquipmentParser {
       if (!title) title = await this.searchWikipediaTitle(trimmed, lang);
       if (!title) return null;
 
-      const result = await this.fetchPageSummaryByLangTitle(lang, title);
-      if (result) this.setCachedResult(cacheKey, result);
+      const summary = await this.fetchPageSummaryByLangTitle(lang, title);
+      if (!summary) return null;
+
+      let result = summary;
+      if (summary.type === 'disambiguation') {
+        const candidates = await this.fetchDisambiguationCandidates(lang, title, 3);
+        if (candidates.length === 0) return null;
+        result = { disambiguation: true, query: trimmed, pageTitle: title, candidates };
+      }
+
+      this.setCachedResult(cacheKey, result);
       return result;
     } catch (_) {
       return null;

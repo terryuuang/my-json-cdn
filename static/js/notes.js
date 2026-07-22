@@ -480,7 +480,7 @@ function buildGeometryVisibilityEditor(geometry, metadata = {}) {
 
   return `
     <div class="note-input-group">
-      <label>顯示哪些圖形</label>
+      <span class="note-input-group-title">顯示哪些圖形</span>
       <div class="note-geometry-toolbar">
         <button type="button" class="note-btn note-btn-secondary note-btn-sm" onclick="setAllGeometryVisibility(true)">全部顯示</button>
         <button type="button" class="note-btn note-btn-secondary note-btn-sm" onclick="setAllGeometryVisibility(false)">全部隱藏</button>
@@ -1200,7 +1200,7 @@ function showShapeSaveDialog(btn) {
 
   const saveScopeHtml = hasGroupOption ? `
     <div class="note-input-group">
-      <label>儲存範圍</label>
+      <span class="note-input-group-title">儲存範圍</span>
       <div class="note-choice-grid">
         <label class="note-choice-card is-selected">
           <input type="radio" name="shapeSaveScope" value="group" checked onchange="handleShapeSaveScopeChange(this)">

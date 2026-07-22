@@ -160,12 +160,72 @@ async function fetchAndRenderWikiSummary(query, searchId) {
     if (!section) {
       section = document.createElement('div');
       section.className = 'search-wiki-section';
-      searchResults.appendChild(section);
+      // 百科卡片放最上面：比起地點清單，使用者查專有名詞時通常最想先看到的是百科摘要
+      searchResults.prepend(section);
     }
     section.innerHTML = `<div class="search-wiki-section-label">百科</div>${innerHtml}`;
   };
 
   renderSection(`<div class="search-wiki-loading"><span class="search-wiki-spinner"></span>正在查詢維基百科...</div>`);
+
+  // 一般摘要卡片（含消歧義選完之後、回頭再查一次確切條目的情境，兩處共用同一個渲染函式）
+  function renderWikiCard(info, fallbackTitle) {
+    const mediaHtml = info.thumbnail
+      ? `<div class="search-wiki-card-media"><img src="${info.thumbnail}" alt="${escapeHtml(info.title || fallbackTitle)}" loading="lazy"></div>`
+      : '';
+    const linkHtml = info.wikipediaUrl
+      ? `<a href="${info.wikipediaUrl}" target="_blank" rel="noopener noreferrer" class="search-wiki-card-link">維基百科原文</a>`
+      : '';
+    renderSection(`
+      <div class="search-wiki-card">
+        ${mediaHtml}
+        <div class="search-wiki-card-body">
+          <div class="search-wiki-card-title">${escapeHtml(info.title || fallbackTitle)}</div>
+          <div class="search-wiki-card-desc">${escapeHtml(info.description || '（無簡介）')}</div>
+          ${linkHtml}
+        </div>
+      </div>
+    `);
+    // 百科卡片內容比純地點清單多（縮圖+摘要），查到才加寬，讓島隨內容量自適應而不是每次都佔滿最大寬度
+    document.getElementById('searchIsland')?.classList.add('island-wide');
+  }
+
+  // 消歧義候選清單：直接列出前 3 個候選條目讓使用者自己點，不盲猜第一個避免選錯
+  function renderDisambiguation(info) {
+    const itemsHtml = info.candidates.map(c => `
+      <button type="button" class="search-wiki-disambig-item" data-title="${escapeHtml(c.title)}">
+        <span class="search-wiki-disambig-title">${escapeHtml(c.title)}</span>
+        <span class="search-wiki-disambig-arrow">›</span>
+      </button>
+    `).join('');
+    renderSection(`
+      <div class="search-wiki-disambig">
+        <div class="search-wiki-disambig-hint">「${escapeHtml(info.query)}」查到多個同名條目，請選擇：</div>
+        ${itemsHtml}
+      </div>
+    `);
+    const section = searchResults.querySelector('.search-wiki-section');
+    section?.querySelectorAll('.search-wiki-disambig-item').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (isStale()) return;
+        const title = btn.dataset.title;
+        renderSection(`<div class="search-wiki-loading"><span class="search-wiki-spinner"></span>正在查詢維基百科...</div>`);
+        try {
+          const picked = await window.equipmentParser.fetchPageSummaryByLangTitle('zh', title);
+          if (isStale()) return;
+          if (!picked) {
+            // 理論上候選已過濾掉查無資料的條目，這裡是保底：查失敗時給明確提示而不是整塊悄悄消失
+            renderSection(`<div class="search-wiki-empty">查無「${escapeHtml(title)}」的摘要資料</div>`);
+            return;
+          }
+          renderWikiCard(picked, title);
+        } catch (_) {
+          if (isStale()) return;
+          renderSection(`<div class="search-wiki-empty">查詢時發生錯誤，請稍後再試</div>`);
+        }
+      });
+    });
+  }
 
   try {
     const info = await window.equipmentParser.fetchGenericSummary(query, 'zh');
@@ -178,24 +238,12 @@ async function fetchAndRenderWikiSummary(query, searchId) {
       return;
     }
 
-    const mediaHtml = info.thumbnail
-      ? `<div class="search-wiki-card-media"><img src="${info.thumbnail}" alt="${escapeHtml(info.title || query)}" loading="lazy"></div>`
-      : '';
-    const linkHtml = info.wikipediaUrl
-      ? `<a href="${info.wikipediaUrl}" target="_blank" rel="noopener noreferrer" class="search-wiki-card-link">維基百科原文</a>`
-      : '';
-    renderSection(`
-      <div class="search-wiki-card">
-        ${mediaHtml}
-        <div class="search-wiki-card-body">
-          <div class="search-wiki-card-title">${escapeHtml(info.title || query)}</div>
-          <div class="search-wiki-card-desc">${escapeHtml(info.description || '（無簡介）')}</div>
-          ${linkHtml}
-        </div>
-      </div>
-    `);
-    // 百科卡片內容比純地點清單多（縮圖+摘要），查到才加寬，讓島隨內容量自適應而不是每次都佔滿最大寬度
-    document.getElementById('searchIsland')?.classList.add('island-wide');
+    if (info.disambiguation) {
+      renderDisambiguation(info);
+      return;
+    }
+
+    renderWikiCard(info, query);
   } catch (_) {
     if (isStale()) return;
     const section = searchResults.querySelector('.search-wiki-section');

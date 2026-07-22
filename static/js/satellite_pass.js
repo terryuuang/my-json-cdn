@@ -425,13 +425,16 @@
       <div class="note-dialog note-dialog-large">
         <div class="note-dialog-header">
           <h3>衛星過境預測</h3>
-          <button class="note-dialog-close" aria-label="關閉">&times;</button>
+          <div class="note-dialog-header-actions">
+            <button class="note-dialog-minimize" aria-label="縮小面板" title="縮小面板（保留查詢結果）">▾</button>
+            <button class="note-dialog-close" aria-label="關閉">&times;</button>
+          </div>
         </div>
         <div class="note-dialog-body">
           <div class="note-dialog-feature" data-role="location-label"></div>
           <div class="osint-preset-chip-list">${renderPresetChips(currentMode)}</div>
           <div class="note-input-group">
-            <label>選擇衛星類別</label>
+            <span class="note-input-group-title">選擇衛星類別</span>
             <div class="sat-pass-category-list">${renderCategoryCheckboxes(selectedIds)}</div>
           </div>
           <div class="note-dialog-info sat-pass-disclaimer">
@@ -440,8 +443,7 @@
           <div class="sat-pass-results" data-state="idle"></div>
         </div>
         <div class="note-dialog-footer">
-          <button class="note-btn note-btn-secondary" data-action="close">取消</button>
-          <button class="note-btn note-btn-primary" data-action="query">查詢未來 48 小時過境</button>
+          <button class="note-btn note-btn-primary" data-action="query" style="width:100%;">查詢未來 48 小時過境</button>
         </div>
       </div>
     `;
@@ -469,7 +471,22 @@
       if (e.target === dialogEl) closeDialog();
     });
     dialogEl.querySelector('.note-dialog-close').addEventListener('click', closeDialog);
-    dialogEl.querySelector('[data-action="close"]').addEventListener('click', closeDialog);
+
+    const dialogBox = dialogEl.querySelector('.note-dialog');
+    const minimizeBtn = dialogEl.querySelector('.note-dialog-minimize');
+    const headerEl = dialogEl.querySelector('.note-dialog-header');
+    function setMinimized(minimized) {
+      dialogBox.classList.toggle('minimized', minimized);
+      minimizeBtn.setAttribute('aria-label', minimized ? '展開面板' : '縮小面板');
+      minimizeBtn.title = minimized ? '展開面板' : '縮小面板（保留查詢結果）';
+    }
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setMinimized(!dialogBox.classList.contains('minimized'));
+    });
+    headerEl.addEventListener('click', () => {
+      if (dialogBox.classList.contains('minimized')) setMinimized(false);
+    });
     dialogEl.querySelectorAll('.osint-preset-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.presetIndex === 'all') {
