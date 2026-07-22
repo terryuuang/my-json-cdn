@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.4.2';
+const APP_VERSION = '0.4.3';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -106,9 +106,17 @@ self.addEventListener('install', (event) => {
   
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('[SW] 快取核心資源');
-        return cache.addAll(CORE_ASSETS);
+        // 逐一快取並容忍個別失敗，避免單一資源 404 導致整批快取失敗
+        const results = await Promise.allSettled(
+          CORE_ASSETS.map((url) => cache.add(url))
+        );
+        results.forEach((result, i) => {
+          if (result.status === 'rejected') {
+            console.warn(`[SW] 快取失敗，略過: ${CORE_ASSETS[i]}`, result.reason);
+          }
+        });
       })
       .then(() => {
         // 立即啟用新 Service Worker（不等待舊的關閉）
