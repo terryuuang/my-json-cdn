@@ -118,10 +118,22 @@ async function performSearch() {
 
   const currentRequestId = ++searchRequestId;
 
-  searchResults.innerHTML = SEARCH_SKELETON_HTML;
+  // 清空整個容器（含上一次查詢殘留的百科卡片），重建乾淨的地點清單容器，
+  // 百科區塊之後會用 prepend 插到最前面，兩者互不覆寫彼此的 innerHTML
+  searchResults.innerHTML = '';
   searchResults.classList.add('show');
+  const locationList = document.createElement('div');
+  locationList.className = 'search-location-list';
+  locationList.innerHTML = SEARCH_SKELETON_HTML;
+  searchResults.appendChild(locationList);
   // 新查詢一律先收回加寬狀態，等百科卡片真的查到才重新加寬，避免沿用上一次查詢的寬度
   document.getElementById('searchIsland')?.classList.remove('island-wide');
+
+  // 百科查詢跟地點結果並行發起（不等地點結果回來才開始查）：
+  // 百科卡片一律插在地點清單「最上面」，若等地點結果顯示、使用者已經在點的時候才插入，
+  // 會把清單往下推、造成點擊座標對不上（點下去沒反應）。提早並行發起可以讓百科區塊
+  // 盡量在地點清單出現前就定位完成，縮小這個位移窗口
+  fetchAndRenderWikiSummary(query, currentRequestId);
 
   try {
     // 使用混合搜尋：本地 GeoJSON + Nominatim API
@@ -134,15 +146,38 @@ async function performSearch() {
 
     if (currentRequestId === searchRequestId) {
       displaySearchResults(results, query);
-      // 百科查詢跟地點結果並行、各自獨立顯示狀態，不會拖慢地點結果的呈現速度
-      fetchAndRenderWikiSummary(query, currentRequestId);
     }
   } catch (error) {
     console.error('[Map] 搜尋錯誤:', error);
     if (currentRequestId === searchRequestId) {
-      searchResults.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
+      const list = searchResults.querySelector('.search-location-list');
+      if (list) list.innerHTML = '<div class="search-no-results">搜尋時發生錯誤</div>';
     }
   }
+}
+
+// 百科卡片理想上放在地點清單「上方」（比起地點清單，查專有名詞時通常最想先看到百科摘要），
+// 但百科查詢常常比地點搜尋慢，而且內容還會隨查詢進度變高（loading spinner → 摘要卡片／消歧義清單）。
+// 只要百科區塊還壓在地點清單上面，它每次變高都會把已經顯示、可能正要被點擊的地點項目往下推，
+// 讓點擊座標跟畫面對不上（點下去沒反應）。這裡在每次更新百科內容「之前」都重新判斷位置：
+// 地點清單還沒有實際項目時放最上面（此時沒有人在點東西，放最上面不會有風險）；
+// 一旦地點清單已經有項目，就固定改放最下面——不只是建立當下判斷一次，
+// 而是每次更新都重新檢查並視需要搬移，這樣就算百科區塊是在地點清單出現「之前」就已經卡在最上面，
+// 之後地點清單一出現，下一次百科內容更新也會把它搬到最下面，不會再讓後續的內容變高波及地點項目
+function placeWikiSection(searchResults) {
+  let section = searchResults.querySelector('.search-wiki-section');
+  if (!section) {
+    section = document.createElement('div');
+    section.className = 'search-wiki-section';
+  }
+  const list = searchResults.querySelector('.search-location-list');
+  const hasRenderedResults = !!(list && list.querySelector('.search-result-item'));
+  if (hasRenderedResults) {
+    if (searchResults.lastElementChild !== section) searchResults.appendChild(section);
+  } else if (searchResults.firstElementChild !== section) {
+    searchResults.prepend(section);
+  }
+  return section;
 }
 
 // 查詢並顯示專有名詞的維基百科摘要（OSINT 用途：地名/單位/人名等查詢時順便附上百科簡介）
@@ -156,13 +191,7 @@ async function fetchAndRenderWikiSummary(query, searchId) {
 
   const renderSection = (innerHtml) => {
     if (isStale()) return;
-    let section = searchResults.querySelector('.search-wiki-section');
-    if (!section) {
-      section = document.createElement('div');
-      section.className = 'search-wiki-section';
-      // 百科卡片放最上面：比起地點清單，使用者查專有名詞時通常最想先看到的是百科摘要
-      searchResults.prepend(section);
-    }
+    const section = placeWikiSection(searchResults);
     section.innerHTML = `<div class="search-wiki-section-label">百科</div>${innerHtml}`;
   };
 
@@ -186,8 +215,17 @@ async function fetchAndRenderWikiSummary(query, searchId) {
         </div>
       </div>
     `);
-    // 百科卡片內容比純地點清單多（縮圖+摘要），查到才加寬，讓島隨內容量自適應而不是每次都佔滿最大寬度
-    document.getElementById('searchIsland')?.classList.add('island-wide');
+    // 百科卡片內容比純地點清單多（縮圖+摘要），查到才加寬，讓島隨內容量自適應而不是每次都佔滿最大寬度。
+    // 但動態島是用 left:50% + translateX(-50%) 置中，變寬時兩側會對稱往外展開，
+    // 連帶把島內所有內容（包含地點清單項目）一起橫向位移，且這個變寬有 0.4s 動畫。
+    // 如果地點清單這時已經顯示出可點擊項目，使用者的點擊座標可能還沒反應過來這個橫移，
+    // 導致點下去偏移到旁邊——所以只在地點清單「還沒有實際項目」時才加寬，
+    // 已經有項目的話寧可百科卡片維持原本寬度（頂多文字換行多一點），優先保證點擊穩定
+    const list = searchResults.querySelector('.search-location-list');
+    const hasRenderedResults = !!(list && list.querySelector('.search-result-item'));
+    if (!hasRenderedResults) {
+      document.getElementById('searchIsland')?.classList.add('island-wide');
+    }
   }
 
   // 消歧義候選清單：直接列出前 3 個候選條目讓使用者自己點，不盲猜第一個避免選錯
@@ -254,9 +292,17 @@ async function fetchAndRenderWikiSummary(query, searchId) {
 // 顯示搜尋結果
 function displaySearchResults(results, query) {
   const searchResults = document.getElementById('searchResults');
+  // 地點清單專用容器：跟百科區塊（.search-wiki-section）分開更新，
+  // 避免其中一方 innerHTML 覆寫時把另一方也清掉，造成已顯示的結果列表突然被百科卡片頂下去
+  let list = searchResults.querySelector('.search-location-list');
+  if (!list) {
+    list = document.createElement('div');
+    list.className = 'search-location-list';
+    searchResults.appendChild(list);
+  }
 
   if (!results || results.length === 0) {
-    searchResults.innerHTML = '<div class="search-no-results">找不到相關地點</div>';
+    list.innerHTML = '<div class="search-no-results">找不到相關地點</div>';
     searchResults.classList.add('show');
     return;
   }
@@ -288,7 +334,7 @@ function displaySearchResults(results, query) {
     `;
   });
 
-  searchResults.innerHTML = html;
+  list.innerHTML = html;
   searchResults.classList.add('show');
 
   // 保存結果供選擇使用

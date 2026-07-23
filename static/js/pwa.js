@@ -8,7 +8,7 @@
 // ============================================
 let deferredPrompt = null; // Android 安裝提示事件
 let swRegistration = null; // Service Worker 註冊物件
-let currentAppVersion = '0.4.3';
+let currentAppVersion = '0.4.4';
 
 // ============================================
 // 初始化
@@ -100,11 +100,8 @@ function setupInstallPrompt() {
   });
 }
 
-// 檢查是否為行動裝置
-function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-         (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
-}
+// 判斷是否為手機設備：統一定義於 map_state.js 的 isMobileDevice()，這裡不重複宣告
+// （避免跟其他檔案各自一份、行為不一致，且互相覆寫 window.isMobileDevice 造成混淆）
 
 // 顯示安裝提示（僅手機版，使用 confirm 對話框）
 function showInstallBanner() {

@@ -42,16 +42,11 @@ function setupDropdowns() {
   loadLayerSelectionFromUrl();
 }
 
-// 判斷是否為手機設備 (如果尚未定義)
-if (!window.isMobileDevice) {
-  window.isMobileDevice = function() {
-    return window.innerWidth <= 768;
-  };
-}
-
-function isMobileDevice() {
-  return window.isMobileDevice();
-}
+// 判斷是否為手機設備：實作統一定義於 map_state.js 的 isMobileDevice()，
+// 這裡不重複宣告——先前這裡曾自帶一份會呼叫 window.isMobileDevice() 的版本，
+// 但函式宣告在 hoisting 階段就會覆寫 window.isMobileDevice，
+// 導致該 if 判斷恆為 false、實際掛上去的是會呼叫自己的遞迴版本，
+// 全靠後面 script 載入順序覆寫掉才沒有真的無限遞迴，非常脆弱
 
 // 切換圖層篩選下拉選單
 function toggleLayerDropdown() {

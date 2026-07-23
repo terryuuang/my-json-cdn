@@ -23,6 +23,50 @@
     return div.innerHTML;
   }
 
+  // 常見中國公務船／軍艦英文船名 → 中文顯示名稱（純顯示層轉換，不影響底層 vessel.name／MMSI 等資料）
+  // AIS 廣播的船名欄位多半是無空格、全大寫的拼音／英文，例如 CHINACOASTGUARD2308、CCG3901、
+  // 也有部分轉發器直接用羅馬拼音（HAIJING/HAIXUN 等）取代英文全名
+  const VESSEL_NAME_DISPLAY_RULES = [
+    // 中國海警（中國海警局，CCG／China Coast Guard）：
+    // CHINACOASTGUARD2308 / CHINA COAST GUARD 2308 / CCG2308 / HAIJING2308 → 海警2308
+    { pattern: /^CHINA\s*COAST\s*GUARD\s*0*(\d+)$/i, replace: (m) => `海警${m[1]}` },
+    { pattern: /^CCG\s*-?\s*0*(\d+)$/i, replace: (m) => `海警${m[1]}` },
+    { pattern: /^HAIJING\s*-?\s*0*(\d+)$/i, replace: (m) => `海警${m[1]}` },
+
+    // 中國海事局（MSA）巡防船：中國籍海巡船的中文本名就是「海巡」+ 編號，
+    // 跟臺灣海巡署是不同單位，但船名習慣用字相同
+    { pattern: /^CHINA\s*M(?:ARITIME)?\s*S(?:AFETY)?\s*A(?:DMINISTRATION)?\s*0*(\d+)$/i, replace: (m) => `海巡${m[1]}` },
+    { pattern: /^HAIXUN\s*-?\s*0*(\d+)$/i, replace: (m) => `海巡${m[1]}` },
+
+    // 中國海監（舊制，2013年已併入海警局，部分歷史資料/AIS 快取仍可能看到）：
+    // CHINAMARINESURVEILLANCE46 / HAIJIAN46 → 海監46
+    { pattern: /^CHINA\s*MARINE\s*SURVEILLANCE\s*0*(\d+)$/i, replace: (m) => `海監${m[1]}` },
+    { pattern: /^HAIJIAN\s*-?\s*0*(\d+)$/i, replace: (m) => `海監${m[1]}` },
+
+    // 中國漁政船（舊制，現多併入海警局）：CHINAFISHERYLAWENFORCEMENT88 / YUZHENG88 → 漁政88
+    { pattern: /^CHINA\s*FISHERY\s*LAW\s*ENFORCEMENT\s*0*(\d+)$/i, replace: (m) => `漁政${m[1]}` },
+    { pattern: /^YUZHENG\s*-?\s*0*(\d+)$/i, replace: (m) => `漁政${m[1]}` },
+
+    // 解放軍海軍軍艦：PLAN／PLA NAVY + 舷號 → 海軍<舷號>；
+    // CNS（Chinese/China Naval Ship）+ 艦名 的英文標示慣例，艦名本身不硬翻譯，只轉換字首
+    { pattern: /^(?:PLA\s*NAVY|PLAN)\s*-?\s*0*(\d+)$/i, replace: (m) => `海軍${m[1]}` },
+    { pattern: /^CNS\s+(.+)$/i, replace: (m) => `海軍艦艇 ${m[1]}` },
+
+    // 軍艦泛用預設名：AIS 轉發器未設定實際艦名時常見的通用佔位標示，各國軍艦都可能出現
+    { pattern: /^WARSHIP\s*0*(\d+)$/i, replace: (m) => `軍艦${m[1]}` },
+    { pattern: /^NAVY\s*VESSEL\s*0*(\d+)$/i, replace: (m) => `軍艦${m[1]}` },
+  ];
+
+  function toDisplayVesselName(rawName) {
+    const name = String(rawName ?? '').trim();
+    if (!name) return name;
+    for (const { pattern, replace } of VESSEL_NAME_DISPLAY_RULES) {
+      const match = name.match(pattern);
+      if (match) return replace(match);
+    }
+    return name;
+  }
+
   function decodeValue(value) {
     const raw = String(value ?? '').trim();
     if (!raw) return '';
@@ -192,16 +236,17 @@
     const typeLabel = TYPE_LABELS[vessel.type] || vessel.type || '未知';
     const regionLabel = REGION_LABELS[vessel.region] || '';
     const color = TYPE_COLORS[vessel.type] || DEFAULT_COLOR;
+    const displayName = toDisplayVesselName(vessel.name);
 
     let html = `
       <div class="popup-header">
         <div class="ais-popup-icon" style="background:${color};">${escapeHtml((vessel.type || '?').toUpperCase())}</div>
-        <h3 class="popup-title">${escapeHtml(vessel.name || '未知')}</h3>
+        <h3 class="popup-title">${escapeHtml(displayName || '未知')}</h3>
       </div>
     `;
 
     html += buildPopupField('MMSI', vessel.mmsi);
-    html += buildPopupField('船名', vessel.name || '未知');
+    html += buildPopupField('船名', displayName || '未知');
     html += buildPopupField('類型', typeLabel);
     html += buildPopupField('區域', regionLabel);
     html += buildPopupField('速度', `${(Number.isFinite(vessel.sog) ? vessel.sog : 0).toFixed(1)} 節`);

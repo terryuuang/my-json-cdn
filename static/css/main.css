@@ -4261,19 +4261,22 @@ select.input-field:hover {
    因為原本這兩顆清單跟對話框本體都還在用瀏覽器預設樣式，跟其餘玻璃感 UI 不搭） */
 .note-dialog-body::-webkit-scrollbar,
 .adsb-results::-webkit-scrollbar,
-.sat-pass-results::-webkit-scrollbar {
+.sat-pass-results::-webkit-scrollbar,
+.changelog-body::-webkit-scrollbar {
   width: 6px;
 }
 
 .note-dialog-body::-webkit-scrollbar-track,
 .adsb-results::-webkit-scrollbar-track,
-.sat-pass-results::-webkit-scrollbar-track {
+.sat-pass-results::-webkit-scrollbar-track,
+.changelog-body::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .note-dialog-body::-webkit-scrollbar-thumb,
 .adsb-results::-webkit-scrollbar-thumb,
-.sat-pass-results::-webkit-scrollbar-thumb {
+.sat-pass-results::-webkit-scrollbar-thumb,
+.changelog-body::-webkit-scrollbar-thumb {
   background: var(--color-scroll-thumb);
   border-radius: var(--radius-full);
   transition: background-color 0.2s ease;
@@ -4281,13 +4284,15 @@ select.input-field:hover {
 
 .note-dialog-body::-webkit-scrollbar-thumb:hover,
 .adsb-results::-webkit-scrollbar-thumb:hover,
-.sat-pass-results::-webkit-scrollbar-thumb:hover {
+.sat-pass-results::-webkit-scrollbar-thumb:hover,
+.changelog-body::-webkit-scrollbar-thumb:hover {
   background: var(--color-scroll-thumb-hover);
 }
 
 .note-dialog-body,
 .adsb-results,
-.sat-pass-results {
+.sat-pass-results,
+.changelog-body {
   scrollbar-width: thin;
   scrollbar-color: var(--color-scroll-thumb) transparent;
   -webkit-overflow-scrolling: touch;
