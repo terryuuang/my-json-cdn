@@ -315,7 +315,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
     }
     const groupItems = shapeSpec.shapes
       .map(shape => {
-        const exportData = window.shapeUtils.shapeToExportData(shape, shapeSpec.text);
+        const exportData = window.shapeUtils.shapeToExportData(shape, shapeSpec.text, shapeSpec);
         if (!exportData || !exportData.geometry) return null;
         return {
           name: exportData.name,
@@ -351,6 +351,8 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
     const typeLabel = shapeTypeLabels[type] || '圖形';
     const perimeterLabel = type === 'circle' ? '圓周' : '周長';
     const parsedText = window.shapeUtils.parseShapeDisplayText(rawText, typeLabel);
+    const activityType = cleanText(shapeSpec.activityType);
+    const aiJudgment = cleanText(shapeSpec.aiJudgment) || parsedText.aiAnalysis;
 
     let popupHtml = `<div class="shape-popup-header">`;
     popupHtml += `<div class="shape-popup-kicker">${typeLabel}</div>`;
@@ -382,9 +384,12 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
     if (shapeInfo.vertexCount) popupHtml += `<div class="popup-field"><strong>頂點數:</strong><span class="popup-field-value">${shapeInfo.vertexCount}</span></div>`;
     if (shapeInfo.nodeCount) popupHtml += `<div class="popup-field"><strong>節點數:</strong><span class="popup-field-value">${shapeInfo.nodeCount}</span></div>`;
 
-    // AI 判斷折疊區塊（置於形狀資訊下方）
-    if (parsedText.aiAnalysis) {
-      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷</summary><div class="shape-ai-content">${escapeHtml(parsedText.aiAnalysis)}</div></details>`;
+    // 新資料將任務類型與推論原因拆欄；舊資料仍可由 text 內的「AI判斷」解析。
+    if (activityType) {
+      popupHtml += `<div class="shape-ai-task-block"><div class="shape-ai-task-label">AI 任務初判</div><div class="shape-ai-task-value">${escapeHtml(activityType)}</div></div>`;
+    }
+    if (aiJudgment) {
+      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷原因</summary><div class="shape-ai-content">${escapeHtml(aiJudgment)}</div></details>`;
     }
 
     const exportDescription = [
@@ -406,7 +411,8 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
       shapeInfo.area ? `面積: ${shapeInfo.area}` : '',
       shapeInfo.vertexCount ? `頂點數: ${shapeInfo.vertexCount}` : '',
       shapeInfo.nodeCount ? `節點數: ${shapeInfo.nodeCount}` : '',
-      parsedText.aiAnalysis ? `AI 判斷: ${parsedText.aiAnalysis}` : ''
+      activityType ? `AI 任務初判: ${activityType}` : '',
+      aiJudgment ? `AI 判斷原因: ${aiJudgment}` : ''
     ].filter(Boolean).join('\n');
 
     const actionButtons = [
@@ -643,7 +649,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
       const overviewGeometry = {
         type: 'GeometryCollection',
         geometries: shapeSpec.shapes
-          .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text))
+          .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text, shapeSpec))
           .filter(Boolean)
           .map(d => d.geometry)
       };
@@ -756,7 +762,7 @@ function exportShapeAsKml(btn) {
     if (isMultiShapeExport) {
       const groupText = window.shapeUtils.parseShapeDisplayText(shapeSpec.text || title || 'APEINTEL Shapes', '圖形');
       const placemarks = shapeSpec.shapes
-        .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text || title))
+        .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text || title, shapeSpec))
         .filter(Boolean);
       exportName = groupText.title || exportName;
       kml = window.shapeUtils.buildShapesKml({

@@ -14,6 +14,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年07月30日',
+    description: '禁航區分享連結新增 activity_type 與 ai_judgment 參數，分別顯示「AI 任務初判」與可展開的「AI 判斷原因」，並相容舊版 text 內嵌 AI 判斷格式'
+  },
+  {
     date: '2026年07月22日',
     description: '修正 Service Worker 安裝時的快取策略：改為逐一快取核心資源並容忍個別失敗，避免單一檔案（例如尚未部署完成的新增模組）404 導致整批離線快取安裝失敗'
   },

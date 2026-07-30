@@ -276,7 +276,7 @@
 </kml>`;
   }
 
-  function shapeToExportData(shape, fallbackText = '') {
+  function shapeToExportData(shape, fallbackText = '', aiMetadata = {}) {
     if (!shape || !shape.type) return null;
 
     const shapeTypeLabels = {
@@ -290,6 +290,8 @@
 
     const typeLabel = shapeTypeLabels[shape.type] || '圖形';
     const parsedText = parseShapeDisplayText(shape.text || fallbackText || typeLabel, typeLabel);
+    const activityType = normalizeTextValue(aiMetadata.activityType);
+    const aiJudgment = normalizeTextValue(aiMetadata.aiJudgment) || parsedText.aiAnalysis;
     let geometry = null;
     let detailText = '';
 
@@ -321,7 +323,8 @@
       parsedText.subtitle,
       parsedText.description,
       detailText,
-      parsedText.aiAnalysis ? `AI 判斷: ${parsedText.aiAnalysis}` : ''
+      activityType ? `AI 任務初判: ${activityType}` : '',
+      aiJudgment ? `AI 判斷原因: ${aiJudgment}` : ''
     ].filter(Boolean).join('\n');
 
     return {
@@ -381,6 +384,8 @@ ${items.join('\n')}
     const shapes = [];
     const globalRadius = parseFloat(urlParams.get('radius'));
     const text = (urlParams.get('text') || '').toString().trim();
+    const activityType = (urlParams.get('activity_type') || '').toString().trim();
+    const aiJudgment = (urlParams.get('ai_judgment') || '').toString().trim();
 
     function normalizeText(value) {
       if (typeof value !== 'string') return null;
@@ -543,7 +548,16 @@ ${items.join('\n')}
 
     // 禁航區附近單位預設距離（線段緩衝）提高為 100km
     const lineBufferKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 100;
-    return { shape, unit, kmPerUnit, shapes, lineBufferKm, text };
+    return {
+      shape,
+      unit,
+      kmPerUnit,
+      shapes,
+      lineBufferKm,
+      text,
+      activityType,
+      aiJudgment
+    };
   }
 
   window.shapeUtils = {

@@ -488,7 +488,30 @@ input, textarea, [contenteditable="true"] {
     gap: 8px;
 }
 
-/* Shape popup AI 判斷折疊區塊 */
+/* Shape popup AI 任務初判與判斷原因 */
+.shape-ai-task-block {
+    margin: 10px 0;
+    padding: 10px 12px;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    background: var(--color-accent-fill);
+}
+
+.shape-ai-task-label {
+    margin-bottom: 4px;
+    color: var(--color-label-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.shape-ai-task-value {
+    color: var(--color-label);
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
 .shape-ai-block {
     margin: 10px 0;
     border: 1px solid var(--color-separator);

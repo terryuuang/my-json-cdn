@@ -23,6 +23,7 @@
 - Inline coordinates for shapes use `lng,lat` pairs separated by semicolons. `line=` and `poly=` accept these lists; `bbox=` expects `west,south,east,north`.
 - Circle/sector inputs read `lat`, `lng`, and `radius`; sectors also need `start`/`end` bearings (degrees, clockwise from north).
 - Multi-shape mode supports multiple values: repeat `circle=lng,lat,r`, `line=...`, `poly=...`, and `sector=lng,lat,r,start,end` to render several overlays at once (radius scaled by `unit`).
+- AI metadata: `activity_type=` shows the AI task classification and `ai_judgment=` shows the AI reasoning in a collapsible section. Legacy `AI判斷：...` text embedded in `text=` remains supported.
 
 ## Coding Style & Naming Conventions
 - JavaScript: ES6+, browser-only, 2-space indent, use `const`/`let`, avoid adding dependencies/frameworks. Keep functions small and side-effect scoped.
