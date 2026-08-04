@@ -1,5 +1,114 @@
 // 純工具函式：shape 解析與幾何計算（與 Leaflet 無相依）
 (function () {
+  // ==========================================================
+  // 圖形顏色（選用參數，未帶時行為與舊版完全相同）
+  // ==========================================================
+  // 預設紅色與歷史版本一致，任何未帶顏色參數的舊連結渲染結果不變。
+  const SHAPE_DEFAULT_COLOR = '#ef4444';
+
+  // popup 內顏色選擇器的預設色票。
+  // 以預設紅 #ef4444 的濃度為基準（感知亮度約 0.47），其餘色相取相同深度的一階，
+  // 讓整排色票在衛星影像上的份量一致，不會有幾顆特別跳、特別淡。
+  // 只保留 6 個色相夠分開的重點色（任兩顆相差 ≥38°），避免色票之間互相雷同；
+  // 其餘顏色仍可由自訂色盤或 color= 參數指定。
+  const SHAPE_COLOR_PRESETS = [
+    { value: '#ef4444', label: '警戒紅' },
+    { value: '#d97706', label: '警示黃' },
+    { value: '#16a34a', label: '行動綠' },
+    { value: '#0891b2', label: '海洋青' },
+    { value: '#2563eb', label: '戰術藍' },
+    { value: '#9333ea', label: '判讀紫' }
+  ];
+
+  // 允許外部 API 直接帶語意化色名（比 %23ef4444 好讀好寫）
+  // 主要色名與上方色票同深度；white/black 保留原本的極端值供需要高反差時使用
+  const SHAPE_COLOR_ALIASES = {
+    red: '#ef4444', orange: '#ea580c', amber: '#d97706', yellow: '#d97706',
+    green: '#16a34a', emerald: '#059669', teal: '#0d9488', cyan: '#0891b2',
+    blue: '#2563eb', indigo: '#4f46e5', violet: '#7c3aed', purple: '#9333ea',
+    pink: '#db2777', magenta: '#db2777', rose: '#e11d48',
+    white: '#f8fafc', black: '#111827', gray: '#64748b', grey: '#64748b'
+  };
+
+  // 多圖形模式下，每種子圖形對應的顏色參數名稱（與既有 *_text 參數同樣的索引語法）
+  const SHAPE_COLOR_PARAM_KEYS = ['circle_color', 'line_color', 'poly_color', 'sector_color'];
+
+  /**
+   * 將任意輸入正規化成 #rrggbb；無法解析時回傳 null（呼叫端一律退回預設色）。
+   * 支援：#rgb / #rrggbb / rgb / rrggbb / 語意色名，大小寫不拘。
+   */
+  function normalizeShapeColor(input) {
+    if (typeof input !== 'string') return null;
+    const raw = input.trim().toLowerCase();
+    if (!raw) return null;
+    if (SHAPE_COLOR_ALIASES[raw]) return SHAPE_COLOR_ALIASES[raw];
+    const hex = raw.startsWith('#') ? raw.slice(1) : raw;
+    if (/^[0-9a-f]{3}$/.test(hex)) return '#' + hex.split('').map(ch => ch + ch).join('');
+    if (/^[0-9a-f]{6}$/.test(hex)) return '#' + hex;
+    return null;
+  }
+
+  // 邊框相對於填色要加深的比例：讓「邊框深、內部淡」的視覺一致套用在每個顏色上
+  const SHAPE_STROKE_DARKEN = 0.24;
+
+  /**
+   * 把顏色往黑色方向調暗（ratio 0~1），用來由填色推導出對比更明顯的邊框色。
+   * 非常暗的顏色（例如接近黑）改為微幅提亮，避免邊框整個糊在一起看不出輪廓。
+   */
+  function shadeShapeColor(color, ratio = SHAPE_STROKE_DARKEN) {
+    const hex = (normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR).slice(1);
+    const rgb = [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16));
+    // 感知亮度（ITU-R BT.601），偏暗的顏色調暗後會失去輪廓，改成提亮
+    const luma = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+    const shifted = rgb.map(channel => (luma < 0.22
+      ? Math.round(channel + (255 - channel) * ratio)
+      : Math.round(channel * (1 - ratio))));
+    return '#' + shifted.map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+  }
+
+  /**
+   * 由單一顏色推導出 Leaflet path 樣式：邊框為加深色、填色為原色 + 低不透明度。
+   * @param {string} color        圖形顏色
+   * @param {object} options      { fillOpacity, weight }
+   */
+  function buildShapePathStyle(color, options = {}) {
+    const resolved = normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR;
+    return {
+      color: shadeShapeColor(resolved),
+      fillColor: resolved,
+      fillOpacity: Number.isFinite(options.fillOpacity) ? options.fillOpacity : 0.12,
+      weight: Number.isFinite(options.weight) ? options.weight : 2
+    };
+  }
+
+  // KML 用的 ABGR 色碼（aabbggrr），alphaHex 為兩碼十六進位透明度
+  function colorToKmlAbgr(color, alphaHex = 'ff') {
+    const hex = (normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR).slice(1);
+    return `${alphaHex}${hex.slice(4, 6)}${hex.slice(2, 4)}${hex.slice(0, 2)}`;
+  }
+
+  function kmlStyleIdFor(color) {
+    return `shapeStyle-${(normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR).slice(1)}`;
+  }
+
+  function buildKmlStyleBlock(color) {
+    const resolved = normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR;
+    // 與地圖上一致：邊線用加深色，填色用原色加透明度
+    return `    <Style id="${kmlStyleIdFor(resolved)}">
+      <LineStyle>
+        <color>${colorToKmlAbgr(shadeShapeColor(resolved), 'ff')}</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>${colorToKmlAbgr(resolved, '33')}</color>
+      </PolyStyle>
+      <IconStyle>
+        <color>${colorToKmlAbgr(resolved, 'ff')}</color>
+        <scale>1.1</scale>
+      </IconStyle>
+    </Style>`;
+  }
+
   function normalizeTextValue(value) {
     if (typeof value !== 'string') return '';
     return value.replace(/\s+/g, ' ').trim();
@@ -243,33 +352,24 @@
     const {
       name = 'APEINTEL Shape',
       description = '',
-      geometry = null
+      geometry = null,
+      color = SHAPE_DEFAULT_COLOR
     } = options;
 
     const geometryMarkup = geometryToKml(geometry);
     if (!geometryMarkup) return '';
 
+    const resolvedColor = normalizeShapeColor(color) || SHAPE_DEFAULT_COLOR;
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>${escapeXml(name)}</name>
-    <Style id="shapeStyle">
-      <LineStyle>
-        <color>ff4444ef</color>
-        <width>3</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>334444ef</color>
-      </PolyStyle>
-      <IconStyle>
-        <color>ff4444ef</color>
-        <scale>1.1</scale>
-      </IconStyle>
-    </Style>
+${buildKmlStyleBlock(resolvedColor)}
     <Placemark>
       <name>${escapeXml(name)}</name>
       <description>${escapeXml(description)}</description>
-      <styleUrl>#shapeStyle</styleUrl>
+      <styleUrl>#${kmlStyleIdFor(resolvedColor)}</styleUrl>
       ${geometryMarkup}
     </Placemark>
   </Document>
@@ -330,7 +430,8 @@
     return {
       name: parsedText.title,
       description: description || parsedText.mainText,
-      geometry
+      geometry,
+      color: normalizeShapeColor(shape.color) || SHAPE_DEFAULT_COLOR
     };
   }
 
@@ -340,14 +441,18 @@
       placemarks = []
     } = options;
 
+    // 每個 placemark 可帶自己的顏色，這裡依實際用到的顏色去重後產生 Style 區塊
+    const usedColors = [];
     const items = placemarks
       .map(item => {
         const geometryMarkup = geometryToKml(item.geometry);
         if (!geometryMarkup) return '';
+        const itemColor = normalizeShapeColor(item.color) || SHAPE_DEFAULT_COLOR;
+        if (!usedColors.includes(itemColor)) usedColors.push(itemColor);
         return `    <Placemark>
       <name>${escapeXml(item.name || name)}</name>
       <description>${escapeXml(item.description || '')}</description>
-      <styleUrl>#shapeStyle</styleUrl>
+      <styleUrl>#${kmlStyleIdFor(itemColor)}</styleUrl>
       ${geometryMarkup}
     </Placemark>`;
       })
@@ -355,23 +460,15 @@
 
     if (items.length === 0) return '';
 
+    const styles = (usedColors.length ? usedColors : [SHAPE_DEFAULT_COLOR])
+      .map(buildKmlStyleBlock)
+      .join('\n');
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>${escapeXml(name)}</name>
-    <Style id="shapeStyle">
-      <LineStyle>
-        <color>ff4444ef</color>
-        <width>3</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>334444ef</color>
-      </PolyStyle>
-      <IconStyle>
-        <color>ff4444ef</color>
-        <scale>1.1</scale>
-      </IconStyle>
-    </Style>
+${styles}
 ${items.join('\n')}
   </Document>
 </kml>`;
@@ -490,6 +587,18 @@ ${items.join('\n')}
       shapes.push(attachText({ type: 'sector', center: { lat, lng }, radiusKm: r * kmPerUnit, startDeg: start, endDeg: end }, textValue));
     };
 
+    // 標記這次 push 出來的圖形（若有成功建立）該讀哪個顏色參數，
+    // 供 popup 顏色選擇器把使用者調整的顏色寫回對應的 URL 參數。
+    const withColorParam = (colorParam, colorIndex, pushFn) => {
+      const before = shapes.length;
+      pushFn();
+      if (shapes.length > before) {
+        const created = shapes[shapes.length - 1];
+        created.colorParam = colorParam;
+        created.colorIndex = colorIndex;
+      }
+    };
+
     if (shape === 'multi') {
       const circleTexts = parseTextList('circle_text');
       const lineTexts = parseTextList('line_text');
@@ -500,51 +609,71 @@ ${items.join('\n')}
         const { value, text: inlineText } = extractInlineText(val || '');
         const [lng, lat, r] = (value || '').split(',').map(Number);
         const label = resolveText(inlineText, circleTexts, idx);
-        if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(r)) pushCircle(lat, lng, r, label);
+        if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(r)) {
+          withColorParam('circle_color', idx, () => pushCircle(lat, lng, r, label));
+        }
       });
       urlParams.getAll('line').forEach((val, idx) => {
         const { value, text: inlineText } = extractInlineText(val || '');
         const label = resolveText(inlineText, lineTexts, idx);
-        pushLine(parseLngLatList(value), label);
+        withColorParam('line_color', idx, () => pushLine(parseLngLatList(value), label));
       });
       urlParams.getAll('poly').forEach((val, idx) => {
         const { value, text: inlineText } = extractInlineText(val || '');
         const label = resolveText(inlineText, polyTexts, idx);
-        pushPoly(parseLngLatList(value), label);
+        withColorParam('poly_color', idx, () => pushPoly(parseLngLatList(value), label));
       });
       urlParams.getAll('sector').forEach((val, idx) => {
         const { value, text: inlineText } = extractInlineText(val || '');
         const [lng, lat, r, start, end] = (value || '').split(',').map(Number);
         const label = resolveText(inlineText, sectorTexts, idx);
-        if ([lat, lng, r, start, end].every(Number.isFinite)) pushSector(lat, lng, r, start, end, label);
+        if ([lat, lng, r, start, end].every(Number.isFinite)) {
+          withColorParam('sector_color', idx, () => pushSector(lat, lng, r, start, end, label));
+        }
       });
     } else if (shape) {
+      // 單一圖形模式只有一個圖形，顏色直接對應全域的 color 參數
       if (shape === 'point') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const rKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 50;
-        pushPoint(lat, lng, rKm, text);
+        withColorParam('color', 0, () => pushPoint(lat, lng, rKm, text));
       } else if (shape === 'line') {
-        pushLine(parseLngLatList(urlParams.get('line') || ''), text);
+        withColorParam('color', 0, () => pushLine(parseLngLatList(urlParams.get('line') || ''), text));
       } else if (shape === 'polygon') {
-        pushPoly(parseLngLatList(urlParams.get('poly') || ''), text);
+        withColorParam('color', 0, () => pushPoly(parseLngLatList(urlParams.get('poly') || ''), text));
       } else if (shape === 'bbox') {
         const [w, s, e, n] = (urlParams.get('bbox') || '').split(',').map(Number);
-        pushBbox(w, s, e, n, text);
+        withColorParam('color', 0, () => pushBbox(w, s, e, n, text));
       } else if (shape === 'circle') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const r = parseFloat(urlParams.get('radius'));
-        pushCircle(lat, lng, r, text);
+        withColorParam('color', 0, () => pushCircle(lat, lng, r, text));
       } else if (shape === 'sector') {
         const lat = parseFloat(urlParams.get('lat'));
         const lng = parseFloat(urlParams.get('lng'));
         const r = parseFloat(urlParams.get('radius'));
         const start = parseFloat(urlParams.get('start'));
         const end = parseFloat(urlParams.get('end'));
-        pushSector(lat, lng, r, start, end, text);
+        withColorParam('color', 0, () => pushSector(lat, lng, r, start, end, text));
       }
     }
+
+    // 解析顏色：優先序為「該圖形專屬顏色 > 全域 color > 預設紅」。
+    // 三者皆無或格式不合法時一律退回預設紅，確保沒帶參數的舊連結行為完全不變。
+    const globalColor = normalizeShapeColor(urlParams.get('color'));
+    const colorLists = {};
+    SHAPE_COLOR_PARAM_KEYS.forEach(key => { colorLists[key] = parseTextList(key); });
+
+    shapes.forEach((s, idx) => {
+      s.uid = `sh${idx}`;
+      if (!s.colorParam) { s.colorParam = 'color'; s.colorIndex = 0; }
+      const perShape = s.colorParam !== 'color'
+        ? normalizeShapeColor((colorLists[s.colorParam] || [])[s.colorIndex])
+        : null;
+      s.color = perShape || globalColor || SHAPE_DEFAULT_COLOR;
+    });
 
     // 禁航區附近單位預設距離（線段緩衝）提高為 100km
     const lineBufferKm = Number.isFinite(globalRadius) ? globalRadius * kmPerUnit : 100;
@@ -556,11 +685,19 @@ ${items.join('\n')}
       lineBufferKm,
       text,
       activityType,
-      aiJudgment
+      aiJudgment,
+      color: globalColor || null
     };
   }
 
   window.shapeUtils = {
+    SHAPE_DEFAULT_COLOR,
+    SHAPE_COLOR_PRESETS,
+    SHAPE_COLOR_PARAM_KEYS,
+    normalizeShapeColor,
+    shadeShapeColor,
+    buildShapePathStyle,
+    colorToKmlAbgr,
     unitToKm,
     parseLngLatList,
     pointInPolygon,

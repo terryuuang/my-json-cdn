@@ -261,15 +261,22 @@ function getLayerIcon(layerName) {
 return layerIcons[layerName] || layerIcons['武裝警察、海外軍事設施及其他分類'];
 }
 
-// 紅色小圓點標記（用於繪圖工具的 point 標記與 shape 模式中心點）
-function createRedDotIcon(extraOptions = {}) {
+// 小圓點標記（用於繪圖工具的 point 標記與 shape 模式中心點）
+// color 可由 shape 的顏色參數指定；未指定時維持原本的紅色
+function createShapeDotIcon(color = '#ef4444', extraOptions = {}) {
+  const safeColor = (window.shapeUtils && window.shapeUtils.normalizeShapeColor(color)) || '#ef4444';
   return L.divIcon({
     className: 'custom-red-marker',
-    html: '<div style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+    html: `<div style="background-color: ${safeColor}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>`,
     iconSize: [16, 16],
     iconAnchor: [8, 8],
     ...extraOptions
   });
+}
+
+// 紅色小圓點標記（保留既有呼叫端介面不變）
+function createRedDotIcon(extraOptions = {}) {
+  return createShapeDotIcon('#ef4444', extraOptions);
 }
 
 // 創建自定義標記圖標

@@ -323,16 +323,6 @@ input, textarea, [contenteditable="true"] {
     color: var(--color-label-secondary);
 }
 
-.shape-popup-description {
-    margin: 0 0 12px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    background: var(--color-warning-fill);
-    color: var(--color-warning-text);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
 .popup-field {
     display: grid;
     grid-template-columns: fit-content(72px) minmax(0, 1fr);
@@ -487,74 +477,6 @@ input, textarea, [contenteditable="true"] {
     flex-wrap: wrap;
     gap: 8px;
 }
-
-/* Shape popup AI 任務初判與判斷原因 */
-.shape-ai-task-block {
-    margin: 10px 0;
-    padding: 10px 12px;
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-sm);
-    background: var(--color-accent-fill);
-}
-
-.shape-ai-task-label {
-    margin-bottom: 4px;
-    color: var(--color-label-secondary);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-}
-
-.shape-ai-task-value {
-    color: var(--color-label);
-    font-size: 14px;
-    font-weight: 650;
-    line-height: 1.45;
-}
-
-.shape-ai-block {
-    margin: 10px 0;
-    border: 1px solid var(--color-separator);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-}
-
-.shape-ai-summary {
-    padding: 8px 12px;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--color-label);
-    cursor: pointer;
-    user-select: none;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.shape-ai-summary::before {
-    content: '▶';
-    font-size: 10px;
-    transition: transform 0.2s ease;
-}
-
-.shape-ai-block[open] .shape-ai-summary::before {
-    transform: rotate(90deg);
-}
-
-.shape-ai-summary::-webkit-details-marker {
-    display: none;
-}
-
-.shape-ai-content {
-    padding: 0 12px 10px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--color-label);
-    border-top: 1px solid var(--color-separator);
-    white-space: pre-line;
-}
-
 
 /* 裝備資訊樣式 */
 .equipment-info {
@@ -937,11 +859,13 @@ select.input-field:hover {
 
 /* --- Leaflet.draw / 測距 外觀微調（紅色主題）--- */
 /* 新繪圖形的預設紅色（JS 亦會設定；此為保險）
-   注意：adiz-layer / theater-layer 使用 className 覆蓋此規則 */
-.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path) {
+   注意：CSS 的 stroke 會蓋過 Leaflet 寫在 SVG 上的 stroke 屬性，因此任何需要
+   自訂顏色的圖層都必須用 className 從這條規則排除（adiz / theater /
+   submarine-cable / nfz-shape 皆是），否則 setStyle({color}) 不會生效 */
+.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path) {
   stroke: #ef4444;
 }
-.leaflet-overlay-pane svg path.leaflet-interactive + path:not(.adiz-path):not(.theater-path):not(.submarine-cable-path) {
+.leaflet-overlay-pane svg path.leaflet-interactive + path:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path) {
   stroke: #ef4444;
 }
 /* 編輯控制點顏色（若外掛使用此類名） */
@@ -5079,4 +5003,407 @@ select.input-field:hover {
     background: rgba(251, 191, 36, 0.35);
     color: var(--color-label);
   }
+}
+
+
+/* ==========================================================
+   Shape popup（禁航／管制區）— iOS 群組式清單版面
+   ----------------------------------------------------------
+   設計原則：
+   1. 資訊分組收在圓角卡片內，以髮絲線分隔，取代「每個欄位一個框」的碎裂感。
+   2. 標籤靠左（次要色）、數值靠右（主色 + 等寬數字），掃視時視線只需走兩條垂直線。
+   3. 顏色只用在必要處（動作按鈕的強調色、使用者選定的圖形色），其餘一律中性灰階。
+   4. 可展開的內容一律用 disclosure 列，收合時右側先給出結論值。
+   ========================================================== */
+
+/* ---- popup 外框：寬度由 JS 依視窗計算，這裡負責高度與捲動 ---- */
+.shape-popup .leaflet-popup-content {
+    /* 右側留出捲軸寬度 + 間距，文字不會黏在捲軸上；scrollbar-gutter 讓有無捲軸時寬度一致 */
+    margin: 16px 8px 16px 18px;
+    padding-right: 10px;
+    scrollbar-gutter: stable;
+    max-height: 520px;
+    max-height: min(62vh, 520px);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Apple 風格細捲軸：透明軌道 + 圓角滑塊（不可使用 scrollbar-width/-color，
+   Chrome 一旦看到標準屬性就會停用 ::-webkit-scrollbar 自訂樣式而退回原生外觀） */
+.shape-popup .leaflet-popup-content::-webkit-scrollbar,
+.custom-popup .leaflet-popup-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.shape-popup .leaflet-popup-content::-webkit-scrollbar-track,
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.shape-popup .leaflet-popup-content::-webkit-scrollbar-thumb,
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-thumb {
+    background: var(--color-scroll-thumb);
+    border-radius: var(--radius-full);
+}
+
+.shape-popup .leaflet-popup-content::-webkit-scrollbar-thumb:hover,
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-scroll-thumb-hover);
+}
+
+.shape-popup .leaflet-popup-content::-webkit-scrollbar-button,
+.custom-popup .leaflet-popup-content::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}
+
+.custom-popup .leaflet-popup-content {
+    padding-right: 10px;
+    scrollbar-gutter: stable;
+}
+
+/* ---- 標題區：類型 → 標題 → 副標，三層字級遞減，不用分隔線 ---- */
+.shape-popup .shape-popup-header {
+    margin: 0 0 14px;
+    padding: 0;
+    border-bottom: 0;
+}
+
+.shape-popup .shape-popup-kicker {
+    margin: 0 0 3px;
+    color: var(--color-label-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: none;
+}
+
+.shape-popup .popup-title {
+    margin: 0;
+    font-size: clamp(16px, 4vw, 18px);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--color-label);
+    overflow-wrap: anywhere;
+}
+
+.shape-popup .shape-popup-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--color-label-secondary);
+    overflow-wrap: anywhere;
+}
+
+/* ---- 區塊與區塊標題 ---- */
+.shape-section {
+    margin: 0 0 10px;
+}
+
+/* ---- 群組式清單卡片 ---- */
+.shape-list {
+    border-radius: var(--radius-md);
+    background: var(--color-fill-tertiary);
+    overflow: hidden;
+}
+
+.shape-row,
+.shape-disclosure-summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 32px;
+    padding: 6px 12px;
+}
+
+/* 髮絲線由標籤起始處內縮，是 iOS 清單的辨識特徵 */
+.shape-list > * + *::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12px;
+    right: 0;
+    height: 1px;
+    background: var(--color-separator);
+}
+
+.shape-row-label {
+    flex: 0 1 auto;
+    overflow-wrap: anywhere;
+    color: var(--color-label-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.shape-row-value {
+    min-width: 0;
+    color: var(--color-label);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+/* ---- 可展開列（AI 研判／顏色）---- */
+.shape-disclosure {
+    position: relative;
+}
+
+.shape-disclosure-summary {
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.shape-disclosure-summary::-webkit-details-marker {
+    display: none;
+}
+
+/* iOS 樣式的 chevron：收合時指右，展開時指下 */
+.shape-disclosure-summary::after {
+    content: '';
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    margin-left: -4px;
+    border-right: 1.8px solid var(--color-scroll-thumb);
+    border-bottom: 1.8px solid var(--color-scroll-thumb);
+    transform: rotate(-45deg);
+    transition: transform 0.2s var(--ease-standard);
+}
+
+.shape-disclosure[open] > .shape-disclosure-summary::after {
+    transform: rotate(45deg);
+}
+
+.shape-disclosure-summary:hover {
+    background: var(--color-fill-secondary);
+}
+
+.shape-disclosure-body {
+    padding: 2px 12px 10px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--color-label);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+/* ---- 公告內容：長文用同樣的卡片底，維持群組節奏 ---- */
+.shape-note {
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--color-fill-tertiary);
+    color: var(--color-label);
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+    /* 約 5 行後自行捲動，超長公告不會把度量與按鈕推到看不見的地方 */
+    max-height: 8.6em;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* ---- 動作按鈕：iOS 風格填色按鈕，強調色只用在文字 ---- */
+.shape-popup .popup-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: 8px;
+    margin-top: 6px;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.shape-popup .popup-actions .link-btn {
+    margin: 0;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-fill-tertiary);
+    box-shadow: none;
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    white-space: normal;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.shape-popup .popup-actions .link-btn:hover {
+    background: var(--color-fill-secondary);
+    transform: none;
+    box-shadow: none;
+    border: 0;
+}
+
+.shape-popup .popup-actions .link-btn:active {
+    opacity: 0.6;
+}
+
+/* ---- 顏色選擇器（作為清單中的一列展開）---- */
+.shape-color-current {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.shape-color-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--swatch-color, #ef4444);
+    box-shadow: 0 0 0 1px var(--color-separator);
+}
+
+.shape-color-hex {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-label);
+}
+
+.shape-color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.shape-color-swatch,
+.shape-color-custom {
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--color-separator);
+    cursor: pointer;
+    transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease;
+}
+
+.shape-color-swatch {
+    background: var(--swatch-color, #ef4444);
+}
+
+.shape-color-swatch:hover,
+.shape-color-custom:hover {
+    transform: scale(1.1);
+}
+
+.shape-color-swatch:active,
+.shape-color-custom:active {
+    transform: scale(0.94);
+}
+
+/* 選中：外圈留白 + 強調色細環，比整顆放大更安靜 */
+.shape-color-swatch.is-active,
+.shape-color-custom.is-active {
+    box-shadow: 0 0 0 2px var(--color-fill-tertiary), 0 0 0 4px var(--color-accent);
+}
+
+.shape-color-swatch:focus-visible,
+.shape-color-custom:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+.shape-color-custom {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(#ef4444, #d97706, #16a34a, #0891b2, #2563eb, #9333ea, #ef4444);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.shape-color-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.shape-color-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.shape-color-action {
+    flex: 1 1 96px;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-fill-secondary);
+    color: var(--color-accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.shape-color-action:hover {
+    background: var(--color-fill-primary);
+}
+
+.shape-color-action:active {
+    opacity: 0.6;
+}
+
+/* ---- 手機／小螢幕 ---- */
+@media (max-width: 768px) {
+    .shape-popup .leaflet-popup-content {
+        margin: 16px 6px 16px 16px !important;
+        max-height: calc(100vh - 200px) !important;
+        max-height: min(58dvh, calc(100dvh - 200px)) !important;
+    }
+
+    .shape-color-swatch,
+    .shape-color-custom {
+        width: 32px;
+        height: 32px;
+    }
+
+    .shape-row,
+    .shape-disclosure-summary {
+        min-height: 38px;
+    }
+}
+
+@media (max-width: 380px) {
+    .shape-popup .popup-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shape-color-swatch,
+    .shape-color-custom,
+    .shape-color-action,
+    .shape-disclosure-summary::after {
+        transition: none;
+    }
 }

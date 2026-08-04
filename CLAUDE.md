@@ -78,10 +78,20 @@ jq . joseph_w.geojson
 - Fallback database for common equipment types
 
 **`static/js/shape_utils.js`** (Geometry Utilities)
-- Pure functions for coordinate parsing and geodesic calculations
+- Pure functions for coordinate parsing and geodesic calculations (no Leaflet dependency)
 - Supports `point`, `circle`, `line`, `polygon`, `bbox`, `sector`, `multi` shapes
 - Unit conversion: nautical miles (`nm`), kilometers (`km`), meters (`m`)
 - Distance calculations: point-to-line, point-in-polygon, bearing/sector checks
+- Colour helpers: `normalizeShapeColor()` (validates hex/named input, returns `null` when unparseable), `shadeShapeColor()` (derives the darker stroke), `buildShapePathStyle()` (stroke + fill + opacity for a Leaflet path)
+- KML building: `buildShapeKml()` / `buildShapesKml()` emit one `<Style>` per distinct colour
+- `parseShapeParams()` assigns each parsed shape a stable `uid`, plus `colorParam`/`colorIndex` so the picker knows which URL param to write back
+
+**`static/js/shape_color.js`** (Shape Colour Customisation)
+- Owns `window.ShapeColor`; loaded after `shape_utils.js` in `index.html`
+- Renders the collapsible colour picker inside shape popups (9 presets + native colour input)
+- **URL is the single source of truth**: picks are written back via `history.replaceState`, so "複製網址", KML export, and any re-render (layer filter, search) all inherit the current colours without extra state
+- `beginRender()` clears the layer registry on each `renderShapeMode()`; `register()` records a per-shape `apply(color)` callback and remembers the link's original colour for "重設顏色"
+- Entirely optional — if this script fails to load, `geo_shapes.js` skips the picker and everything else works unchanged
 
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
@@ -121,10 +131,19 @@ The application uses URL parameters for deep linking and state persistence:
   - Line: `?shape=line&line=120,25;121,26&radius=10`
   - Multi: `?shape=multi&circle=120,25,30&sector=121,26,50,0,90&unit=km`
 
+**Shape Colours** (all optional — omitting them renders exactly as before):
+- `color=`: applies to every shape in the URL
+- `circle_color=`, `line_color=`, `poly_color=`, `sector_color=`: per-shape, using the same indexed syntax as the existing `*_text` params (repeat the param, pass a JSON array, or use `poly_color[1]=`)
+- Precedence: per-shape colour > `color` > default `#ef4444`
+- Accepts `#rrggbb`, `#rgb`, bare hex, or names (`red`, `orange`, `teal`, …). Invalid values fall back to the default rather than throwing
+- Stroke is auto-darkened from the fill so every colour keeps the "deep border, light fill" look; very dark colours are lightened instead so the outline stays visible
+- Users can change colours live from the popup picker; the change is written back into the URL
+
 **Shape Mode Behavior**:
 - Defaults to hiding unit markers (`unitsVisible = false`)
 - Filters features within specified distance from shape boundaries
 - Updates control panel to reflect current state
+- Multi-shape URLs render each sub-shape with its own popup; there is no aggregate overview marker
 
 ### State Management
 
@@ -181,8 +200,9 @@ Equipment parsing is **asynchronous and lazy**:
 - `fetchGeoJSON()` helper extracted from init for clearer separation
 - Init timing logged to console
 
-### Service Worker (v0.2.0)
-- CORE_ASSETS: `main.js`, `notes.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc.
+### Service Worker
+- `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, `pwa.js` `currentAppVersion`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
+- CORE_ASSETS: `notes.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Coding Conventions
@@ -217,6 +237,20 @@ All GeoJSON files contain Point features with properties:
 Primary data source: `joseph_w.geojson` (updated manually)
 Snapshots: `joseph_w-YYYYMMDD.geojson` (version history)
 External data: `submarinecablemap-cdn-json-20250618.json` (submarine cables)
+
+## CSS Gotchas
+
+**`stroke` is force-set on interactive SVG paths.** `static/css/main.css` carries a Leaflet.draw red-theme rule:
+
+```css
+.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path) {
+  stroke: #ef4444;
+}
+```
+
+CSS `stroke` **overrides the `stroke` presentation attribute Leaflet writes on the SVG**, so `setStyle({ color })` silently has no visible effect on any path not excluded here. Symptom: fill changes colour but the border stays red. Any layer needing a custom stroke must pass a `className` and be added to the `:not()` list (`adiz` / `theater` / `submarine-cable` / `nfz-shape` already are).
+
+**Do not add `scrollbar-width` / `scrollbar-color` to elements styled with `::-webkit-scrollbar`.** Chrome disables the `::-webkit-scrollbar` pseudo-elements entirely once a standard scrollbar property is present, reverting the element to the native scrollbar. Pick one system per element; the popups use the `::-webkit-scrollbar` route.
 
 ## Known Constraints
 

@@ -118,16 +118,45 @@ function fmtLatLng(lat, lng) {
   return `${Math.abs(lat).toFixed(5)}°${latDir}, ${Math.abs(lng).toFixed(5)}°${lngDir}`;
 }
 
-// 複合圖形（multi）總覽標記圖示，與一般紅點標記做出區隔
-function createShapeOverviewIcon(extraOptions = {}) {
-  return L.divIcon({
-    className: 'custom-shape-overview-marker',
-    html: '<div style="background-color:#f59e0b;width:18px;height:18px;border-radius:5px;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;line-height:1;">&Sigma;</div>',
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
-    popupAnchor: [0, -11],
-    ...extraOptions
-  });
+// 取得目前 shape 圖形應使用的顏色（未指定時為預設紅）
+function resolveShapeColor(shape) {
+  const normalize = window.shapeUtils && window.shapeUtils.normalizeShapeColor;
+  const fallback = (window.shapeUtils && window.shapeUtils.SHAPE_DEFAULT_COLOR) || '#ef4444';
+  if (!normalize) return fallback;
+  return normalize(shape && shape.color) || fallback;
+}
+
+// shape 模式圖形的 className。
+// main.css 有一條 Leaflet.draw 紅色主題規則會用 CSS 強制把 path 的 stroke 設成紅色，
+// 而 CSS 的 stroke 優先於 Leaflet 寫在 SVG 上的 stroke 屬性，因此必須掛上這個
+// className 讓該規則以 :not() 排除，setStyle({ color }) 才會真的改到邊框顏色。
+const NFZ_SHAPE_PATH_CLASS = 'nfz-shape-path';
+
+// 由圖形顏色推導出「邊框深、內部淡」的 Leaflet path 樣式
+function shapePathStyle(color, fillOpacity = 0.12) {
+  return { ...window.shapeUtils.buildShapePathStyle(color, { fillOpacity }), className: NFZ_SHAPE_PATH_CLASS };
+}
+
+// 只描邊不填色的線段樣式
+function shapeStrokeStyle(color, weight = 3) {
+  return { color: window.shapeUtils.shadeShapeColor(color), weight, className: NFZ_SHAPE_PATH_CLASS };
+}
+
+// shape popup 的顯示參數：依視窗寬度自適應，小螢幕不會被硬撐出水平捲動
+function buildShapePopupOptions() {
+  const viewportWidth = window.innerWidth || 360;
+  const mobile = typeof isMobileDevice === 'function' ? isMobileDevice() : viewportWidth <= 768;
+  const maxWidth = Math.max(240, Math.min(mobile ? 400 : 430, viewportWidth - 32));
+  // 高度上限交給 CSS（.shape-popup .leaflet-popup-content）以便用 vh/dvh 自適應
+  return {
+    className: 'shape-popup',
+    maxWidth,
+    minWidth: Math.min(268, maxWidth),
+    autoPan: true,
+    autoPanPadding: [16, 16],
+    keepInView: true,
+    closeOnEscapeKey: true
+  };
 }
 
 // 建立 hover tooltip 內容（每種形狀）
@@ -206,7 +235,7 @@ function makeEdgeLine(latA, lngA, latB, lngB) {
     `<tr><td style="font-weight:600">邊長</td></tr>` +
     `<tr><td style="white-space:nowrap">${fmtDist(distKm)}</td></tr></table>`;
   return L.polyline([[latA, lngA], [latB, lngB]], {
-    color: '#ef4444', opacity: 0.001, weight: 14, interactive: true
+    color: '#ef4444', opacity: 0.001, weight: 14, interactive: true, className: NFZ_SHAPE_PATH_CLASS
   }).bindTooltip(ttContent, { sticky: true, direction: 'top', className: 'shape-hover-tooltip' });
 }
 
@@ -247,7 +276,7 @@ function addSectorEdgeLines(latlngs, radiusKm, angleDeg, layerGroup) {
   const arcContent = `<table style="font-size:12px;line-height:1.7;border-collapse:collapse">` +
     `<tr><td style="font-weight:600">弧長</td></tr>` +
     `<tr><td style="white-space:nowrap">${fmtDist(arcLen)}</td></tr></table>`;
-  L.polyline(arcPts, { color: '#ef4444', opacity: 0.001, weight: 14, interactive: true })
+  L.polyline(arcPts, { color: '#ef4444', opacity: 0.001, weight: 14, interactive: true, className: NFZ_SHAPE_PATH_CLASS })
     .bindTooltip(arcContent, { sticky: true, direction: 'top', className: 'shape-hover-tooltip' })
     .addTo(layerGroup);
 }
@@ -298,6 +327,8 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
   const buildShapeKmlButton = (shapeData) => {
     const dataAttrs = `
       data-shape-type="${shapeData.shapeType}"
+      data-shape-uid="${shapeData.uid || ''}"
+      data-shape-color="${shapeData.color || ''}"
       data-title="${encodeDataAttr(shapeData.title || '')}"
       data-description="${encodeDataAttr(shapeData.description || '')}"
       data-geometry="${encodeDataAttr(shapeData.geometry || null)}"
@@ -345,7 +376,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
   // - Circle: { type: 'Circle', center: [lng, lat], radiusKm: number }
   // - Sector: { type: 'Sector', center: [lng, lat], radiusKm: number, startDeg: number, endDeg: number }
   // - Rectangle: { type: 'Rectangle', bounds: { west, south, east, north } }
-  const buildShapePopup = (type, text, center, shapeInfo = {}, geometry = null) => {
+  const buildShapePopup = (type, text, center, shapeInfo = {}, geometry = null, colorContext = {}) => {
     const rawText = text || '區域標記';
     const shapeTypeLabels = { 'point': '標記點', 'circle': '圓形區域', 'line': '線段', 'polygon': '多邊形', 'bbox': '矩形區域', 'sector': '扇形區域', 'multi': '複合圖形' };
     const typeLabel = shapeTypeLabels[type] || '圖形';
@@ -354,63 +385,75 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
     const activityType = cleanText(shapeSpec.activityType);
     const aiJudgment = cleanText(shapeSpec.aiJudgment) || parsedText.aiAnalysis;
 
-    let popupHtml = `<div class="shape-popup-header">`;
-    popupHtml += `<div class="shape-popup-kicker">${typeLabel}</div>`;
-    popupHtml += `<h3 class="popup-title">${escapeHtml(parsedText.title)}</h3>`;
-    if (parsedText.subtitle) {
-      popupHtml += `<div class="shape-popup-subtitle">${escapeHtml(parsedText.subtitle)}</div>`;
-    }
-    popupHtml += `</div>`;
-    if (parsedText.description) {
-      popupHtml += `<div class="shape-popup-description">${escapeHtml(parsedText.description)}</div>`;
-    }
-    popupHtml += `<div class="popup-field"><strong>類型:</strong><span class="popup-field-value">${typeLabel}</span></div>`;
-    
-    // 添加形狀資訊（依形狀類型顯示對應的度量欄位）
-    if (shapeInfo.coordinates) popupHtml += `<div class="popup-field"><strong>座標:</strong><span class="popup-field-value">${shapeInfo.coordinates}</span></div>`;
-    if (shapeInfo.radius) popupHtml += `<div class="popup-field"><strong>半徑:</strong><span class="popup-field-value">${shapeInfo.radius}</span></div>`;
-    if (shapeInfo.diameter) popupHtml += `<div class="popup-field"><strong>直徑:</strong><span class="popup-field-value">${shapeInfo.diameter}</span></div>`;
-    if (shapeInfo.angle) popupHtml += `<div class="popup-field"><strong>張角:</strong><span class="popup-field-value">${shapeInfo.angle}</span></div>`;
-    if (shapeInfo.arcLength) popupHtml += `<div class="popup-field"><strong>弧長:</strong><span class="popup-field-value">${shapeInfo.arcLength}</span></div>`;
-    if (shapeInfo.boundaryLength) popupHtml += `<div class="popup-field"><strong>邊界總長:</strong><span class="popup-field-value">${shapeInfo.boundaryLength}</span></div>`;
-    if (shapeInfo.length) popupHtml += `<div class="popup-field"><strong>路徑總長:</strong><span class="popup-field-value">${shapeInfo.length}</span></div>`;
-    if (shapeInfo.startEndSpan) popupHtml += `<div class="popup-field"><strong>首尾跨度:</strong><span class="popup-field-value">${shapeInfo.startEndSpan}</span></div>`;
-    if (shapeInfo.composition) popupHtml += `<div class="popup-field"><strong>圖形組成:</strong><span class="popup-field-value">${shapeInfo.composition}</span></div>`;
-    if (shapeInfo.boundingBox) popupHtml += `<div class="popup-field"><strong>外接長寬:</strong><span class="popup-field-value">${shapeInfo.boundingBox}</span></div>`;
-    if (shapeInfo.diagonalSpan) popupHtml += `<div class="popup-field"><strong>對角跨度:</strong><span class="popup-field-value">${shapeInfo.diagonalSpan}</span></div>`;
-    if (shapeInfo.totalArea) popupHtml += `<div class="popup-field"><strong>子圖形估算總面積:</strong><span class="popup-field-value">${shapeInfo.totalArea}</span></div>`;
-    if (shapeInfo.perimeter) popupHtml += `<div class="popup-field"><strong>${perimeterLabel}:</strong><span class="popup-field-value">${shapeInfo.perimeter}</span></div>`;
-    if (shapeInfo.area) popupHtml += `<div class="popup-field"><strong>面積:</strong><span class="popup-field-value">${shapeInfo.area}</span></div>`;
-    if (shapeInfo.vertexCount) popupHtml += `<div class="popup-field"><strong>頂點數:</strong><span class="popup-field-value">${shapeInfo.vertexCount}</span></div>`;
-    if (shapeInfo.nodeCount) popupHtml += `<div class="popup-field"><strong>節點數:</strong><span class="popup-field-value">${shapeInfo.nodeCount}</span></div>`;
+    // 度量欄位統一收斂成 [標籤, 值] 清單，畫面與 KML 說明共用同一份資料來源
+    const metrics = [
+      ['座標', shapeInfo.coordinates],
+      ['半徑', shapeInfo.radius],
+      ['直徑', shapeInfo.diameter],
+      ['張角', shapeInfo.angle],
+      ['弧長', shapeInfo.arcLength],
+      ['邊界總長', shapeInfo.boundaryLength],
+      ['路徑總長', shapeInfo.length],
+      ['首尾跨度', shapeInfo.startEndSpan],
+      ['外接長寬', shapeInfo.boundingBox],
+      ['對角跨度', shapeInfo.diagonalSpan],
+      [perimeterLabel, shapeInfo.perimeter],
+      ['面積', shapeInfo.area],
+      ['頂點數', shapeInfo.vertexCount],
+      ['節點數', shapeInfo.nodeCount]
+    ].filter(([, value]) => value);
 
-    // 新資料將任務類型與推論原因拆欄；舊資料仍可由 text 內的「AI判斷」解析。
-    if (activityType) {
-      popupHtml += `<div class="shape-ai-task-block"><div class="shape-ai-task-label">AI 任務初判</div><div class="shape-ai-task-value">${escapeHtml(activityType)}</div></div>`;
+    // 版面採 iOS 設定頁的「群組式清單」：同一群資訊收在一張圓角卡裡、以髮絲線分隔，
+    // 標籤靠左、數值靠右，不再每個欄位各自一個框，讓資訊密度高但視覺安靜。
+    const listRow = (label, value) => `<div class="shape-row">`
+      + `<span class="shape-row-label">${escapeHtml(label)}</span>`
+      + `<span class="shape-row-value">${escapeHtml(value)}</span></div>`;
+
+    const listDisclosure = (label, value, body) => `<details class="shape-disclosure">`
+      + `<summary class="shape-disclosure-summary">`
+      + `<span class="shape-row-label">${escapeHtml(label)}</span>`
+      + `<span class="shape-row-value">${escapeHtml(value)}</span></summary>`
+      + `<div class="shape-disclosure-body">${escapeHtml(body)}</div></details>`;
+
+    // 不再輸出區塊標題：圓角群組卡本身已足以分區，省下的高度讓 popup 大多數情況免捲動
+    const section = (body) => `<section class="shape-section"><div class="shape-list">${body}</div></section>`;
+
+    let popupHtml = `<header class="shape-popup-header">`
+      + `<p class="shape-popup-kicker">${escapeHtml(typeLabel)}</p>`
+      + `<h3 class="popup-title">${escapeHtml(parsedText.title)}</h3>`
+      + (parsedText.subtitle ? `<p class="shape-popup-subtitle">${escapeHtml(parsedText.subtitle)}</p>` : '')
+      + `</header>`;
+
+    if (parsedText.description) {
+      popupHtml += `<section class="shape-section">`
+        + `<div class="shape-note">${escapeHtml(parsedText.description)}</div></section>`;
     }
-    if (aiJudgment) {
-      popupHtml += `<details class="shape-ai-block"><summary class="shape-ai-summary">AI 判斷原因</summary><div class="shape-ai-content">${escapeHtml(aiJudgment)}</div></details>`;
+
+    if (metrics.length) {
+      popupHtml += section(metrics.map(([label, value]) => listRow(label, value)).join(''));
     }
+
+    // AI 任務初判與判斷原因合併成單一可摺疊列（預設收合）：
+    // 收合時右側直接顯示任務類型，展開才看完整推論，資訊層級一次到位。
+    const detailRows = [];
+    if (activityType && aiJudgment) {
+      detailRows.push(listDisclosure('AI 研判', activityType, aiJudgment));
+    } else if (activityType) {
+      detailRows.push(listRow('AI 研判', activityType));
+    } else if (aiJudgment) {
+      detailRows.push(listDisclosure('AI 研判', '', aiJudgment));
+    }
+
+    // 選色器：ShapeColor 模組未載入時整段略過，popup 其餘功能不受影響
+    if (colorContext.uid && window.ShapeColor && typeof window.ShapeColor.buildPickerHtml === 'function') {
+      detailRows.push(window.ShapeColor.buildPickerHtml(colorContext.uid, colorContext.color));
+    }
+    if (detailRows.length) popupHtml += section(detailRows.join(''));
 
     const exportDescription = [
       parsedText.subtitle,
       parsedText.description,
-      shapeInfo.coordinates ? `座標: ${shapeInfo.coordinates}` : '',
-      shapeInfo.radius ? `半徑: ${shapeInfo.radius}` : '',
-      shapeInfo.diameter ? `直徑: ${shapeInfo.diameter}` : '',
-      shapeInfo.angle ? `張角: ${shapeInfo.angle}` : '',
-      shapeInfo.arcLength ? `弧長: ${shapeInfo.arcLength}` : '',
-      shapeInfo.boundaryLength ? `邊界總長: ${shapeInfo.boundaryLength}` : '',
-      shapeInfo.length ? `路徑總長: ${shapeInfo.length}` : '',
-      shapeInfo.startEndSpan ? `首尾跨度: ${shapeInfo.startEndSpan}` : '',
-      shapeInfo.composition ? `圖形組成: ${shapeInfo.composition}` : '',
-      shapeInfo.boundingBox ? `外接長寬: ${shapeInfo.boundingBox}` : '',
-      shapeInfo.diagonalSpan ? `對角跨度: ${shapeInfo.diagonalSpan}` : '',
-      shapeInfo.totalArea ? `子圖形估算總面積: ${shapeInfo.totalArea}` : '',
-      shapeInfo.perimeter ? `${perimeterLabel}: ${shapeInfo.perimeter}` : '',
-      shapeInfo.area ? `面積: ${shapeInfo.area}` : '',
-      shapeInfo.vertexCount ? `頂點數: ${shapeInfo.vertexCount}` : '',
-      shapeInfo.nodeCount ? `節點數: ${shapeInfo.nodeCount}` : '',
+      ...metrics.map(([label, value]) => `${label}: ${value}`),
       activityType ? `AI 任務初判: ${activityType}` : '',
       aiJudgment ? `AI 判斷原因: ${aiJudgment}` : ''
     ].filter(Boolean).join('\n');
@@ -419,6 +462,8 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
       buildCopyUrlButton(),
       buildShapeKmlButton({
         shapeType: type,
+        uid: colorContext.uid || '',
+        color: colorContext.color || '',
         title: parsedText.title,
         description: exportDescription || parsedText.mainText,
         geometry
@@ -447,30 +492,45 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
     return popupHtml;
   };
 
-  // 複合圖形（multi）總覽用：累計各子圖形面積與類型計數
-  let totalAreaKm2 = 0;
-  const shapeTypeCounts = {};
-  const tallyShape = (label, areaKm2 = 0) => {
-    shapeTypeCounts[label] = (shapeTypeCounts[label] || 0) + 1;
-    totalAreaKm2 += areaKm2;
+  // 交給選色模組管理本次渲染出來的圖層（模組未載入時全部退化成 no-op）
+  const colorApi = window.ShapeColor || null;
+  if (colorApi) {
+    try {
+      colorApi.beginRender(shapeSpec);
+      colorApi.ensureAttached(map);
+    } catch (_) {}
+  }
+  const registerShapeColor = (shape, color, applyFn) => {
+    if (!colorApi || !shape || !shape.uid) return;
+    try {
+      colorApi.register(shape.uid, {
+        color,
+        apply: applyFn,
+        colorParam: shape.colorParam,
+        colorIndex: shape.colorIndex
+      });
+    } catch (_) {}
   };
+  const colorContextFor = (shape, color) => ({ uid: shape && shape.uid, color });
+  const popupOptions = buildShapePopupOptions();
 
   shapeSpec.shapes.forEach(s => {
     try {
       s._bufferPolyline = null;
+      const shapeColor = resolveShapeColor(s);
+      const colorContext = colorContextFor(s, shapeColor);
       if (s.type === 'point') {
-        const redIcon = createRedDotIcon();
         const markerText = s.text || shapeSpec.text || '禁航點';
         // 建立 Point 幾何資料
         const pointGeometry = { type: 'Point', coordinates: [s.center.lng, s.center.lat] };
-        const popupContent = buildShapePopup('point', markerText, s.center, { coordinates: fmtLatLng(s.center.lat, s.center.lng) }, pointGeometry);
-        const m = L.marker([s.center.lat, s.center.lng], { icon: redIcon }).bindPopup(popupContent);
+        const popupContent = buildShapePopup('point', markerText, s.center, { coordinates: fmtLatLng(s.center.lat, s.center.lng) }, pointGeometry, colorContext);
+        const m = L.marker([s.center.lat, s.center.lng], { icon: createShapeDotIcon(shapeColor) }).bindPopup(popupContent, popupOptions);
         nfzLayerGroup.addLayer(m);
         extendBounds([[s.center.lat, s.center.lng]]);
-        tallyShape('標記點');
+        let radiusCircle = null;
         if (Number.isFinite(s.radiusKm) && s.radiusKm > 0) {
           const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
-          const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+          const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, ...shapePathStyle(shapeColor) });
           const circleText = s.text || shapeSpec.text || '圓形區域';
           // 建立 Circle 幾何資料
           const circleGeometry = { type: 'Circle', center: [s.center.lng, s.center.lat], radiusKm: s.radiusKm };
@@ -481,15 +541,19 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
             diameter: fmtDist(s.radiusKm * 2),
             perimeter: fmtDist(circleCircKm2a),
             area: fmtArea(circleAreaKm2a)
-          }, circleGeometry);
-          c.bindPopup(circlePopup);
+          }, circleGeometry, colorContext);
+          c.bindPopup(circlePopup, popupOptions);
           nfzLayerGroup.addLayer(c);
           extendBounds(c.getBounds());
-          tallyShape('圓形', circleAreaKm2a);
+          radiusCircle = c;
         }
+        registerShapeColor(s, shapeColor, (color) => {
+          m.setIcon(createShapeDotIcon(color));
+          if (radiusCircle) radiusCircle.setStyle(shapePathStyle(color));
+        });
       } else if (s.type === 'line') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
-        const pl = L.polyline(latlngs, { color: '#ef4444', weight: 3 });
+        const pl = L.polyline(latlngs, shapeStrokeStyle(shapeColor));
         // 計算線段長度
         let totalLength = 0;
         for (let i = 1; i < latlngs.length; i++) {
@@ -513,15 +577,15 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           startEndSpan: fmtDist(startEndKm),
           boundingBox: lineBbox ? `${fmtKmShort(lineBbox.widthKm)} × ${fmtKmShort(lineBbox.heightKm)}` : '',
           nodeCount: `${s.coords.length} 個`
-        }, lineGeometry);
-        pl.bindPopup(linePopup);
+        }, lineGeometry, colorContext);
+        pl.bindPopup(linePopup, popupOptions);
         nfzLayerGroup.addLayer(pl);
         addPolylineEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
-        tallyShape('線段');
+        registerShapeColor(s, shapeColor, (color) => pl.setStyle(shapeStrokeStyle(color)));
       } else if (s.type === 'polygon') {
         const latlngs = s.coords.map(p => [p.lat, p.lng]);
-        const poly = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        const poly = L.polygon(latlngs, shapePathStyle(shapeColor));
         const center = poly.getBounds().getCenter();
         const polyText = s.text || shapeSpec.text || '多邊形區域';
         // 建立 Polygon 幾何資料（儲存所有頂點座標）
@@ -542,14 +606,14 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           perimeter: fmtDist(polyPerim),
           area: fmtArea(polyAreaKm2),
           vertexCount: `${s.coords.length} 個`
-        }, polygonGeometry);
-        poly.bindPopup(polyPopup);
+        }, polygonGeometry, colorContext);
+        poly.bindPopup(polyPopup, popupOptions);
         nfzLayerGroup.addLayer(poly);
         addPolygonEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(s.coords.map(p => ({ lat: p.lat, lng: p.lng })));
         s._bufferPolyline = perimeter;
-        tallyShape('多邊形', polyAreaKm2);
+        registerShapeColor(s, shapeColor, (color) => poly.setStyle(shapePathStyle(color)));
       } else if (s.type === 'bbox') {
         const latlngs = [
           [s.bounds.south, s.bounds.west],
@@ -557,7 +621,7 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           [s.bounds.north, s.bounds.east],
           [s.bounds.north, s.bounds.west]
         ];
-        const rect = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.08 });
+        const rect = L.polygon(latlngs, shapePathStyle(shapeColor, 0.08));
         const center = rect.getBounds().getCenter();
         const rectText = s.text || shapeSpec.text || '矩形區域';
         // 建立 Rectangle 幾何資料
@@ -575,17 +639,17 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           diagonalSpan: fmtDist(rectDiagonalKm),
           perimeter: fmtDist(2 * (rectWKm + rectHKm)),
           area: fmtArea(rectAreaKm2)
-        }, rectGeometry);
-        rect.bindPopup(rectPopup);
+        }, rectGeometry, colorContext);
+        rect.bindPopup(rectPopup, popupOptions);
         nfzLayerGroup.addLayer(rect);
         addPolygonEdgeLines(latlngs, nfzLayerGroup);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
         s._bufferPolyline = perimeter;
-        tallyShape('矩形', rectAreaKm2);
+        registerShapeColor(s, shapeColor, (color) => rect.setStyle(shapePathStyle(color, 0.08)));
       } else if (s.type === 'circle') {
         const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
-        const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        const c = L.circle([s.center.lat, s.center.lng], { radius: s.radiusKm * 1000, ...shapePathStyle(shapeColor) });
         const circleText = s.text || shapeSpec.text || '圓形區域';
         // 建立 Circle 幾何資料
         const circleGeometry = { type: 'Circle', center: [s.center.lng, s.center.lat], radiusKm: s.radiusKm };
@@ -596,14 +660,14 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           diameter: fmtDist(s.radiusKm * 2),
           perimeter: fmtDist(circleCircKm2b),
           area: fmtArea(circleAreaKm2b)
-        }, circleGeometry);
-        c.bindPopup(circlePopup);
+        }, circleGeometry, colorContext);
+        c.bindPopup(circlePopup, popupOptions);
         nfzLayerGroup.addLayer(c);
         extendBounds(c.getBounds());
-        tallyShape('圓形', circleAreaKm2b);
+        registerShapeColor(s, shapeColor, (color) => c.setStyle(shapePathStyle(color)));
       } else if (s.type === 'sector') {
         const latlngs = window.shapeUtils.buildSectorLatLngs(s.center, s.radiusKm, s.startDeg, s.endDeg);
-        const sec = L.polygon(latlngs, { color: '#ef4444', weight: 2, fillColor: '#ef4444', fillOpacity: 0.12 });
+        const sec = L.polygon(latlngs, shapePathStyle(shapeColor));
         const radiusText = s.radiusKm < 1 ? `${(s.radiusKm * 1000).toFixed(0)} 公尺` : `${s.radiusKm.toFixed(2)} 公里`;
         const sectorText = s.text || shapeSpec.text || '扇形區域';
         // 建立 Sector 幾何資料
@@ -624,49 +688,18 @@ function renderShapeMode(shapeSpec, selectedLayer = null, options = {}) {
           arcLength: fmtDist(sectorArcLen),
           boundaryLength: fmtDist(sectorBoundaryKm),
           area: fmtArea(sectorAreaKm2)
-        }, sectorGeometry);
-        sec.bindPopup(sectorPopup);
+        }, sectorGeometry, colorContext);
+        sec.bindPopup(sectorPopup, popupOptions);
         nfzLayerGroup.addLayer(sec);
         const sectorAngleDeg = (((s.endDeg - s.startDeg) + 360) % 360) || 360;
         addSectorEdgeLines(latlngs, s.radiusKm, sectorAngleDeg, nfzLayerGroup);
         extendBounds(latlngs);
         const perimeter = ensureClosedPolyline(latlngs.map(([lat, lng]) => ({ lat, lng })));
         s._bufferPolyline = perimeter;
-        tallyShape('扇形', sectorAreaKm2);
+        registerShapeColor(s, shapeColor, (color) => sec.setStyle(shapePathStyle(color)));
       }
     } catch (_) { /* 忽略單一形狀錯誤 */ }
   });
-
-  // 複合圖形（multi）總覽標記：彙整整組圖形的組成、外接範圍與估算總面積
-  if (shapeSpec.shape === 'multi' && Array.isArray(shapeSpec.shapes) && shapeSpec.shapes.length > 1 && bounds) {
-    try {
-      const sw = bounds.getSouthWest();
-      const ne = bounds.getNorthEast();
-      const overviewCenter = bounds.getCenter();
-      const compositionText = Object.entries(shapeTypeCounts)
-        .map(([label, count]) => `${label} x${count}`)
-        .join('、');
-      const overviewGeometry = {
-        type: 'GeometryCollection',
-        geometries: shapeSpec.shapes
-          .map(shape => window.shapeUtils.shapeToExportData(shape, shapeSpec.text, shapeSpec))
-          .filter(Boolean)
-          .map(d => d.geometry)
-      };
-      const overviewPopup = buildShapePopup('multi', shapeSpec.text || '複合圖形', { lat: overviewCenter.lat, lng: overviewCenter.lng }, {
-        composition: compositionText,
-        boundingBox: `${fmtKmShort(calculateDistance(sw.lat, sw.lng, sw.lat, ne.lng))} × ${fmtKmShort(calculateDistance(sw.lat, sw.lng, ne.lat, sw.lng))}`,
-        diagonalSpan: fmtDist(calculateDistance(sw.lat, sw.lng, ne.lat, ne.lng)),
-        totalArea: `約 ${fmtArea(totalAreaKm2)}`
-      }, overviewGeometry);
-      const overviewMarker = L.marker([overviewCenter.lat, overviewCenter.lng], {
-        icon: createShapeOverviewIcon(),
-        zIndexOffset: 1000
-      });
-      overviewMarker.bindPopup(overviewPopup);
-      nfzLayerGroup.addLayer(overviewMarker);
-    } catch (_) { /* 忽略總覽標記建立錯誤 */ }
-  }
 
   const matched = [];
   for (const feature of featuresToScan) {
@@ -755,6 +788,11 @@ function exportShapeAsKml(btn) {
     const urlParams = new URLSearchParams(window.location.search);
     const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
     const isMultiShapeExport = shapeSpec.shape === 'multi' && Array.isArray(shapeSpec.shapes) && shapeSpec.shapes.length > 1;
+    // 顏色以「目前畫面上的顏色」為準：使用者調色後會寫回 URL，這裡重新解析即可拿到最新值
+    const shapeUid = btn.dataset.shapeUid || '';
+    const exportColor = (window.ShapeColor && shapeUid && window.ShapeColor.getColor(shapeUid))
+      || window.shapeUtils.normalizeShapeColor(btn.dataset.shapeColor)
+      || window.shapeUtils.SHAPE_DEFAULT_COLOR;
 
     let exportName = title || 'APEINTEL Shape';
     let kml = '';
@@ -773,7 +811,8 @@ function exportShapeAsKml(btn) {
       kml = window.shapeUtils.buildShapeKml({
         name: exportName,
         description,
-        geometry
+        geometry,
+        color: exportColor
       });
     }
 

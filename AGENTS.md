@@ -5,7 +5,8 @@
 - `static/js/main.js`: Core map logic, URL param handling, data fetch/render.
 - Map tiles: Google 海域 (satellite hybrid, default) and Google 空域 (road map).
 - `static/js/equipment_parser.js`: Parses equipment text; fetches Wikipedia summaries.
-- `static/js/shape_utils.js`: Shared helpers for shape parsing and geodesic calculations.
+- `static/js/shape_utils.js`: Shared helpers for shape parsing, geodesic calculations, colour normalisation, and KML building.
+- `static/js/shape_color.js`: Runtime colour customisation for shape overlays (popup picker, URL sync). Depends on `shape_utils.js`.
 - `static/css/main.css`: UI styles for map, popups, controls, and mobile.
 - Data: `joseph_w.geojson` (primary), `joseph_w-20250806.geojson` (snapshot), `submarinecablemap-cdn-json-20250618.json`, and related JSON.
 - Utilities: `download_googlemap.js` (bookmarklet to export Google Maps data as GeoJSON), `classify_layer.py` (lists GeoJSON layer names).
@@ -24,6 +25,11 @@
 - Circle/sector inputs read `lat`, `lng`, and `radius`; sectors also need `start`/`end` bearings (degrees, clockwise from north).
 - Multi-shape mode supports multiple values: repeat `circle=lng,lat,r`, `line=...`, `poly=...`, and `sector=lng,lat,r,start,end` to render several overlays at once (radius scaled by `unit`).
 - AI metadata: `activity_type=` shows the AI task classification and `ai_judgment=` shows the AI reasoning in a collapsible section. Legacy `AI判斷：...` text embedded in `text=` remains supported.
+- Shape colours (all optional): `color=` sets every shape; `circle_color=`/`line_color=`/`poly_color=`/`sector_color=` target individual shapes using the same indexed syntax as `*_text` (repeat the param, or use `poly_color[1]=`). Precedence is per-shape > `color` > default `#ef4444`. Accepts `#rrggbb`, `#rgb`, bare hex, or names (`red`, `teal`, …); anything unparseable silently falls back to the default, so links without these params render exactly as before.
+
+## CSS Gotchas
+- `main.css` force-sets `stroke: #ef4444` on `.leaflet-overlay-pane svg path.leaflet-interactive` (Leaflet.draw red theme). CSS beats Leaflet's `stroke` presentation attribute, so `setStyle({ color })` will not change a border unless the layer passes a `className` that is added to that rule's `:not()` list (`adiz-path`, `theater-path`, `submarine-cable-path`, `nfz-shape-path`).
+- Never mix `scrollbar-width`/`scrollbar-color` with `::-webkit-scrollbar` on the same element — Chrome drops the webkit styling and falls back to the native scrollbar.
 
 ## Coding Style & Naming Conventions
 - JavaScript: ES6+, browser-only, 2-space indent, use `const`/`let`, avoid adding dependencies/frameworks. Keep functions small and side-effect scoped.

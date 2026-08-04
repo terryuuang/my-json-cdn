@@ -1,6 +1,6 @@
 /**
  * Service Worker - APEINTEL ATLAS PWA
- * 版本：v0.5.0
+ * 版本：v0.5.1
  * 功能：快取管理、離線支援、自動更新
  * 
  * ============================================
@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.5.0';
+const APP_VERSION = '0.5.1';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -71,6 +71,7 @@ const CORE_ASSETS = [
   '/static/js/equipment_parser.js',
   '/static/js/search_utils.js',
   '/static/js/shape_utils.js',
+  '/static/js/shape_color.js',
   '/static/js/osm_facilities.js',
   '/static/js/unified_dropdown.js',
   '/static/js/notes.js',
@@ -257,7 +258,7 @@ async function networkFirst(request) {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(request);
-  
+
   // 背景更新快取
   const fetchPromise = fetch(request).then((response) => {
     if (response.ok) {
@@ -267,7 +268,24 @@ async function staleWhileRevalidate(request) {
   }).catch(() => null);
 
   // 有快取就先回傳，沒有就等網路
-  return cached || fetchPromise;
+  if (cached) return cached;
+
+  const networkResponse = await fetchPromise;
+  if (networkResponse) return networkResponse;
+
+  // 沒快取又連不上網路。這裡「一定」要回傳 Response：
+  // event.respondWith(null) 會拋 TypeError: Failed to convert value to 'Response'。
+  // 導覽請求退回快取的 index.html，讓 PWA 離線時仍能開啟。
+  if (request.mode === 'navigate') {
+    const shell = await cache.match('/index.html') || await cache.match('/');
+    if (shell) return shell;
+  }
+
+  return new Response('離線且無可用快取', {
+    status: 503,
+    statusText: 'Service Unavailable',
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  });
 }
 
 // ============================================
