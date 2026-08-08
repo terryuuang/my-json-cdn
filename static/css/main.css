@@ -1707,7 +1707,10 @@ select.input-field:hover {
     border: 1px solid var(--color-panel-border);
 }
 
-/* Leaflet 控制項：與自家控制面板與行動裝置的協調 */
+/* ========================================
+   Leaflet 控制項：Apple Maps 風格浮動圓角按鈕
+   毛玻璃背景、圓角膠囊、精簡間距、圖示化
+   ======================================== */
 .leaflet-right .leaflet-control {
   margin-right: 10px;
 }
@@ -1715,32 +1718,146 @@ select.input-field:hover {
   margin-bottom: 10px;
 }
 .leaflet-top .leaflet-control {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-/* 行動裝置：縮小 Leaflet 控制項尺寸（維持可點擊） */
+/* 統一 bar 樣式：Apple Maps 圓角膠囊 + 毛玻璃
+   預設深色（衛星底圖），切換到道路圖時由 JS 加上 .map-light-controls 改為淺色 */
+.leaflet-bar {
+  border: none !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  background: rgba(30, 30, 40, 0.78) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 18px !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  border: none !important;
+  border-bottom: none !important;
+  background-color: transparent !important;
+  transition: background-color 0.12s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.leaflet-bar a:active {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* 按鈕之間的細線分隔 */
+.leaflet-bar a + a {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 淺色模式（道路底圖）：由 JS switchBaseLayer 加上 .map-light-controls */
+.map-light-controls .leaflet-bar {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.map-light-controls .leaflet-bar a {
+  color: #1c1c1e !important;
+}
+
+.map-light-controls .leaflet-bar a:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.map-light-controls .leaflet-bar a:active {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.map-light-controls .leaflet-bar a + a {
+  border-top-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Zoom 控制按鈕文字樣式 */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  font-weight: 300 !important;
+  font-size: 20px !important;
+}
+
+/* Draw 工具列：與 zoom 同樣風格但稍小，不能覆蓋 background-position/size
+   （Leaflet.draw 用 sprite sheet 靠 position 切割不同圖示） */
+.leaflet-draw-toolbar a {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  /* 深色底圖下反色顯示（sprite 原本是黑色線條） */
+  filter: invert(1) brightness(1.5);
+}
+
+.map-light-controls .leaflet-draw-toolbar a {
+  filter: none;
+}
+
+/* 停用態按鈕 */
+.leaflet-bar a.leaflet-disabled {
+  opacity: 0.35 !important;
+  cursor: default;
+}
+
+/* Draw section 之間的間距 */
+.leaflet-draw-section + .leaflet-draw-section {
+  margin-top: 6px;
+}
+
+/* 觸控裝置（含 Leaflet touch 模式） */
+.leaflet-touch .leaflet-bar a {
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+}
+
+/* 行動裝置：更精簡 + 位置調整 */
 @media (max-width: 768px) {
-  /* 確保右上角控制項不會擋到搜尋列 */
   .leaflet-top.leaflet-right {
-    top: 72px; /* 搜尋列高度 + 間距 */
+    top: 72px;
   }
 
-  .leaflet-bar a,
-  .leaflet-control-zoom a {
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
-    font-size: 16px;
+  .leaflet-bar {
+    border-radius: 10px !important;
   }
-  .leaflet-touch .leaflet-bar a { /* 觸控優化但不過大 */
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
+
+  .leaflet-bar a {
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    font-size: 16px !important;
   }
-  /* Draw 工具列按鈕縮小 */
+
+  .leaflet-touch .leaflet-bar a {
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+  }
+
   .leaflet-draw-toolbar a {
-    width: 36px;
-    height: 36px;
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .leaflet-control-zoom-in,
+  .leaflet-control-zoom-out {
+    font-size: 17px !important;
+  }
+
+  .leaflet-right .leaflet-control {
+    margin-right: 8px;
+  }
+
+  .leaflet-top .leaflet-control {
+    margin-top: 6px;
   }
 }
 
@@ -3477,17 +3594,30 @@ select.input-field:hover {
   width: 34px !important;
   height: 34px !important;
   text-decoration: none !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  color: #f59e0b !important;
+  background: rgba(30, 30, 40, 0.78) !important;
+  color: #fbbf24 !important;
   border-radius: var(--radius-sm) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   transition: all 0.2s ease !important;
 }
 
 .notes-control-btn.is-off {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 淺色底圖時切回淺色風格 */
+.map-light-controls .notes-control-btn {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.map-light-controls .notes-control-btn.is-off {
   color: #64748b !important;
-  background: rgba(255, 255, 255, 0.95) !important;
 }
 
 /* 沒有任何筆記時，隱藏「顯示/隱藏筆記圖層」按鈕（無筆記可切換） */
@@ -3500,25 +3630,17 @@ select.input-field:hover {
   height: 20px;
 }
 
+/* 筆記按鈕 hover：預設深色底圖 */
 .notes-control-btn:hover {
-  background: rgba(245, 158, 11, 0.15) !important;
-  color: #d97706 !important;
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
   transform: scale(1.05);
-  box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3) !important;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3) !important;
 }
 
-/* 深色模式下的筆記控制按鈕 */
-@media (prefers-color-scheme: dark) {
-  .notes-control-btn {
-    background: rgba(40, 40, 60, 0.9) !important;
-    color: #fbbf24 !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  }
-
-  .notes-control-btn:hover {
-    background: rgba(245, 158, 11, 0.25) !important;
-    color: #fcd34d !important;
-  }
+.map-light-controls .notes-control-btn:hover {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #d97706 !important;
 }
 
 /* ========================================
@@ -3545,14 +3667,22 @@ select.input-field:hover {
   width: 34px !important;
   height: 34px !important;
   text-decoration: none !important;
-  background: var(--color-surface) !important;
-  backdrop-filter: blur(var(--blur-menu)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--blur-menu)) saturate(180%);
-  color: var(--color-label-secondary) !important;
+  background: rgba(30, 30, 40, 0.78) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  color: rgba(255, 255, 255, 0.85) !important;
   border-radius: var(--radius-sm) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s var(--ease-spring), box-shadow 0.2s ease !important;
+}
+
+/* 淺色底圖時切回淺色風格 */
+.map-light-controls .osint-toolbar-btn {
+  background: var(--color-surface) !important;
+  color: var(--color-label-secondary) !important;
   border: 1px solid var(--color-panel-border) !important;
   box-shadow: var(--shadow-sm) !important;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s var(--ease-spring), box-shadow 0.2s ease !important;
 }
 
 .osint-toolbar-btn svg {
@@ -3561,9 +3691,15 @@ select.input-field:hover {
 }
 
 .osint-toolbar-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.map-light-controls .osint-toolbar-btn:hover {
   background: var(--color-fill-primary) !important;
   color: var(--color-accent) !important;
-  transform: scale(1.05);
   box-shadow: var(--shadow-md) !important;
 }
 

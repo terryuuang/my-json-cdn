@@ -67,6 +67,10 @@ window.switchBaseLayer = function(layerName) {
     }
   });
 
+  // 切換控制項深/淺色模式（衛星=深色控制項，道路=淺色控制項）
+  const container = map.getContainer();
+  container.classList.toggle('map-light-controls', layerName === 'air');
+
   currentBaseLayer = layerName;
 
   // 同步寫回 URL，讓「分享目前畫面」連結能還原底圖模式
@@ -80,8 +84,9 @@ window.switchBaseLayer = function(layerName) {
   window.history.replaceState({}, '', newUrl);
 };
 
-// 若初始化時就是空域（來自分享連結），確保按鈕狀態與底圖切換函式邏輯一致
+// 若初始化時就是空域（來自分享連結），確保按鈕狀態與控制項色調一致
 if (currentBaseLayer === 'air') {
+  map.getContainer().classList.add('map-light-controls');
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.layer-toggle-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.layer === 'air');

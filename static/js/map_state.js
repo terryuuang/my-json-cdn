@@ -15,6 +15,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年08月08日',
+    description: '地圖控制項（縮放、繪圖工具）改為 Apple Maps 風格：毛玻璃圓角膠囊按鈕，精簡尺寸、更輕盈的視覺佔用；動態島展開/收合動畫修正（border-radius 不再閃爍直角、hover 卡頓改善）；OSINT 面板（衛星過境／周邊航空動態）手機版支援 Apple 風格三段吸附 bottom sheet（向上拉全螢幕、向下拉折疊、頂部拉桿手勢）'
+  },
+  {
+    date: '2026年08月08日',
     description: '新增動態島活動通知系統：公共設施查詢（OSM）的「正在查詢」狀態、複製網址、KML 匯出等操作回饋統一整合到搜尋動態島收合態顯示（比照 Apple Dynamic Island Live Activity 概念），取代原本分散的多套浮動通知；天氣輪播在活動進行中自動暫停，完成後恢復；衛星過境預測手機版 UI 大幅改善：面板改為底部 sheet 風格（帶拉桿提示）、類別選擇改為水平捲動 chip、預設點改橫向捲動、結果更緊湊、支援向下滑動手勢縮小或關閉面板'
   },
   {
