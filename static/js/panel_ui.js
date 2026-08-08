@@ -93,12 +93,16 @@ async function copyTextToClipboard(text) {
       document.body.removeChild(textarea);
     }
 
-    if (window.Notes && typeof window.Notes.showToast === 'function') {
+    if (window.IslandActivity) {
+      window.IslandActivity.transient('✓ 網址已複製', 'success');
+    } else if (window.Notes && typeof window.Notes.showToast === 'function') {
       window.Notes.showToast('網址已複製');
     }
   } catch (error) {
     console.error('[Map] 複製網址失敗:', error);
-    if (window.Notes && typeof window.Notes.showToast === 'function') {
+    if (window.IslandActivity) {
+      window.IslandActivity.transient('複製網址失敗', 'error');
+    } else if (window.Notes && typeof window.Notes.showToast === 'function') {
       window.Notes.showToast('複製網址失敗', 'error');
     }
   }
@@ -239,24 +243,20 @@ function clearDrawings() {
   }
 }
 
-// 頂部提醒：滑入+3秒後淡出
+// 頂部提醒：整合到動態島活動通知，不再使用獨立的 #topNotice DOM
 function showTopNotice() {
   try {
+    // 移除舊的 #topNotice DOM（若存在）
     const el = document.getElementById('topNotice');
-    if (!el) return;
-    // 下一幀加入 .show 以觸發過渡
-    requestAnimationFrame(() => {
-      el.classList.add('show');
-    });
-    const DISPLAY_MS = 5000; // 顯示5秒
-    setTimeout(() => {
-      el.classList.add('hide');
-      el.addEventListener('transitionend', () => {
-        if (el && el.parentNode) el.parentNode.removeChild(el);
-      }, { once: true });
-    }, DISPLAY_MS);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+
+    if (window.IslandActivity) {
+      const id = window.IslandActivity.generateId('init');
+      window.IslandActivity.start(id, '資料載入中…');
+      // 資料載入完成後由 bootstrap.js 呼叫 finish
+      window._initActivityId = id;
+    }
   } catch (e) {
-    // 靜默失敗，不影響主流程
     console.warn('[Map] top notice 失敗:', e);
   }
 }

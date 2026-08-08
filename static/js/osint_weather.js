@@ -121,9 +121,9 @@
   // 「搜尋地點」文字會維持顯示，抓到資料後就完全交給輪播接手
   function rotateNext() {
     const island = document.getElementById('searchIsland');
-    if (isIslandExpanded(island) || entries.length === 0) {
-      // 展開中或還沒抓到資料：先不更新畫面，但還是要保留重試排程，
-      // 不然收合回來後輪播就永遠卡住、再也不會恢復
+    // 展開中、還沒抓到資料、或活動通知佔用中：先不更新畫面
+    if (isIslandExpanded(island) || entries.length === 0 ||
+        (window.IslandActivity && window.IslandActivity.isCarouselPaused())) {
       rotateTimer = setTimeout(rotateNext, 1000);
       return;
     }

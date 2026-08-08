@@ -995,15 +995,15 @@ select.input-field:hover {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    /* 這個 max-width 是最終安全上限，必須 >= 下面 .expanded / .island-wide 用到的最大值，
-       否則會把展開寬度悄悄夾住（width 與 max-width 同時存在時取兩者較小值） */
     max-width: min(560px, calc(100vw - 20px));
     overflow: hidden;
-    /* width 也要納入 transition：展開/收合時由 JS 鎖定舊寬度再放開（見 location_search.js
-       lockIslandWidth/releaseIslandWidthNextFrame），讓寬高圓角同時以同一條 spring 曲線變形，
-       而不是像原本 width 突然跳一格的生硬切換 */
-    transition: width 0.4s var(--ease-spring), border-radius 0.35s var(--ease-spring),
+    /* width 用 spring 曲線做彈性動感；border-radius 必須用 ease-decelerate 而非 spring，
+       因為 spring 的 overshoot 會讓 border-radius 瞬間跌到 0 或負值（呈現直角），
+       ease-decelerate 確保值永遠在起點與目標之間單調遞減，不會出現尖角閃爍 */
+    transition: width 0.4s var(--ease-spring), border-radius 0.3s var(--ease-decelerate),
         max-width 0.35s var(--ease-spring), background-color 0.2s ease;
+    will-change: width, border-radius;
+    contain: layout style;
 }
 
 /* 展開時的寬度：calc(100vw - 20px) 這段是手機安全網——螢幕比目標寬度窄時自動改用「螢幕寬度減
@@ -1065,6 +1065,57 @@ select.input-field:hover {
 @keyframes islandLabelMarquee {
     from { transform: translateX(0); }
     to { transform: translateX(var(--marquee-distance, 0px)); }
+}
+
+/* ========================================
+   動態島活動指示器（island_activity.js）
+   在收合態左側顯示小型狀態圈：loading 旋轉、success/error/warning 靜態色圈
+   ======================================== */
+.search-island.island-activity-loading .search-island-compact::before,
+.search-island.island-activity-success .search-island-compact::before,
+.search-island.island-activity-error .search-island-compact::before,
+.search-island.island-activity-warning .search-island-compact::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    margin-left: 2px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.search-island.island-activity-loading .search-island-compact::before {
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(255, 255, 255, 0.9);
+    background: transparent;
+    animation: islandActivitySpin 0.8s linear infinite;
+}
+
+.search-island.island-activity-success .search-island-compact::before {
+    background: #34d399;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+.search-island.island-activity-error .search-island-compact::before {
+    background: #f87171;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.5);
+}
+
+.search-island.island-activity-warning .search-island-compact::before {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+}
+
+/* 展開態不顯示活動指示器（搜尋輸入中不需要干擾） */
+.search-island.expanded .search-island-compact::before {
+    display: none !important;
+}
+
+@keyframes islandActivitySpin {
+    to { transform: rotate(360deg); }
 }
 
 .search-island-compact {
@@ -4120,10 +4171,146 @@ select.input-field:hover {
 
 @media (max-width: 768px) {
   .osint-side-panel .note-dialog {
-    /* 手機版預設高度收斂（原本 60vh 幾乎佔滿螢幕下半，使用者一看到就想點叉叉關閉，
-       連帶清空查詢結果）。想看更多結果時仍可用標題列的縮小/展開鈕自行調整，
-       不需要一開始就把地圖蓋掉一大半 */
-    max-height: 42vh;
+    /* 手機版底部 sheet 風格：max-height 由 JS bottom sheet 控制（三段吸附），
+       CSS 這裡只設初始值（半高），會被 JS 覆蓋 */
+    max-height: 50vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    /* 拖曳時 transition 由 JS 控制，這裡設 overflow 讓內容不會溢出 */
+    overflow: hidden;
+  }
+
+  /* 手機版面板拉桿提示（底部 sheet 慣例：上方橫線） */
+  .osint-side-panel .note-dialog::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 5px;
+    border-radius: 2.5px;
+    background: var(--color-separator);
+    margin: 10px auto 4px;
+    opacity: 0.7;
+  }
+
+  .osint-side-panel .note-dialog-header {
+    padding-top: 4px;
+    cursor: grab;
+  }
+
+  .osint-side-panel .note-dialog-header:active {
+    cursor: grabbing;
+  }
+
+  /* 手機版類別列表改為橫向捲動，節省垂直空間 */
+  .osint-side-panel .sat-pass-category-list,
+  .osint-side-panel .adsb-category-list {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+    gap: 6px;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .osint-side-panel .sat-pass-category-list::-webkit-scrollbar,
+  .osint-side-panel .adsb-category-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 手機版類別選項改為 chip 風格（水平排列用） */
+  .osint-side-panel .sat-pass-category-list label,
+  .osint-side-panel .adsb-category-list label {
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-separator);
+    background: var(--color-fill-tertiary);
+    font-size: 12px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .osint-side-panel .sat-pass-category-list label:has(input:checked),
+  .osint-side-panel .adsb-category-list label:has(input:checked) {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+  }
+
+  /* 手機版 checkbox 在 chip 模式隱藏（改由整顆 chip 背景色表示選取） */
+  .osint-side-panel .sat-pass-category-list input[type="checkbox"],
+  .osint-side-panel .adsb-category-list input[type="checkbox"] {
+    display: none;
+  }
+
+  /* 手機版免責聲明更精簡 */
+  .osint-side-panel .sat-pass-disclaimer,
+  .osint-side-panel .adsb-disclaimer {
+    padding: 6px 10px;
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  /* 手機版查詢按鈕更明顯、觸控友善 */
+  .osint-side-panel .note-dialog-footer .note-btn {
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+  }
+
+  /* 手機版 body 改為 flex column，讓結果列表能佔滿剩餘空間 */
+  .osint-side-panel .note-dialog-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* 手機版結果列表：允許內部捲動（全螢幕模式時結果多） */
+  .osint-side-panel .sat-pass-results,
+  .osint-side-panel .adsb-results {
+    gap: 6px;
+    max-height: none;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .osint-side-panel .sat-pass-item,
+  .osint-side-panel .adsb-item {
+    padding: 10px 12px;
+    gap: 3px;
+  }
+
+  /* 手機版結果項目操作區更明顯 */
+  .osint-side-panel .sat-pass-item-hint {
+    display: none;
+  }
+
+  /* 預設點 chip 在手機橫向捲動 */
+  .osint-side-panel .osint-preset-chip-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .osint-side-panel .osint-preset-chip-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .osint-side-panel .osint-preset-chip {
+    flex-shrink: 0;
   }
 }
 

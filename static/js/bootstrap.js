@@ -84,6 +84,12 @@ try {
     
     // 完成後隱藏載入指示器
     hideLoading();
+
+    // 通知動態島資料載入完成
+    if (window._initActivityId && window.IslandActivity) {
+      window.IslandActivity.finish(window._initActivityId, '✓ 地圖就緒', 'success');
+      delete window._initActivityId;
+    }
     
     // 延後初始化繪圖工具（不影響地圖資料顯示）
     requestAnimationFrame(() => {

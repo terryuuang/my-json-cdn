@@ -822,12 +822,16 @@ function exportShapeAsKml(btn) {
 
     const filename = `${slugifyFilename(title || btn.dataset.shapeType || 'shape')}.kml`;
     downloadTextFile(kml, filename, 'application/vnd.google-earth.kml+xml;charset=utf-8');
-    if (window.Notes && typeof window.Notes.showToast === 'function') {
+    if (window.IslandActivity) {
+      window.IslandActivity.transient('✓ KML 已匯出', 'success');
+    } else if (window.Notes && typeof window.Notes.showToast === 'function') {
       window.Notes.showToast('KML 已匯出');
     }
   } catch (error) {
     console.error('[Map] 匯出 KML 失敗:', error);
-    if (window.Notes && typeof window.Notes.showToast === 'function') {
+    if (window.IslandActivity) {
+      window.IslandActivity.transient('KML 匯出失敗', 'error');
+    } else if (window.Notes && typeof window.Notes.showToast === 'function') {
       window.Notes.showToast('KML 匯出失敗', 'error');
     }
   }

@@ -401,6 +401,13 @@
     }
   }
 
+  // 使用全域 bottom sheet 工具（由 island_activity.js 提供）
+  function setupBottomSheet(dialogBox, headerEl, setMinimized, onClose) {
+    if (window.setupOsintBottomSheet) {
+      return window.setupOsintBottomSheet(dialogBox, headerEl, setMinimized, onClose);
+    }
+  }
+
   function openSatellitePassPanel(lat, lng, label, options = {}) {
     const { allPresets = false } = options;
     closeDialog();
@@ -487,6 +494,9 @@
     headerEl.addEventListener('click', () => {
       if (dialogBox.classList.contains('minimized')) setMinimized(false);
     });
+
+    // 手機版 Apple 風格 bottom sheet：三段吸附（minimized / half / full）
+    setupBottomSheet(dialogBox, headerEl, setMinimized, closeDialog);
     dialogEl.querySelectorAll('.osint-preset-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.presetIndex === 'all') {

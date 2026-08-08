@@ -695,38 +695,33 @@ async function handleFacilityChange(checkbox) {
   if (checkbox.checked) {
     selectedFacilities.add(type);
     setFacilityVisualState(type, 'loading', '正在查詢');
-    const loadingNotice = showStatus(`正在查詢 ${FACILITY_TYPES[type].name}`, 'loading');
-    
+    currentOsmActivityId = null;
+    const activityId = showStatus(`正在查詢 ${FACILITY_TYPES[type].name}`, 'loading');
+
     try {
       const data = await loadLayer(type, map);
+      currentOsmActivityId = null;
       setFacilityVisualState(type, 'success', data?.features?.length > 0 ? `已載入 ${data.features.length} 筆` : '查無資料');
       setTimeout(() => setFacilityVisualState(type, checkbox.checked ? 'idle' : 'idle'), 1600);
-      
-      // 移除 loading 提示
-      if (loadingNotice) {
-        loadingNotice.classList.remove('show');
-        loadingNotice.classList.add('hide');
-        setTimeout(() => loadingNotice.remove(), 400);
-      }
-      
+
       if (data?.features?.length > 0) {
-        showStatus(`已載入 ${data.features.length} 個 ${FACILITY_TYPES[type].name}`, 'success');
+        if (activityId && window.IslandActivity) {
+          window.IslandActivity.finish(activityId, `✓ ${data.features.length} 個${FACILITY_TYPES[type].name}`, 'success');
+        }
       } else {
-        showStatus(`公開資料中當前範圍內查無 ${FACILITY_TYPES[type].name}`, 'warning');
+        if (activityId && window.IslandActivity) {
+          window.IslandActivity.finish(activityId, `查無${FACILITY_TYPES[type].name}`, 'warning');
+        }
       }
     } catch (error) {
+      currentOsmActivityId = null;
       checkbox.checked = false;
       selectedFacilities.delete(type);
       setFacilityVisualState(type, 'error', '查詢失敗');
-      
-      // 移除 loading 提示
-      if (loadingNotice) {
-        loadingNotice.classList.remove('show');
-        loadingNotice.classList.add('hide');
-        setTimeout(() => loadingNotice.remove(), 400);
+
+      if (activityId && window.IslandActivity) {
+        window.IslandActivity.finish(activityId, `載入失敗`, 'error');
       }
-      
-      showStatus(`載入失敗: ${error.message}`, 'error');
     }
   } else {
     selectedFacilities.delete(type);
@@ -764,51 +759,28 @@ function clearSelections() {
 }
 
 // 顯示狀態訊息（使用 topNotice 樣式）
+// 整合到動態島活動通知；若 IslandActivity 不可用則降級為靜默忽略
+// currentOsmActivityId：當 handleFacilityChange 發起查詢時設定，
+// 讓中間的重試/逾時訊息能更新同一個活動而非另開新的
+let currentOsmActivityId = null;
+
 function showStatus(msg, type = 'success') {
-  const existingNotice = document.querySelector('.osm-notice');
-  if (existingNotice) {
-    existingNotice.remove();
-  }
-  
-  const notice = document.createElement('div');
-  notice.className = 'osm-notice';
-  notice.classList.toggle('osm-notice-loading', type === 'loading');
-  notice.textContent = msg;
-  
-  // 根據類型設定顏色
+  if (!window.IslandActivity) return null;
+
   if (type === 'loading') {
-    notice.style.background = 'rgba(255, 255, 255, 0.96)';
-    notice.style.color = '#111827';
-    notice.style.borderColor = '#cbd5e1';
-  } else if (type === 'error') {
-    notice.style.background = 'rgba(255, 255, 255, 0.96)';
-    notice.style.color = '#991b1b';
-    notice.style.borderColor = '#fecaca';
-  } else if (type === 'warning') {
-    notice.style.background = 'rgba(255, 255, 255, 0.96)';
-    notice.style.color = '#92400e';
-    notice.style.borderColor = '#fcd34d';
-  } else {
-    notice.style.background = 'rgba(255, 255, 255, 0.96)';
-    notice.style.color = '#065f46';
-    notice.style.borderColor = '#a7f3d0';
+    // 若已有進行中的 OSM 活動，更新它而非建立新的
+    if (currentOsmActivityId) {
+      window.IslandActivity.update(currentOsmActivityId, msg);
+      return currentOsmActivityId;
+    }
+    const id = window.IslandActivity.generateId('osm');
+    currentOsmActivityId = id;
+    window.IslandActivity.start(id, msg);
+    return id;
   }
-  
-  document.body.appendChild(notice);
-  
-  // 觸發動畫
-  setTimeout(() => notice.classList.add('show'), 10);
-  
-  // 自動隱藏（除非是 loading 狀態）
-  if (type !== 'loading') {
-    setTimeout(() => {
-      notice.classList.remove('show');
-      notice.classList.add('hide');
-      setTimeout(() => notice.remove(), 400);
-    }, 3000);
-  }
-  
-  return notice;
+  // 非 loading：短暫顯示結果
+  window.IslandActivity.transient(msg, type);
+  return null;
 }
 
 // ============================================

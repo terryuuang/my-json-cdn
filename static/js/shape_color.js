@@ -304,7 +304,9 @@
   }
 
   function toast(message) {
-    if (window.Notes && typeof window.Notes.showToast === 'function') {
+    if (window.IslandActivity) {
+      window.IslandActivity.transient(message, 'success');
+    } else if (window.Notes && typeof window.Notes.showToast === 'function') {
       window.Notes.showToast(message);
     }
   }

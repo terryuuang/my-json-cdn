@@ -17,7 +17,10 @@ const lng = parseFloat(lngInputEl.value);
 const radius = parseFloat(radiusInputEl ? radiusInputEl.value : NaN) || 50;
 
 if (isNaN(lat) || isNaN(lng)) {
-    alert('請輸入有效的經緯度數值！');
+    if (window.IslandActivity) {
+      window.IslandActivity.transient('請輸入有效的經緯度', 'error');
+    }
+
     return;
 }
 
@@ -39,18 +42,16 @@ if (isMobileDevice()) {
 let searchRequestId = 0;
 let wikiRequestId = 0;
 
-// 展開/收合動態島前，先把目前實際寬度鎖成 inline style，
-// 讓 class 切換後的目標寬度（CSS .expanded 規則）能跟這個鎖定值之間跑 transition，
-// 而不是直接從 width:auto 跳過去（auto 沒辦法平滑動畫）
+// 展開/收合動態島時，先把目前實際寬度鎖成 inline style，
+// 讓 class 切換後目標寬度能跟鎖定值之間跑 CSS transition
 function lockIslandWidth(island) {
   const currentWidth = island.getBoundingClientRect().width;
   island.style.width = `${currentWidth}px`;
-  void island.offsetWidth; // 強制 reflow，確保鎖定寬度已經套用到畫面上
+  getComputedStyle(island).width;
 }
 
-// 用兩次 requestAnimationFrame 才放開鎖定的寬度：第一次只是排入下一輪繪製，
-// 瀏覽器不保證這時候上一步的 reflow 真的已經定案；等到第二次 rAF 才放開，
-// 才能穩定觸發 width 從鎖定值→目標值的 transition（單次 rAF 在部分瀏覽器會直接跳過動畫）
+// 放開鎖定寬度。雙 rAF 確保瀏覽器已經把鎖定寬度 commit 到繪製管線，
+// 第二幀移除 inline style 才能穩定觸發 transition（單幀在部分瀏覽器/負載高時不穩定）
 function releaseIslandWidthNextFrame(island) {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {

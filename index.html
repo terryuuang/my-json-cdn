@@ -135,8 +135,8 @@
   </script>
 </head>
 <body>
-  <!-- 頂部提醒 -->
-  <div id="topNotice" class="top-notice" role="status" aria-live="polite">
+  <!-- 載入提醒已整合到動態島活動通知（island_activity.js） -->
+  <div id="topNotice" class="top-notice" role="status" aria-live="polite" hidden>
     資料載入中，首次可能稍等片刻
   </div>
   <div id="map"></div>
@@ -419,6 +419,8 @@
   <script src="static/js/satellite_pass.js" defer></script>
   <!-- 周邊航空動態（airplanes.live ADS-B） -->
   <script src="static/js/adsb_traffic.js" defer></script>
+  <!-- 動態島活動通知系統（整合各模組 loading/成功/錯誤狀態到動態島顯示） -->
+  <script src="static/js/island_activity.js" defer></script>
   <!-- 動態島天氣即時活動（Open-Meteo，OSINT 用途：中國沿岸預設點風速/雲量/起霧判讀提示） -->
   <script src="static/js/osint_weather.js" defer></script>
   <!-- main.js 已依模組職責拆分（可維護性重構），需依此順序載入 -->

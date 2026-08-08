@@ -369,6 +369,11 @@
     headerEl.addEventListener('click', () => {
       if (dialogBox.classList.contains('minimized')) setMinimized(false);
     });
+
+    // 手機版 Apple 風格 bottom sheet：三段吸附（minimized / half / full）
+    if (window.setupOsintBottomSheet) {
+      window.setupOsintBottomSheet(dialogBox, headerEl, setMinimized, closeDialog);
+    }
     dialogEl.querySelectorAll('.osint-preset-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.presetIndex === 'all') {
