@@ -135,15 +135,28 @@
   </script>
 </head>
 <body>
+  <!-- 液態 UI 系統：全站共用的 gooey 濾鏡（thinking-orbs 三點脈動、iOS 開關液滴用）
+       純內嵌 SVG，不佔版面；載入失敗時相關元素會自然退化為無濾鏡外觀 -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
+    <defs>
+      <filter id="liquid-goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+        <feColorMatrix in="blur" mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
+
   <!-- 載入提醒已整合到動態島活動通知（island_activity.js） -->
   <div id="topNotice" class="top-notice" role="status" aria-live="polite" hidden>
     資料載入中，首次可能稍等片刻
   </div>
   <div id="map"></div>
 
-  <!-- 載入指示器 -->
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
+  <!-- 載入指示器（v0.6.0：環繞光束 + 三點液態脈動） -->
+  <div id="loading" class="loading border-beam">
+    <div class="thinking-orbs" role="img" aria-label="載入中"><i></i><i></i><i></i></div>
     <div>載入地圖資料中...</div>
   </div>
 
@@ -175,39 +188,45 @@
   <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
     <div class="control-title">地圖控制</div>
 
-    <!-- 搜尋與定位 -->
+    <!-- ① 定位 -->
     <div class="settings-section">
-      <div class="settings-section-title">搜尋與定位</div>
+      <div class="settings-section-title">定位</div>
       <div class="settings-group">
         <div class="input-group">
-          <label class="input-label" for="latInput">緯度 (Latitude)</label>
-          <input type="number" id="latInput" class="input-field" step="any" placeholder="例如: 31.9424765">
+          <div class="field-row-2">
+            <div>
+              <label class="input-label" for="latInput">緯度</label>
+              <input type="number" id="latInput" class="input-field" step="any" placeholder="31.9424765">
+            </div>
+            <div>
+              <label class="input-label" for="lngInput">經度</label>
+              <input type="number" id="lngInput" class="input-field" step="any" placeholder="120.2903877">
+            </div>
+          </div>
         </div>
 
         <div class="input-group">
-          <label class="input-label" for="lngInput">經度 (Longitude)</label>
-          <input type="number" id="lngInput" class="input-field" step="any" placeholder="例如: 120.2903877">
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="radiusInput">搜尋半徑 (公里)</label>
+          <label class="input-label" for="radiusInput">搜尋半徑（公里）</label>
           <input type="number" id="radiusInput" class="input-field" value="50" min="1" max="500" step="5">
         </div>
 
         <div class="input-group">
-          <button class="btn btn-primary" style="width:100%;margin:0;" onclick="searchLocation()">搜尋位置</button>
+          <button class="btn btn-primary btn-block" onclick="searchLocation()">搜尋此座標</button>
         </div>
       </div>
     </div>
 
-    <!-- 圖層篩選 -->
+    <!-- ② 資料圖層（多選篩選：地圖上要顯示哪些資料） -->
     <div class="settings-section">
-      <div class="settings-section-title">圖層篩選</div>
+      <div class="settings-section-title">資料圖層</div>
       <div class="settings-group">
         <div class="input-group">
-          <label class="input-label" for="layerDropdownToggle">單位篩選</label>
+          <div class="panel-inline-head">
+            <span class="input-label" id="layerFilterLabel">軍事單位</span>
+            <button type="button" class="ios-switch active" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()" role="switch" aria-checked="true" title="顯示/隱藏單位標記" aria-label="顯示或隱藏軍事單位標記"></button>
+          </div>
           <div class="unified-dropdown">
-            <button type="button" id="layerDropdownToggle" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇圖層">
+            <button type="button" id="layerDropdownToggle" class="dropdown-toggle" onclick="toggleLayerDropdown()" aria-label="選擇軍事單位分層">
               <span id="layerSelectedCount">顯示全部分層</span>
               <span class="dropdown-arrow">▼</span>
             </button>
@@ -315,29 +334,13 @@
             </div>
           </div>
         </div>
-
-        <div class="input-group">
-          <span class="input-label">底圖圖層</span>
-          <div class="layer-toggle-group">
-            <button type="button" class="layer-toggle-btn active" data-layer="sea" onclick="switchBaseLayer('sea')">
-              Google（海域）
-            </button>
-            <button type="button" class="layer-toggle-btn" data-layer="air" onclick="switchBaseLayer('air')">
-              Google（空域）
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- 疊圖與顯示（開關型） -->
+    <!-- ③ 疊加範圍（參考邊界／區域，單一開關） -->
     <div class="settings-section">
-      <div class="settings-section-title">疊圖與顯示</div>
+      <div class="settings-section-title">疊加範圍</div>
       <div class="settings-group">
-        <div class="settings-row">
-          <span class="settings-row-label">顯示單位</span>
-          <button type="button" class="ios-switch active" id="toggleUnitsBtn" onclick="toggleUnitsVisibility()" role="switch" aria-checked="true" title="顯示/隱藏單位標記"></button>
-        </div>
         <div class="settings-row">
           <span class="settings-row-label">五大戰區</span>
           <button type="button" class="ios-switch" id="theaterToggleBtn" role="switch" aria-checked="false" title="顯示共軍戰區"></button>
@@ -347,18 +350,31 @@
           <button type="button" class="ios-switch" id="adizToggleBtn" role="switch" aria-checked="false" title="顯示防空識別區"></button>
         </div>
         <div class="settings-row">
-          <span class="settings-row-label">12/24 海浬線</span>
+          <span class="settings-row-label">12 / 24 海浬線</span>
           <button type="button" class="ios-switch" id="maritimeZonesToggleBtn" role="switch" aria-checked="false" title="顯示 12/24 海浬線"></button>
         </div>
       </div>
     </div>
 
-    <!-- 工具 -->
+    <!-- ④ 底圖（互斥選一，segmented） -->
     <div class="settings-section">
-      <div class="settings-section-title">工具</div>
+      <div class="settings-section-title">底圖</div>
       <div class="settings-group">
         <div class="input-group">
-          <button class="btn btn-secondary" style="width:100%;margin:0;" onclick="clearDrawings()">清除繪圖</button>
+          <div class="layer-toggle-group">
+            <button type="button" class="layer-toggle-btn active" data-layer="sea" onclick="switchBaseLayer('sea')">海域</button>
+            <button type="button" class="layer-toggle-btn" data-layer="air" onclick="switchBaseLayer('air')">空域</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 繪圖 -->
+    <div class="settings-section">
+      <div class="settings-section-title">繪圖</div>
+      <div class="settings-group">
+        <div class="input-group">
+          <button class="btn btn-secondary btn-block" onclick="clearDrawings()">清除繪圖</button>
         </div>
       </div>
     </div>
@@ -413,12 +429,6 @@
   <script src="static/js/pwa.js" defer></script>
   <!-- AIS Snapshot Layer -->
   <script src="static/js/ais_snapshot.js" defer></script>
-  <!-- satellite.js：SGP4 軌道計算函式庫（供衛星過境預測使用，純前端運算） -->
-  <script src="https://cdn.jsdelivr.net/npm/satellite.js@5/dist/satellite.min.js" defer></script>
-  <!-- 衛星過境預測（Celestrak TLE + satellite.js） -->
-  <script src="static/js/satellite_pass.js" defer></script>
-  <!-- 周邊航空動態（airplanes.live ADS-B） -->
-  <script src="static/js/adsb_traffic.js" defer></script>
   <!-- 動態島活動通知系統（整合各模組 loading/成功/錯誤狀態到動態島顯示） -->
   <script src="static/js/island_activity.js" defer></script>
   <!-- 動態島天氣即時活動（Open-Meteo，OSINT 用途：中國沿岸預設點風速/雲量/起霧判讀提示） -->

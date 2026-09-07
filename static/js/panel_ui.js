@@ -262,7 +262,7 @@ function showTopNotice() {
 }
 
 // ==========================================================
-// OSINT 工具浮動工具列（分享目前畫面／衛星過境預測／周邊航空動態）
+// OSINT 工具浮動工具列（分享目前畫面）
 // 視覺與互動比照 notes.js 的 addNotesControlToMap()，掛在地圖右下角
 // ==========================================================
 function initOsintToolbar(map) {
@@ -279,29 +279,6 @@ function initOsintToolbar(map) {
         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
       </svg>`,
       onClick: () => shareCurrentView()
-    },
-    {
-      title: '衛星過境預測',
-      svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 11a9 9 0 0 1 9 9"/>
-        <path d="M4 4a16 16 0 0 1 16 16"/>
-        <circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/>
-      </svg>`,
-      onClick: () => {
-        if (!window.openSatellitePassPanelAllPresets) return;
-        window.openSatellitePassPanelAllPresets();
-      }
-    },
-    {
-      title: '周邊航空動態',
-      svg: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>`,
-      onClick: () => {
-        if (!window.openAdsbTrafficPanelAllPresets) return;
-        window.openAdsbTrafficPanelAllPresets();
-      }
     }
   ];
 

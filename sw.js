@@ -50,7 +50,7 @@
 // ============================================
 // 版本與快取設定
 // ============================================
-const APP_VERSION = '0.5.3';
+const APP_VERSION = '0.6.0';
 const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
 
 // 需要快取的核心資源
@@ -81,8 +81,6 @@ const CORE_ASSETS = [
   '/static/js/submarine_cable.js',
   '/static/js/ais_snapshot.js',
   '/static/js/pwa.js',
-  '/static/js/satellite_pass.js',
-  '/static/js/adsb_traffic.js',
   '/static/js/island_activity.js',
   '/static/js/osint_weather.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
@@ -96,8 +94,7 @@ const CDN_ASSETS = [
   'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css',
   'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js',
-  'https://cdn.jsdelivr.net/npm/satellite.js@5/dist/satellite.min.js'
+  'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js'
 ];
 
 // ============================================

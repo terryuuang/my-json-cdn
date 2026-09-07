@@ -1,11 +1,11 @@
 /**
  * 海底電纜圖層模組
- * 資料來源：submarinecablemap-cdn-json-20250618.json
+ * 資料來源：geojson/submarinecablemap.json
  * 預設關閉，透過公共設施 checkbox 控制顯示
  */
 
 const SubmarineCable = (() => {
-  const GEOJSON_URL = './submarinecablemap-cdn-json-20250618.json';
+  const GEOJSON_URL = './geojson/submarinecablemap.json';
 
   // 現代化電纜配色：用明亮、高對比的色票取代原始暗色
   // 原始資料每條電纜有自己的 color，但大量是暗灰或低飽和色

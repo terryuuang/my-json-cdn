@@ -48,7 +48,7 @@ jq . joseph_w.geojson
 ### Tile Layers
 - **googleSea** (海域): `https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=zh-TW` — 衛星混合圖（satellite hybrid）
 - **googleAir** (空域): `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=zh-TW` — 標準道路圖（standard road map）
-- HTML 按鈕：「Google（海域）」與「Google（空域）」
+- HTML segmented 按鈕（控制面板「底圖」群組）：「海域」與「空域」（`.layer-toggle-btn[data-layer="sea"|"air"]`）
 - `switchBaseLayer('sea')` / `switchBaseLayer('air')` 切換底圖
 
 ### Module Responsibilities

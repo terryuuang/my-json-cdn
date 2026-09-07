@@ -319,13 +319,7 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
               <polyline points="14,2 14,8 20,8"/>
               <line x1="16" y1="13" x2="8" y2="13"/>
               <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>筆記</a><a href="#" class="link-btn" onclick="openSatellitePassPanelFromEl(this);return false;"
-            data-lat="${geoCoords[1]}"
-            data-lng="${geoCoords[0]}"
-            data-label="${escapeAttr(mainTitle)}">衛星過境預測</a><a href="#" class="link-btn" onclick="openAdsbTrafficPanelFromEl(this);return false;"
-            data-lat="${geoCoords[1]}"
-            data-lng="${geoCoords[0]}"
-            data-label="${escapeAttr(mainTitle)}">周邊航空動態</a></div>`;
+            </svg>筆記</a></div>`;
           
           const popupOptions = { className: 'custom-popup' };
           if (isMobileDevice()) {

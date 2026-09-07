@@ -5,7 +5,7 @@
  */
 
 const PLA_THEATER = (() => {
-  const GEOJSON_URL = './PLA_Theater_Commands.geojson';
+  const GEOJSON_URL = './geojson/PLA_Theater_Commands.geojson';
 
   // 各戰區顏色設定（現代化配色）
   const THEATER_STYLES = {
