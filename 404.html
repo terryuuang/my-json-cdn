@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>找不到頁面 - APEINTEL ATLAS</title>
+
+  <!-- 舊網域退場導引：與 index.html 一致，保留路徑後跳往正典網域。 -->
+  <script>
+    (function () {
+      const LEGACY_HOST = 'rnap.riotoolkit.cc';
+      const CANONICAL_HOST = 'rnap.watchember.cc';
+      if (location.hostname !== LEGACY_HOST) return;
+      location.replace(location.href.replace('//' + LEGACY_HOST, '//' + CANONICAL_HOST));
+    })();
+  </script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.ico">
+
+  <!-- 自包含樣式：404 不應依賴 main.css 或任何 CDN，那些正是可能失敗的東西。 -->
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffffcc;
+      --border: #0f172a1f;
+      --label: #0f172a;
+      --muted: #475569;
+      --accent: #ef4444;
+      --shadow: 0 8px 40px #0f172a1a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a2e;
+        --surface: #ffffff0f;
+        --border: #ffffff1f;
+        --label: #f1f5f9;
+        --muted: #94a3b8;
+        --shadow: 0 8px 40px #00000066;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+      background: var(--bg);
+      color: var(--label);
+      font: 400 16px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+    }
+    main {
+      width: min(440px, 100%);
+      padding: 40px 32px 32px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      text-align: center;
+    }
+    img { width: 56px; height: 56px; border-radius: 14px; }
+    .code {
+      margin: 20px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: var(--accent);
+    }
+    h1 { margin: 6px 0 12px; font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+    p { margin: 0; color: var(--muted); font-size: 15px; }
+    .path {
+      margin: 20px 0 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #64748b1a;
+      color: var(--muted);
+      font: 400 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      word-break: break-all;
+    }
+    a {
+      display: inline-block;
+      margin-top: 28px;
+      padding: 12px 28px;
+      min-height: 44px;
+      border-radius: 22px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+    a:hover { filter: brightness(1.08); }
+    a:active { transform: scale(.97); }
+    a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { a { transition: none; } a:active { transform: none; } }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/static/assets/APP_LOGO_192x192.png" width="56" height="56" alt="">
+    <p class="code">404</p>
+    <h1>找不到這個位置</h1>
+    <p>這個網址沒有對應的頁面或資料檔，可能是連結有誤，或該檔案已經移動。</p>
+    <p class="path" id="path"></p>
+    <a href="/">回到地圖</a>
+  </main>
+  <script>
+    document.getElementById('path').textContent = location.pathname;
+  </script>
+</body>
+</html>
