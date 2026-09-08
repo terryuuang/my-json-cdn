@@ -210,8 +210,17 @@ Equipment parsing is **asynchronous and lazy**:
 Served by **Cloudflare Pages**, deployed automatically on every push to `main`
 (no build step: build command empty, output directory `/`).
 
-- **`_headers`** is the single source of truth for cache and CORS policy. Pages purges
-  the edge on every deploy, so `s-maxage` can be long while browser `max-age` stays short.
+- **`_headers`** declares the cache and CORS policy. Pages purges the edge on every deploy,
+  so `s-maxage` can be long while browser `max-age` stays short.
+- **`_headers` alone is not enough**, and this is the non-obvious part. Cloudflare only
+  edge-caches a default list of extensions, which excludes `.geojson`/`.json`, and the
+  zone's Browser Cache TTL (4h here) overrides whatever `max-age` the origin sends. Both
+  zones therefore carry a matching set of Cache Rules, scoped to the `rnap` host so they
+  cannot touch anything else on the zone:
+  1. `respect_origin` for both edge and browser TTL — without this `_headers` is ignored
+  2. `cache: true` for `.geojson`/`.json` — without this datasets stay `DYNAMIC`
+  3. `cache: false` for `/sw.js`
+  If a cache change in `_headers` appears to do nothing, check these rules first.
 - `Access-Control-Allow-Origin: *` on `/*` is deliberate. Both GitHub Pages and Cloudflare
   Pages happen to send it by default today, but other projects consume these datasets
   cross-origin, so the rule pins the behaviour instead of trusting a platform default.
@@ -227,6 +236,8 @@ Served by **Cloudflare Pages**, deployed automatically on every push to `main`
 - Do **not** put a 301 on the legacy host yet: a redirected `/sw.js` makes Service Worker
   updates fail permanently, freezing existing installs where nothing can reach them.
   The legacy host only becomes a redirect once its traffic has drained.
+- Both hosts point at the same Pages project. To roll back to GitHub Pages, point the
+  `rnap` CNAME back at `terryuuang.github.io` and restore the `CNAME` file.
 
 ## Coding Conventions
 
