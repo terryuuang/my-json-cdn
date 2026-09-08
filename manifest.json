@@ -2,7 +2,7 @@
   "name": "溫SINT地圖 - APEINTEL ATLAS",
   "short_name": "溫SINT地圖",
   "description": "探索地理情報、儲存個人筆記，離線查看已下載點位。",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "start_url": "/?source=pwa",
   "scope": "/",
   "id": "/",

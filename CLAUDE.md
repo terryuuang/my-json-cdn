@@ -225,6 +225,11 @@ Served by **Cloudflare Pages**, deployed automatically on every push to `main`
   Pages happen to send it by default today, but other projects consume these datasets
   cross-origin, so the rule pins the behaviour instead of trusting a platform default.
 - `/sw.js` must stay `no-store`. Any intermediary cache on it delays every PWA update.
+- **Precache `/`, never `/index.html`.** Pages 308s `/index.html` to `/`, and
+  `cache.addAll()` rejects the entire batch if any response was redirected — so a single
+  `/index.html` entry in `CORE_ASSETS` silently breaks offline support and PWA install for
+  the whole app. The navigation handler's `caches.match()` key must match it. This differs
+  from GitHub Pages, which served `/index.html` with a plain 200.
 - **`404.html` must exist.** Without it Pages serves `index.html` with a `200` for every
   unknown path, so a renamed or deleted dataset returns HTML instead of a 404 —
   `refreshData()` in `sw.js` only checks `response.ok`, and would cache that HTML as data.

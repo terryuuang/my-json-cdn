@@ -1,12 +1,14 @@
 /** App shell updates are atomic; live APIs and map tiles are never archived. */
-const APP_VERSION = '0.6.2';
+const APP_VERSION = '0.6.3';
 // 退場中的舊網域：不預載、不攔截、主動註銷，讓訪客拿到帶有導向邏輯的最新頁面。
 const LEGACY_HOST = 'rnap.riotoolkit.cc';
 const IS_LEGACY_HOST = self.location.hostname === LEGACY_HOST;
 const CACHE_NAME = `apeintel-atlas-shell-v${APP_VERSION}`;
 const DATA_CACHE = 'apeintel-atlas-data-v1';
 const CORE_ASSETS = [
-  '/index.html',
+  // Must be '/', not '/index.html': Pages 308s the latter to the former, and
+  // cache.addAll() rejects the whole batch on any redirected response.
+  '/',
   '/manifest.json',
   '/favicon.ico',
   '/static/css/main.css',
@@ -136,7 +138,7 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate' && url.origin === self.location.origin) {
     // One versioned shell for all coordinate / shape links, including offline.
     event.respondWith((async () => {
-      const shell = await (await caches.open(CACHE_NAME)).match('/index.html');
+      const shell = await (await caches.open(CACHE_NAME)).match('/');
       return shell || fetch(request);
     })());
     return;

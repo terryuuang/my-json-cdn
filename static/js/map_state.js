@@ -18,6 +18,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年09月08日',
+    description: '離線功能修復（v0.6.3）：修正遷站後 Service Worker 無法安裝的問題。Cloudflare Pages 會將 /index.html 重新導向至 /，而快取 API 拒絕任何被重新導向的回應，導致整批預先快取失敗，離線瀏覽與 App 安裝因此失效。改以 / 作為應用外殼的快取鍵後恢復正常。'
+  },
+  {
+    date: '2026年09月08日',
     description: '網域與供應調整（v0.6.2）：站台改由 Cloudflare Pages 供應，資料檔（GeoJSON／JSON）自此進入邊緣快取，不再每次回源；快取策略改以 repo 內的 _headers 管理，Service Worker 不再被中間層快取，新版可即時送達。正式網域轉為 rnap.watchember.cc，舊網域 rnap.riotoolkit.cc 仍持續供應資料以免既有依賴中斷，但瀏覽時會自動導向新網域，舊網域上的離線安裝會自行退場。另修正手機版 App 按鈕遮擋左下角繪圖工具列的問題。'
   },
   {
