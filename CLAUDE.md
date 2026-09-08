@@ -242,8 +242,17 @@ Served by **Cloudflare Pages**, deployed automatically on every push to `main`
 - Do **not** put a 301 on the legacy host yet: a redirected `/sw.js` makes Service Worker
   updates fail permanently, freezing existing installs where nothing can reach them.
   The legacy host only becomes a redirect once its traffic has drained.
-- Both hosts point at the same Pages project. To roll back to GitHub Pages, point the
-  `rnap` CNAME back at `terryuuang.github.io` and restore the `CNAME` file.
+- Both hosts point at the same Pages project. There is no longer a GitHub Pages fallback
+  to roll back to — that deployment is disabled and the `CNAME` file is gone.
+- **Order matters when attaching a custom domain to Pages: point the DNS record at
+  `apeintel-atlas.pages.dev` FIRST, then add the custom domain.** Pages validates over
+  HTTP, so a hostname that still resolves somewhere else fails validation, and on timeout
+  Pages removes the custom domain *and deletes the DNS record it considers its own* —
+  leaving the hostname at `NXDOMAIN`. That happened to `rnap.riotoolkit.cc` during this
+  migration and took the legacy host offline. In the correct order validation completes in
+  well under a minute. Note that browsers and resolvers cache the `NXDOMAIN` for the SOA
+  minimum TTL (1800s here), so recovery looks broken long after it is actually fixed —
+  verify with `dig @<authoritative-ns>` or `curl --resolve`, never the local resolver.
 
 ## Coding Conventions
 
