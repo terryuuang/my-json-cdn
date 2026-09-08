@@ -1,4 +1,6 @@
 /* App surfaces share the map's system typography and colour tokens. */
+/* Launcher height + offset + gap; bottom-left map controls clear this much space. */
+:root { --app-launcher-clearance: 84px; }
 .app-launcher {
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
@@ -93,6 +95,8 @@
   .leaflet-top { top: env(safe-area-inset-top); }
   .leaflet-right { right: env(safe-area-inset-right); }
   .leaflet-bottom { bottom: env(safe-area-inset-bottom); }
+  /* Leaflet.draw sits at bottomleft on mobile, exactly where the launcher is. */
+  .leaflet-bottom.leaflet-left .leaflet-control { margin-bottom: var(--app-launcher-clearance, 84px); }
   .leaflet-control-zoom a { min-width: 44px; min-height: 44px; display: grid !important; place-items: center; }
   input, textarea, select { font-size: max(16px, 1rem); }
 }
