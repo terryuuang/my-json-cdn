@@ -323,7 +323,7 @@ function displaySearchResults(results, query) {
 
     // 來源標記
     const sourceIcon = source === 'nominatim'
-      ? '<span class="search-source-badge" title="來自 OpenStreetMap">🌍</span>'
+      ? '<span class="search-source-badge" title="來自 OpenStreetMap"><i class="bi bi-globe2" aria-hidden="true"></i></span>'
       : '';
 
     html += `

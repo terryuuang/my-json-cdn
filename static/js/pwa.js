@@ -1,428 +1,242 @@
-/**
- * PWA 功能模組 - APEINTEL ATLAS
- * 功能：Service Worker 註冊、安裝提示、更新通知、iOS 教學
- */
+/** Installation, offline status and explicit app updates. No framework required. */
+(() => {
+  let registration;
+  let installPrompt;
+  let updateRequested = false;
+  let dataOffline = false;
+  let installedThisSession = false;
+  let version = '0.6.1';
+  let lastFocus;
+  let toastTimer;
+  const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  const ios = () => /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const byId = id => document.getElementById(id);
 
-// ============================================
-// 全域變數
-// ============================================
-let deferredPrompt = null; // Android 安裝提示事件
-let swRegistration = null; // Service Worker 註冊物件
-let currentAppVersion = '0.6.0';
+  function toast(message) {
+    const el = byId('app-feedback');
+    el.textContent = message;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, 4500);
+  }
 
-// ============================================
-// 初始化
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  initPWA();
-});
-
-// 初始化 PWA 功能
-function initPWA() {
-  // 檢查瀏覽器是否支援 Service Worker
-  if (!('serviceWorker' in navigator)) return;
-
-  registerServiceWorker();
-  setupInstallPrompt();
-  checkIOSInstallable();
-  setupUpdateNotification();
-}
-
-// ============================================
-// Service Worker 註冊
-// ============================================
-async function registerServiceWorker() {
-  try {
-    swRegistration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/'
+  function workerMessage(type) {
+    return new Promise((resolve, reject) => {
+      const worker = navigator.serviceWorker?.controller || registration?.active;
+      if (!worker) return reject(new Error('App 尚未準備完成'));
+      const channel = new MessageChannel();
+      const timer = setTimeout(() => { channel.port1.close(); reject(new Error('回應逾時')); }, 5000);
+      channel.port1.onmessage = event => {
+        clearTimeout(timer);
+        channel.port1.close();
+        resolve(event.data);
+      };
+      worker.postMessage({ type }, [channel.port2]);
     });
+  }
 
-    // 檢查更新
-    swRegistration.addEventListener('updatefound', () => {
-      const newWorker = swRegistration.installing;
+  function renderInstall() {
+    const installed = standalone() || installedThisSession;
+    byId('app-install').hidden = installed;
+    byId('app-install').textContent = installPrompt ? '安裝到主畫面' : '如何加入主畫面';
+    byId('app-mode').textContent = standalone() ? '主畫面 App' : installedThisSession ? '已加入主畫面' : '瀏覽器模式';
+    byId('app-install-help').hidden = installed;
+    byId('app-install-help').textContent = ios()
+      ? '開啟瀏覽器的「分享」選單，選擇「加入主畫面」，再點「新增」。若有「作為 Web App 打開」，請保持開啟；找不到選項時可改用 Safari。'
+      : '使用瀏覽器選單的「安裝應用程式」或「加入主畫面」。支援直接安裝時，上方按鈕會開啟安裝確認。';
+    document.body.classList.toggle('app-standalone', standalone());
+  }
 
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // 新版本已安裝，顯示更新提示
-          showUpdateNotification();
+  function renderConnection() {
+    const offline = !navigator.onLine || dataOffline;
+    byId('app-connection').textContent = offline ? '目前離線' : '網路已連線';
+    byId('app-connection').classList.toggle('is-offline', offline);
+    byId('app-offline').hidden = !offline;
+    byId('app-launcher').classList.toggle('is-offline', offline);
+  }
+
+  async function refreshStatus() {
+    renderConnection();
+    if (!navigator.serviceWorker?.controller && !registration?.active) return;
+    try {
+      const [info, status] = await Promise.all([workerMessage('GET_VERSION'), workerMessage('OFFLINE_STATUS')]);
+      version = info.version;
+      const versionLabel = byId('app-version');
+      if (versionLabel) versionLabel.textContent = `版本 ${version}`;
+      byId('app-cache-state').textContent = status.ready ? '地理資料已儲存' : '尚未儲存地理資料';
+      byId('app-cache-date').textContent = status.cachedAt
+        ? `儲存於 ${new Date(status.cachedAt).toLocaleString('zh-TW')}；此時間不是來源發布時間。`
+        : '連線開啟地圖後會自動儲存；完成後可離線查看點位。';
+    } catch (error) {
+      console.warn('[PWA] 無法讀取離線狀態', error);
+      byId('app-cache-state').textContent = '暫時無法讀取離線狀態';
+    }
+  }
+
+  function open() {
+    const sheet = byId('app-sheet');
+    if (sheet.open) return;
+    lastFocus = document.activeElement;
+    renderInstall();
+    refreshStatus();
+    if (registration) showUpdate();
+    sheet.appendChild(byId('app-feedback'));
+    sheet.showModal();
+    byId('app-close').focus();
+  }
+
+  async function install() {
+    if (!installPrompt) {
+      open();
+      byId('app-install-help').focus();
+      return;
+    }
+    const prompt = installPrompt;
+    installPrompt = null;
+    try {
+      await prompt.prompt();
+      const choice = await prompt.userChoice;
+      if (choice.outcome === 'accepted') toast('已送出安裝要求');
+    } catch (_) { toast('請使用瀏覽器選單加入主畫面'); }
+    renderInstall();
+  }
+
+  async function showUpdate() {
+    registration = await navigator.serviceWorker.getRegistration();
+    const ready = !!navigator.serviceWorker.controller &&
+      registration?.waiting?.state === 'installed' &&
+      registration.waiting !== navigator.serviceWorker.controller;
+    byId('app-update').hidden = !ready;
+    byId('app-check').textContent = ready ? '有新版本可用' : '檢查更新';
+  }
+
+  async function checkUpdate() {
+    if (!registration || !navigator.onLine) { toast('請連線後再檢查更新'); return; }
+    const button = byId('app-check');
+    button.disabled = true;
+    try {
+      await registration.update();
+      await showUpdate();
+      toast(registration.waiting ? '新版本已準備好' : registration.installing ? '正在下載新版本' : '已完成更新檢查');
+    } catch (_) { toast('暫時無法檢查更新，請稍後再試'); }
+    finally { button.disabled = false; }
+  }
+
+  async function applyUpdate() {
+    registration = await navigator.serviceWorker.getRegistration();
+    const worker = registration?.waiting;
+    if (!worker || worker.state !== 'installed') return;
+    // Only the requesting tab reloads, and only after the controller changes.
+    if (typeof window.buildShareUrl === 'function') {
+      history.replaceState(history.state, '', window.buildShareUrl());
+    }
+    updateRequested = true;
+    byId('app-apply-update').disabled = true;
+    worker.postMessage({ type: 'SKIP_WAITING' });
+    toast('正在更新，將保留目前網址');
+  }
+
+  async function register() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) {
+      byId('app-cache-state').textContent = '此環境不支援離線儲存';
+      return;
+    }
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'DATA_CONNECTION') {
+        dataOffline = !event.data.online;
+        renderConnection();
+      }
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (updateRequested) {
+        updateRequested = false;
+        window.location.reload();
+      } else {
+        showUpdate();
+        refreshStatus();
+      }
+    });
+    try {
+      registration = await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
+      showUpdate();
+      const watched = new WeakSet();
+      const watch = worker => {
+        if (!worker || watched.has(worker)) return;
+        watched.add(worker);
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            setTimeout(() => showUpdate(), 0);
+            if (navigator.serviceWorker.controller) toast('新版本已準備好，可在 App 面板更新');
+          } else if (worker.state === 'redundant' && !registration.active) {
+            byId('app-cache-state').textContent = '離線準備未完成，請連線後重試';
+          }
+        });
+      };
+      registration.addEventListener('updatefound', event => watch(event.target.installing));
+      watch(registration.installing);
+      navigator.serviceWorker.ready.then(() => refreshStatus());
+      let lastCheck = Date.now();
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        refreshStatus();
+        if (navigator.onLine && Date.now() - lastCheck > 30 * 60 * 1000) {
+          lastCheck = Date.now();
+          registration.update().catch(() => {});
         }
       });
+    } catch (_) {
+      byId('app-cache-state').textContent = '離線準備未完成，請連線後重試';
+    }
+  }
+
+  function init() {
+    byId('app-launcher').addEventListener('click', open);
+    byId('app-close').addEventListener('click', () => byId('app-sheet').close());
+    byId('app-sheet').addEventListener('click', event => {
+      if (event.target !== byId('app-sheet')) return;
+      const rect = event.target.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right ||
+          event.clientY < rect.top || event.clientY > rect.bottom) event.target.close();
     });
-
-    // 監聽 SW 訊息
-    navigator.serviceWorker.addEventListener('message', handleSWMessage);
-
-    // 定期檢查更新（每 30 分鐘）
-    setInterval(() => {
-      swRegistration.update();
-    }, 30 * 60 * 1000);
-
-  } catch (error) {
-    console.error('[PWA] Service Worker 註冊失敗:', error);
+    byId('app-sheet').addEventListener('close', () => {
+      document.body.appendChild(byId('app-feedback'));
+      lastFocus?.focus();
+    });
+    byId('app-install').addEventListener('click', install);
+    byId('app-check').addEventListener('click', checkUpdate);
+    byId('app-apply-update').addEventListener('click', applyUpdate);
+    byId('app-share').addEventListener('click', () => window.shareCurrentView());
+    byId('app-clear').addEventListener('click', async () => {
+      try {
+        await workerMessage('CLEAR_CACHE');
+        await refreshStatus();
+        toast('已清除下載資料，個人筆記仍保留');
+      } catch (_) { toast('暫時無法清除下載資料'); }
+    });
+    window.addEventListener('online', () => { dataOffline = false; refreshStatus(); });
+    window.addEventListener('offline', refreshStatus);
+    window.addEventListener('appinstalled', () => {
+      installPrompt = null;
+      installedThisSession = true;
+      renderInstall();
+      toast('已加入主畫面，可從 App 圖示開啟');
+    });
+    matchMedia('(display-mode: standalone)').addEventListener('change', renderInstall);
+    renderInstall();
+    renderConnection();
+    register();
   }
-}
 
-// 處理 Service Worker 訊息
-function handleSWMessage(event) {
-  const { type, version } = event.data || {};
-
-  switch (type) {
-    case 'SW_ACTIVATED':
-      currentAppVersion = version;
-      // 新版本啟動後重新載入頁面
-      if (sessionStorage.getItem('pwa_update_pending')) {
-        sessionStorage.removeItem('pwa_update_pending');
-        window.location.reload();
-      }
-      break;
-  }
-}
-
-// ============================================
-// Android 安裝提示
-// ============================================
-function setupInstallPrompt() {
-  // 捕獲 beforeinstallprompt 事件
-  window.addEventListener('beforeinstallprompt', (event) => {
-    // 阻止預設的安裝提示
+  // Capture early; no automatic modal interrupts map use.
+  window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
-    deferredPrompt = event;
-    
-    // 顯示自訂安裝按鈕
-    showInstallBanner();
+    installPrompt = event;
+    if (byId('app-install')) renderInstall();
   });
-
-  // 監聯安裝完成事件
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    hideInstallBanner();
-    showToast('✅ 應用程式已成功安裝到主畫面！');
-  });
-}
-
-// 判斷是否為手機設備：統一定義於 map_state.js 的 isMobileDevice()，這裡不重複宣告
-// （避免跟其他檔案各自一份、行為不一致，且互相覆寫 window.isMobileDevice 造成混淆）
-
-// 顯示安裝提示（僅手機版，使用 confirm 對話框）
-function showInstallBanner() {
-  // 僅在手機版顯示，電腦版跳過
-  if (!isMobileDevice()) {
-    console.log('[PWA] 電腦版不顯示安裝提示');
-    return;
-  }
-
-  // 檢查是否已經安裝（standalone 模式）
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    return;
-  }
-
-  // 檢查是否已經顯示過或使用者已拒絕
-  const dismissed = localStorage.getItem('pwa_install_dismissed');
-  if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) {
-    return; // 7 天內不再顯示
-  }
-
-  // 延遲顯示 confirm 對話框（避免干擾頁面載入）
-  setTimeout(() => {
-    const userConfirmed = confirm('📱 安裝 APEINTEL ATLAS\n\n將地圖加入主畫面，享受更佳體驗！\n\n是否立即安裝？');
-    if (userConfirmed) {
-      installPWA();
-    } else {
-      dismissInstallBanner();
-    }
-  }, 1500);
-}
-
-// 隱藏安裝橫幅（保留函式相容性，改為 confirm 後不再需要實體移除）
-function hideInstallBanner() {
-  // 改用 confirm 對話框後，無需移除 DOM 元素
-}
-
-// 拒絕安裝
-function dismissInstallBanner() {
-  localStorage.setItem('pwa_install_dismissed', Date.now().toString());
-  hideInstallBanner();
-}
-
-// 觸發安裝
-async function installPWA() {
-  if (!deferredPrompt) return;
-
-  // 顯示安裝提示
-  deferredPrompt.prompt();
-
-  // 等待使用者回應
-  const { outcome } = await deferredPrompt.userChoice;
-
-  if (outcome === 'accepted') {
-    hideInstallBanner();
-  }
-
-  deferredPrompt = null;
-}
-
-// ============================================
-// iOS 安裝教學
-// ============================================
-
-// 偵測 iOS 裝置類型
-function detectIOSDevice() {
-  const ua = navigator.userAgent;
-  const isIOS = /iPad|iPhone|iPod/.test(ua) || 
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPad OS 13+
-  const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
-  const isStandalone = window.navigator.standalone === true || 
-                       window.matchMedia('(display-mode: standalone)').matches;
-  const isIPad = /iPad/.test(ua) || 
-                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  
-  return { isIOS, isSafari, isStandalone, isIPad };
-}
-
-function checkIOSInstallable() {
-  const { isIOS, isSafari, isStandalone, isIPad } = detectIOSDevice();
-
-  if (isIOS && isSafari && !isStandalone) {
-    // iOS Safari 但尚未安裝
-    const dismissed = localStorage.getItem('pwa_ios_guide_dismissed');
-    if (dismissed && Date.now() - parseInt(dismissed) < 14 * 24 * 60 * 60 * 1000) {
-      return; // 14 天內不再顯示
-    }
-
-    // 延遲顯示教學（避免干擾使用者）
-    setTimeout(() => showIOSInstallGuide(isIPad), 3000);
-  }
-}
-
-// 顯示 iOS 安裝教學
-function showIOSInstallGuide(isIPad = false) {
-  // 根據裝置類型調整說明
-  const shareButtonLocation = isIPad ? '右上角' : '底部';
-  const shareIcon = isIPad ? '↑' : '⬆';
-  
-  const guide = document.createElement('div');
-  guide.id = 'pwa-ios-guide';
-  guide.className = 'pwa-ios-guide';
-  guide.innerHTML = `
-    <div class="pwa-ios-content">
-      <button class="pwa-ios-close" onclick="dismissIOSGuide()" aria-label="關閉">✕</button>
-      <div class="pwa-ios-header">
-        <img src="static/assets/APEINTEL ATLAS_192x192.png" alt="App Icon" class="pwa-ios-icon">
-        <div class="pwa-ios-header-text">
-          <h3>安裝 APEINTEL ATLAS</h3>
-          <span class="pwa-ios-subtitle">加入主畫面，享受完整 APP 體驗</span>
-        </div>
-      </div>
-      <div class="pwa-ios-steps">
-        <div class="pwa-ios-step">
-          <span class="pwa-ios-step-num">1</span>
-          <div class="pwa-ios-step-content">
-            <span>點擊 Safari ${shareButtonLocation}的「<strong>分享</strong>」按鈕</span>
-            <span class="pwa-ios-share-icon">${shareIcon}</span>
-          </div>
-        </div>
-        <div class="pwa-ios-step">
-          <span class="pwa-ios-step-num">2</span>
-          <div class="pwa-ios-step-content">
-            <span>向下滑動選單，點擊「<strong>加入主畫面</strong>」</span>
-            <span class="pwa-ios-add-icon">➕</span>
-          </div>
-        </div>
-        <div class="pwa-ios-step">
-          <span class="pwa-ios-step-num">3</span>
-          <div class="pwa-ios-step-content">
-            <span>點擊右上角「<strong>新增</strong>」完成安裝</span>
-            <span class="pwa-ios-done-icon">✓</span>
-          </div>
-        </div>
-      </div>
-      <div class="pwa-ios-benefits">
-        <div class="pwa-ios-benefit">
-          <span class="pwa-ios-benefit-icon">📱</span>
-          <span>全螢幕體驗</span>
-        </div>
-        <div class="pwa-ios-benefit">
-          <span class="pwa-ios-benefit-icon">📴</span>
-          <span>離線可用</span>
-        </div>
-        <div class="pwa-ios-benefit">
-          <span class="pwa-ios-benefit-icon">⚡</span>
-          <span>快速啟動</span>
-        </div>
-      </div>
-      <button class="pwa-ios-dismiss-btn" onclick="dismissIOSGuide()">稍後再說</button>
-    </div>
-  `;
-  document.body.appendChild(guide);
-
-  setTimeout(() => guide.classList.add('show'), 100);
-}
-
-// 關閉 iOS 教學
-function dismissIOSGuide() {
-  localStorage.setItem('pwa_ios_guide_dismissed', Date.now().toString());
-  const guide = document.getElementById('pwa-ios-guide');
-  if (guide) {
-    guide.classList.remove('show');
-    setTimeout(() => guide.remove(), 300);
-  }
-}
-
-// ============================================
-// 更新通知
-// ============================================
-function setupUpdateNotification() {
-  // 監聽頁面可見性變化，回到頁面時檢查更新
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && swRegistration) {
-      swRegistration.update();
-    }
-  });
-}
-
-// 顯示更新通知
-function showUpdateNotification() {
-  // 檢查是否已顯示
-  if (document.getElementById('pwa-update-toast')) {
-    return;
-  }
-
-  const toast = document.createElement('div');
-  toast.id = 'pwa-update-toast';
-  toast.className = 'pwa-update-toast';
-  toast.innerHTML = `
-    <div class="pwa-update-content">
-      <span class="pwa-update-icon">🔄</span>
-      <div class="pwa-update-text">
-        <strong>有新版本可用</strong>
-        <span>點擊更新以取得最新功能</span>
-      </div>
-    </div>
-    <div class="pwa-update-actions">
-      <button class="pwa-update-btn pwa-update-btn-primary" onclick="applyUpdate()">立即更新</button>
-      <button class="pwa-update-btn pwa-update-btn-secondary" onclick="dismissUpdate()">稍後</button>
-    </div>
-  `;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add('show'), 100);
-}
-
-// 套用更新
-function applyUpdate() {
-  sessionStorage.setItem('pwa_update_pending', 'true');
-  
-  // 通知 SW 跳過等待
-  if (swRegistration && swRegistration.waiting) {
-    swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
-  }
-
-  dismissUpdate();
-  showToast('⏳ 正在更新，請稍候...');
-  
-  // 延遲重新載入（讓 SW 有時間啟動）
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
-}
-
-// 關閉更新提示
-function dismissUpdate() {
-  const toast = document.getElementById('pwa-update-toast');
-  if (toast) {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }
-}
-
-// ============================================
-// 通知權限
-// ============================================
-async function requestNotificationPermission() {
-  if (!('Notification' in window)) return false;
-
-  // 如果已經允許
-  if (Notification.permission === 'granted') {
-    return true;
-  }
-
-  // 如果尚未決定，請求權限
-  if (Notification.permission !== 'denied') {
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
-  }
-
-  // 如果被拒絕，顯示說明
-  showNotificationPermissionGuide();
-  return false;
-}
-
-// 顯示通知權限說明（當使用者之前拒絕過）
-function showNotificationPermissionGuide() {
-  const guide = document.createElement('div');
-  guide.className = 'pwa-notification-guide';
-  guide.innerHTML = `
-    <div class="pwa-notification-content">
-      <button class="pwa-notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="關閉">✕</button>
-      <h4>🔔 開啟通知權限</h4>
-      <p>您之前拒絕了通知權限。如需開啟，請依照以下步驟：</p>
-      <ol>
-        <li>點擊瀏覽器網址列左側的「🔒」或「ⓘ」圖示</li>
-        <li>找到「通知」設定</li>
-        <li>將設定改為「允許」</li>
-        <li>重新整理頁面</li>
-      </ol>
-      <button class="pwa-notification-dismiss" onclick="this.parentElement.parentElement.remove()">我知道了</button>
-    </div>
-  `;
-  document.body.appendChild(guide);
-  setTimeout(() => guide.classList.add('show'), 100);
-}
-
-// ============================================
-// Toast 通知
-// ============================================
-function showToast(message, duration = 3000) {
-  // 移除現有 toast
-  const existing = document.querySelector('.pwa-toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.className = 'pwa-toast';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, duration);
-}
-
-// ============================================
-// 公開 API
-// ============================================
-window.PWA = {
-  install: installPWA,
-  checkUpdate: () => swRegistration?.update(),
-  clearCache: async () => {
-    if (swRegistration?.active) {
-      return new Promise((resolve) => {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = (event) => resolve(event.data.success);
-        swRegistration.active.postMessage({ type: 'CLEAR_CACHE' }, [channel.port2]);
-      });
-    }
-    return false;
-  },
-  getVersion: () => currentAppVersion,
-  requestNotification: requestNotificationPermission,
-  showToast: showToast
-};
-
-// 將安裝函式暴露到全域（供 HTML onclick 使用）
-window.installPWA = installPWA;
-window.dismissInstallBanner = dismissInstallBanner;
-window.dismissIOSGuide = dismissIOSGuide;
-window.applyUpdate = applyUpdate;
-window.dismissUpdate = dismissUpdate;
+  document.addEventListener('DOMContentLoaded', init);
+  window.PWA = {
+    open, install, checkUpdate, getVersion: () => version, showToast: toast,
+    clearCache: () => workerMessage('CLEAR_CACHE').then(result => result.success)
+  };
+})();

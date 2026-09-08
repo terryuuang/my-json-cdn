@@ -1,65 +1,11 @@
-/**
- * Service Worker - APEINTEL ATLAS PWA
- * 版本：v0.5.1
- * 功能：快取管理、離線支援、自動更新
- * 
- * ============================================
- * 📋 版本更新規則 (Version Control Rules)
- * ============================================
- * 
- * 版本格式：X.Y.Z (Major.Minor.Patch)
- * 
- * 🔹 Patch 更新 (0.0.X → 0.0.X+1)
- *    - 修復 Bug
- *    - 小幅 UI 調整
- *    - 文字修正
- *    - 效能優化
- *    範例：0.0.1 → 0.0.2
- * 
- * 🔸 Minor 更新 (0.X.0 → 0.X+1.0)
- *    - 新增功能
- *    - 新增圖層或資料來源
- *    - 介面重新設計
- *    - 新增 API 整合
- *    範例：0.1.0 → 0.2.0
- * 
- * 🔺 Major 更新 (X.0.0 → X+1.0.0)
- *    - 重大架構變更
- *    - 不相容的 API 變更
- *    - 全新版本發布
- *    範例：1.0.0 → 2.0.0
- * 
- * ============================================
- * 🔄 如何更新版本
- * ============================================
- * 
- * 1. 修改下方 APP_VERSION 常數（唯一需要修改的地方）
- * 2. 同步修改 manifest.json 中的 version 欄位（非必要但建議）
- * 3. 推送到 GitHub，Cloudflare CDN 會自動更新
- * 4. 使用者下次訪問時會自動收到更新提示
- * 
- * ⚠️ 注意事項：
- * - Service Worker 會在背景自動檢查更新
- * - 新版本安裝後，舊快取會自動清除
- * - 使用者可手動透過 PWA.clearCache() 清除快取
- * - 若 Cloudflare 快取延遲，可在 Dashboard 手動 Purge Cache
- * 
- * ============================================
- */
-
-// ============================================
-// 版本與快取設定
-// ============================================
-const APP_VERSION = '0.6.0';
-const CACHE_NAME = `apeintel-atlas-v${APP_VERSION}`;
-
-// 需要快取的核心資源
+/** App shell updates are atomic; live APIs and map tiles are never archived. */
+const APP_VERSION = '0.6.1';
+const CACHE_NAME = `apeintel-atlas-shell-v${APP_VERSION}`;
+const DATA_CACHE = 'apeintel-atlas-data-v1';
 const CORE_ASSETS = [
-  '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
-  '/.well-known/web-app-origin-association',
   '/static/css/main.css',
   '/static/js/map_state.js',
   '/static/js/geo_shapes.js',
@@ -84,11 +30,23 @@ const CORE_ASSETS = [
   '/static/js/island_activity.js',
   '/static/js/osint_weather.js',
   '/static/assets/APEINTEL ATLAS_192x192.png',
-  '/static/assets/APEINTEL ATLAS_512x512.png'
+  '/static/assets/APEINTEL ATLAS_512x512.png',
+  '/static/css/pwa.css',
+  '/static/assets/app-maskable-512.png',
+  '/static/assets/atlas-companion.webp',
+  '/static/assets/APP_LOGO_180x180.png',
+  '/static/assets/APP_LOGO_192x192.png',
+  '/static/assets/APP_LOGO_512x512.png'
 ];
-
-// CDN 資源（快取但不影響安裝）
 const CDN_ASSETS = [
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/layers.png',
+  'https://unpkg.com/leaflet@1.9.4/dist/images/layers-2x.png',
+  'https://unpkg.com/leaflet-draw@1.0.4/dist/images/spritesheet.svg',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6',
+  'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff?dd67030699838ea613ee6dbda90effa6',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css',
@@ -96,269 +54,126 @@ const CDN_ASSETS = [
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
   'https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js'
 ];
+const ASSETS = [...CORE_ASSETS, ...CDN_ASSETS];
+const assetURLs = new Set(ASSETS.map(path => new URL(path, self.location.origin).href));
+const MAIN_DATA = '/geojson/joseph_w.geojson';
 
-// ============================================
-// Service Worker 安裝事件
-// ============================================
-self.addEventListener('install', (event) => {
-  console.log(`[SW] 安裝中... 版本 ${APP_VERSION}`);
-  
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(async (cache) => {
-        console.log('[SW] 快取核心資源');
-        // 逐一快取並容忍個別失敗，避免單一資源 404 導致整批快取失敗
-        const results = await Promise.allSettled(
-          CORE_ASSETS.map((url) => cache.add(url))
-        );
-        results.forEach((result, i) => {
-          if (result.status === 'rejected') {
-            console.warn(`[SW] 快取失敗，略過: ${CORE_ASSETS[i]}`, result.reason);
-          }
-        });
-      })
-      .then(() => {
-        // 立即啟用新 Service Worker（不等待舊的關閉）
-        return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('[SW] 安裝失敗:', error);
-      })
-  );
+self.addEventListener('install', event => {
+  // A missing dependency must not replace a working offline installation.
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })));
+    try {
+      await refreshData(new Request(new URL(MAIN_DATA, self.location.origin)));
+    } catch (_) { /* Existing dataset remains available when offline. */ }
+    // Updates wait for the user's explicit action or for all old tabs to close.
+  })());
 });
 
-// ============================================
-// Service Worker 啟動事件
-// ============================================
-self.addEventListener('activate', (event) => {
-  console.log(`[SW] 啟動中... 版本 ${APP_VERSION}`);
-  
-  event.waitUntil(
-    Promise.all([
-      // 清除舊版本快取
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((cacheName) => {
-              return cacheName.startsWith('apeintel-atlas-') && cacheName !== CACHE_NAME;
-            })
-            .map((cacheName) => {
-              console.log(`[SW] 刪除舊快取: ${cacheName}`);
-              return caches.delete(cacheName);
-            })
-        );
-      }),
-      // 立即接管所有頁面
-      self.clients.claim()
-    ]).then(() => {
-      // 通知所有客戶端有新版本
-      return self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: 'SW_ACTIVATED',
-            version: APP_VERSION
-          });
-        });
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith('apeintel-atlas-') &&
+      key !== CACHE_NAME && key !== DATA_CACHE).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
+});
+
+async function refreshData(request) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  let response;
+  try {
+    response = await fetch(request, { signal: controller.signal, cache: 'no-cache' });
+    // Finish reading before clearing the timeout, including stalled bodies.
+    if (response.ok) {
+      response = new Response(await response.blob(), {
+        status: response.status, statusText: response.statusText, headers: response.headers
       });
-    })
-  );
-});
+    }
+  } finally { clearTimeout(timeout); }
+  if (response.ok && response.type !== 'opaque') {
+    const cache = await caches.open(DATA_CACHE);
+    const headers = new Headers(response.headers);
+    headers.delete('Content-Encoding');
+    headers.delete('Content-Length');
+    headers.set('X-Atlas-Cached-At', new Date().toISOString());
+    await cache.put(request, new Response(await response.clone().blob(), {
+      status: response.status, statusText: response.statusText, headers
+    }));
+    // Keep storage bounded; retain the main dataset for offline launches.
+    const keys = await cache.keys();
+    const extras = keys.filter(key => new URL(key.url).pathname !== MAIN_DATA);
+    await Promise.all(extras.slice(0, Math.max(0, extras.length - 24)).map(key => cache.delete(key)));
+  }
+  return response;
+}
 
-// ============================================
-// 網路請求攔截（快取策略）
-// ============================================
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
+  if (request.method !== 'GET' || !/^https?:$/.test(url.protocol)) return;
 
-  // 跳過非 GET 請求
-  if (request.method !== 'GET') {
+  if (request.mode === 'navigate' && url.origin === self.location.origin) {
+    // One versioned shell for all coordinate / shape links, including offline.
+    event.respondWith((async () => {
+      const shell = await (await caches.open(CACHE_NAME)).match('/index.html');
+      return shell || fetch(request);
+    })());
     return;
   }
-
-  // 跳過 Chrome 擴充功能請求
-  if (url.protocol === 'chrome-extension:') {
-    return;
-  }
-
-  // GeoJSON 和 JSON 資料：Stale While Revalidate（快取優先，背景更新）
-  if (request.url.endsWith('.geojson') || request.url.endsWith('.json')) {
-    event.respondWith(staleWhileRevalidate(request));
-    return;
-  }
-
-  // API 請求：Network Only（不快取）
-  if (url.pathname.includes('/api/') || url.hostname.includes('overpass-api')) {
-    event.respondWith(fetch(request));
-    return;
-  }
-
-  // CDN 資源：Cache First with Network Fallback
-  if (url.hostname !== location.hostname) {
-    event.respondWith(cacheFirst(request));
-    return;
-  }
-
-  // 本地靜態資源：Stale While Revalidate（快取優先，背景更新）
-  event.respondWith(staleWhileRevalidate(request));
-});
-
-// ============================================
-// 快取策略函式
-// ============================================
-
-/**
- * 快取優先策略（適用於 CDN 資源）
- */
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) {
-    return cached;
-  }
-  
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
+  if (assetURLs.has(url.href)) {
+    event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (error) {
-    console.error('[SW] 網路請求失敗:', error);
-    return new Response('Network error', { status: 503 });
+      return (await cache.match(request)) || fetch(request);
+    })());
+    return;
   }
-}
-
-/**
- * 網路優先策略（適用於資料檔案）
- */
-async function networkFirst(request) {
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (error) {
-    console.log('[SW] 網路不可用，使用快取');
-    const cached = await caches.match(request);
-    if (cached) {
-      return cached;
-    }
-    return new Response('Offline', { status: 503 });
-  }
-}
-
-/**
- * 快取優先 + 背景更新策略（適用於靜態資源）
- */
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-
-  // 背景更新快取
-  const fetchPromise = fetch(request).then((response) => {
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  }).catch(() => null);
-
-  // 有快取就先回傳，沒有就等網路
-  if (cached) return cached;
-
-  const networkResponse = await fetchPromise;
-  if (networkResponse) return networkResponse;
-
-  // 沒快取又連不上網路。這裡「一定」要回傳 Response：
-  // event.respondWith(null) 會拋 TypeError: Failed to convert value to 'Response'。
-  // 導覽請求退回快取的 index.html，讓 PWA 離線時仍能開啟。
-  if (request.mode === 'navigate') {
-    const shell = await cache.match('/index.html') || await cache.match('/');
-    if (shell) return shell;
-  }
-
-  return new Response('離線且無可用快取', {
-    status: 503,
-    statusText: 'Service Unavailable',
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-  });
-}
-
-// ============================================
-// 訊息處理
-// ============================================
-self.addEventListener('message', (event) => {
-  const { type, data } = event.data || {};
-
-  switch (type) {
-    case 'GET_VERSION':
-      // 回傳當前版本
-      event.ports[0]?.postMessage({ version: APP_VERSION });
-      break;
-
-    case 'SKIP_WAITING':
-      // 強制跳過等待，立即啟用新 SW
-      self.skipWaiting();
-      break;
-
-    case 'CLEAR_CACHE':
-      // 清除所有快取
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName))
-        );
-      }).then(() => {
-        event.ports[0]?.postMessage({ success: true });
+  // Only local, published datasets. AIS, weather, search, analytics and tiles
+  // pass through to the network so old observations cannot look like live data.
+  if (url.origin === self.location.origin &&
+      /^\/(?:geojson|static\/geojson)\/[^?]+\.(?:geojson|json)$/.test(url.pathname) && !url.search) {
+    const report = async online => {
+      if (url.pathname !== MAIN_DATA) return;
+      const client = await self.clients.get(event.clientId);
+      client?.postMessage({ type: 'DATA_CONNECTION', online });
+    };
+    const refresh = refreshData(request).then(async response => {
+      await report(response.ok);
+      return response;
+    }).catch(async () => { await report(false); return null; });
+    event.waitUntil(refresh);
+    event.respondWith((async () => {
+      const cached = await (await caches.open(DATA_CACHE)).match(request);
+      return cached || await refresh || new Response('此資料尚未儲存，請連線後再試', {
+        status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
       });
-      break;
-
-    case 'CHECK_UPDATE':
-      // 檢查更新（強制重新下載 SW）
-      self.registration.update();
-      break;
+    })());
   }
 });
 
-// ============================================
-// 推播通知處理（未來擴充用）
-// ============================================
-self.addEventListener('push', (event) => {
-  const data = event.data?.json() || {};
-  const title = data.title || 'APEINTEL ATLAS';
-  const options = {
-    body: data.body || '有新的更新可用',
-    icon: '/static/assets/APEINTEL ATLAS_192x192.png',
-    badge: '/static/assets/APEINTEL ATLAS_192x192.png',
-    tag: 'apeintel-update',
-    renotify: true,
-    data: data
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
+self.addEventListener('message', event => {
+  const reply = value => event.ports[0]?.postMessage(value);
+  switch (event.data?.type) {
+    case 'GET_VERSION':
+      reply({ version: APP_VERSION });
+      break;
+    case 'SKIP_WAITING':
+      event.waitUntil(self.skipWaiting());
+      break;
+    case 'OFFLINE_STATUS':
+      event.waitUntil((async () => {
+        const cache = await caches.open(DATA_CACHE);
+        const data = await cache.match(MAIN_DATA);
+        reply({ ready: !!data, cachedAt: data?.headers.get('X-Atlas-Cached-At') });
+      })());
+      break;
+    case 'CLEAR_CACHE':
+      // Preserve the app shell and IndexedDB notes. Remove only downloaded data.
+      event.waitUntil(caches.delete(DATA_CACHE).then(() => reply({ success: true })));
+      break;
+    case 'CHECK_UPDATE':
+      event.waitUntil(self.registration.update());
+      break;
+  }
 });
-
-// 點擊通知
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window' }).then((clients) => {
-      // 如果已有開啟的視窗，聚焦它
-      for (const client of clients) {
-        if (client.url === '/' && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      // 否則開啟新視窗
-      if (self.clients.openWindow) {
-        return self.clients.openWindow('/');
-      }
-    })
-  );
-});
-
-console.log(`[SW] Service Worker 已載入 - 版本 ${APP_VERSION}`);

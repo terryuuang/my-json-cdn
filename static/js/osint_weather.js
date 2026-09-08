@@ -18,15 +18,15 @@
   const STATIC_DWELL_MS = 3200; // 文字沒超出寬度、不需要跑馬燈時，單純停留閱讀的時間
 
   // WMO 天氣代碼（Open-Meteo 採用同一套標準）
-  const WEATHER_ICONS = [
-    [0, 0, '☀️'], [1, 3, '⛅'], [45, 48, '🌫️'],
-    [51, 67, '🌧️'], [71, 77, '❄️'], [80, 82, '🌦️'], [85, 86, '🌨️'], [95, 99, '⛈️']
+  const WEATHER_LABELS = [
+    [0, 0, '晴'], [1, 3, '多雲'], [45, 48, '霧'],
+    [51, 67, '雨'], [71, 77, '雪'], [80, 82, '陣雨'], [85, 86, '陣雪'], [95, 99, '雷雨']
   ];
 
-  function weatherIcon(code) {
-    if (!Number.isFinite(code)) return '🌡️';
-    const hit = WEATHER_ICONS.find(([min, max]) => code >= min && code <= max);
-    return hit ? hit[2] : '🌡️';
+  function weatherLabel(code) {
+    if (!Number.isFinite(code)) return '天氣';
+    const hit = WEATHER_LABELS.find(([min, max]) => code >= min && code <= max);
+    return hit ? hit[2] : '天氣';
   }
 
   function compassDir(deg) {
@@ -54,7 +54,7 @@
   }
 
   function formatEntryText(entry) {
-    const icon = weatherIcon(entry.weatherCode);
+    const icon = weatherLabel(entry.weatherCode);
     const temp = Number.isFinite(entry.temp) ? `${Math.round(entry.temp)}°C` : '';
     const wind = Number.isFinite(entry.windSpeed)
       ? `${compassDir(entry.windDir)}風 ${Math.round(entry.windSpeed)}kt`
@@ -62,7 +62,7 @@
     const hint = buildOsintHint(entry);
     const parts = [entry.label, temp, wind].filter(Boolean);
     let text = `${icon} ${parts.join(' · ')}`;
-    if (hint) text += ` · ⚠️ ${hint}`;
+    if (hint) text += ` · ${hint}`;
     return text;
   }
 

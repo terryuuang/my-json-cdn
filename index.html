@@ -7,7 +7,7 @@
   <!-- ============================================
        基礎 Meta 標籤
        ============================================ -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="APEINTEL ATLAS - 互動式地理資訊地圖">
   <meta name="author" content="APEINTEL">
   <meta name="keywords" content="地圖,軍事,設施,OSINT,情報,GeoJSON">
@@ -80,20 +80,36 @@
        ============================================ -->
   <!-- 預設 -->
   <link rel="apple-touch-icon" href="static/assets/APP_LOGO_180x180.png">
-  <!-- iPad (非 Retina) -->
-  <link rel="apple-touch-icon" sizes="76x76" href="static/assets/APP_LOGO_152x152.png">
   <!-- iPad (Retina) -->
   <link rel="apple-touch-icon" sizes="152x152" href="static/assets/APP_LOGO_152x152.png">
   <!-- iPhone (Retina) -->
   <link rel="apple-touch-icon" sizes="180x180" href="static/assets/APP_LOGO_180x180.png">
-  <!-- iPad Pro -->
-  <link rel="apple-touch-icon" sizes="167x167" href="static/assets/APP_LOGO_180x180.png">
   
-  <!-- ============================================
-       iOS 啟動畫面（Splash Screen）
-       注意：iOS 需要完整螢幕解析度的圖片才會顯示
-       目前使用 background_color 作為啟動畫面背景
-       ============================================ -->
+  <!-- iOS 啟動畫面：裝置尺寸對應，直向與橫向皆提供。 -->
+  <link rel="apple-touch-startup-image" href="static/assets/launch-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1334x750.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2436x1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2532x1170.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2556x1179.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1206x2622.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2622x1206.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1792x828.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2688x1242.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2778x1284.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2796x1290.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2868x1320.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-1640x2360.png" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2360x1640.png" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="static/assets/launch-2732x2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
 
   <!-- ============================================
        樣式表預載與載入
@@ -109,6 +125,7 @@
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
   <link rel="stylesheet" href="static/css/main.css">
+  <link rel="stylesheet" href="static/css/pwa.css">
   <!-- Cloudflare Web Analytics（僅正式環境載入：beacon 的 token 綁定正式網域，
        本機開發時的 origin 一定不符，載入只會產生無意義的 CORS 錯誤訊息） -->
   <script>
@@ -135,6 +152,41 @@
   </script>
 </head>
 <body>
+  <button id="app-launcher" class="app-launcher" type="button" aria-haspopup="dialog" aria-controls="app-sheet" aria-label="App 安裝與離線設定">
+    <img src="static/assets/APP_LOGO_192x192.png" width="26" height="26" alt=""> <span>App</span>
+  </button>
+  <div id="app-offline" class="app-offline" role="status" hidden>離線模式 · 底圖與即時查詢需連線</div>
+  <div id="app-feedback" class="app-feedback" role="status" aria-live="polite" hidden></div>
+  <dialog id="app-sheet" class="app-sheet" aria-labelledby="app-title">
+    <button id="app-close" class="app-close" type="button" aria-label="關閉 App 面板"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+    <div class="app-sheet-body">
+      <img class="app-art" src="static/assets/atlas-companion.webp" width="960" height="640" alt="彩色猩猩研究地圖，身旁環繞等高線圖層與指南針">
+      <div class="app-sheet-content">
+        <span class="app-eyebrow">APEINTEL ATLAS</span>
+        <h1 id="app-title">把世界，帶在身邊。</h1>
+        <p class="app-intro">從主畫面一鍵開啟，讓每一次探索都更順手。</p>
+        <div class="app-badges"><span id="app-mode"></span><span id="app-connection"></span></div>
+        <button id="app-install" class="app-primary" type="button">加入主畫面</button>
+        <p id="app-install-help" class="app-help" tabindex="-1"></p>
+        <section class="app-card" aria-labelledby="app-offline-title">
+          <h2 id="app-offline-title"><i class="bi bi-cloud-arrow-down" aria-hidden="true"></i> 離線探索</h2>
+          <strong id="app-cache-state">正在準備離線功能…</strong>
+          <p id="app-cache-date">首次準備完成後，介面與地理資料可離線開啟。</p>
+          <p>離線可查看已儲存點位與個人筆記。Google 底圖、天氣、AIS 與線上搜尋需要網路；下載資料不代表最新情報。</p>
+          <button id="app-clear" class="app-text-button" type="button">清除下載資料</button>
+        </section>
+        <div id="app-update" class="app-card app-update" hidden>
+          <strong>新版本已準備好</strong>
+          <p>更新會重新開啟目前連結；請先儲存尚未完成的繪圖或筆記。</p>
+          <button id="app-apply-update" class="app-primary" type="button">更新並重新開啟</button>
+        </div>
+        <div class="app-actions">
+          <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
+          <button id="app-check" type="button">檢查更新</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
   <!-- 液態 UI 系統：全站共用的 gooey 濾鏡（thinking-orbs 三點脈動、iOS 開關液滴用）
        純內嵌 SVG，不佔版面；載入失敗時相關元素會自然退化為無濾鏡外觀 -->
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
@@ -156,6 +208,7 @@
 
   <!-- 載入指示器（v0.6.0：環繞光束 + 三點液態脈動） -->
   <div id="loading" class="loading border-beam">
+    <img class="app-loading-mark" src="static/assets/APP_LOGO_192x192.png" width="64" height="64" alt="APEINTEL ATLAS">
     <div class="thinking-orbs" role="img" aria-label="載入中"><i></i><i></i><i></i></div>
     <div>載入地圖資料中...</div>
   </div>

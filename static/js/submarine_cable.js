@@ -60,7 +60,7 @@ const SubmarineCable = (() => {
           },
         });
 
-        layer.bindPopup(`<strong>🔌 ${name}</strong>`, { className: 'custom-popup' });
+        layer.bindPopup(`<strong>${name}</strong>`, { className: 'custom-popup' });
         layer.addTo(_layerGroup);
       });
 

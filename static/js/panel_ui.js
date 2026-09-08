@@ -122,7 +122,16 @@ async function copyCurrentUrl() {
 
 // 「分享目前畫面」按鈕：完整重建分享連結並複製
 async function shareCurrentView() {
-  await copyTextToClipboard(buildShareUrl());
+  const url = buildShareUrl();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '溫SINT地圖 - APEINTEL ATLAS', url });
+      return;
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+    }
+  }
+  await copyTextToClipboard(url);
 }
 
 // 隱藏/顯示控制面板

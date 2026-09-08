@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 - `index.html`: Entry point for the Leaflet-based map UI.
-- `static/js/main.js`: Core map logic, URL param handling, data fetch/render.
+- `static/js/map_state.js`, `map_init.js`, `markers_render.js`, `panel_ui.js`, and `bootstrap.js`: Shared state, map setup, data rendering, controls, and startup (formerly `main.js`).
 - Map tiles: Google 海域 (satellite hybrid, default) and Google 空域 (road map).
 - `static/js/equipment_parser.js`: Parses equipment text; fetches Wikipedia summaries.
 - `static/js/shape_utils.js`: Shared helpers for shape parsing, geodesic calculations, colour normalisation, and KML building.
@@ -53,3 +53,12 @@
 
 ## Agent-Specific Instructions
 - Keep changes minimal and in-scope; do not introduce build tools. Preserve structure and style; update this guide if conventions change.
+
+## PWA Maintenance
+- `sw.js` owns the app-shell version (`APP_VERSION`). Bump it for changes to cached HTML, CSS, JavaScript or artwork; also update `manifest.json` and the fallback version in `pwa.js`.
+- Keep every required local script/style and pinned CDN dependency in `CORE_ASSETS` / `CDN_ASSETS`. Installation is atomic: a failed dependency leaves the previous version in use.
+- App shells are versioned separately from downloaded local datasets. Do not cache live APIs, analytics or Google map tiles. Dataset cache is bounded to the main GeoJSON plus 24 optional local files.
+- Updates wait for explicit activation or closure of all previous tabs. Only the tab requesting an update reloads. Cache clearing must preserve the shell and IndexedDB notes.
+- `static/js/pwa.js` and `static/css/pwa.css` implement the App dialog, installation guidance, connectivity feedback and update controls. Use text or Bootstrap Icons, not decorative Emoji.
+- `static/assets/atlas-companion.webp` is AI-generated artwork derived from `APP_LOGO_512x512.png` (2026-09-08, approximately 44 KB). `app-maskable.svg` embeds the unchanged logo inside the maskable safe circle; `app-maskable-512.png` is its rendered manifest icon. `launch-*.png` are branded iOS startup screens matched by device-size media queries in `index.html`.
+- Serve over HTTPS (localhost is supported for development). See `PWA.md` for offline limits and manual device QA.

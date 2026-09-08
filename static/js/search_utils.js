@@ -296,7 +296,7 @@
         const formattedNominatim = nominatimResults.slice(0, nominatimMaxResults).map(result => ({
           displayName: result.displayName,
           name: result.name,
-          layer: `🌍 ${result.type || '地點'}`,
+          layer: result.type || '地點',
           coordinates: [result.lng, result.lat],
           source: 'nominatim',
           matchScore: 40 + (result.importance * 10) // Nominatim 結果分數較低
