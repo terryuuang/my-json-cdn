@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>溫SINT地圖 - APEINTEL ATLAS</title>
+
+  <!-- 舊網域退場導引：只影響人類訪客，跨網域取用資料檔的程式不執行 JS，不受影響。 -->
+  <script>
+    (function () {
+      const LEGACY_HOST = 'rnap.riotoolkit.cc';
+      const CANONICAL_HOST = 'rnap.watchember.cc';
+      if (location.hostname !== LEGACY_HOST) return;
+      location.replace(location.href.replace('//' + LEGACY_HOST, '//' + CANONICAL_HOST));
+    })();
+  </script>
+  <link rel="canonical" href="https://rnap.watchember.cc/">
   
   <!-- ============================================
        基礎 Meta 標籤
@@ -16,7 +27,7 @@
        OpenGraph 社群媒體預覽標籤
        ============================================ -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://rnap.riotoolkit.cc">
+  <meta property="og:url" content="https://rnap.watchember.cc">
   <meta property="og:site_name" content="APEINTEL ATLAS">
   <meta property="og:title" content="溫SINT地圖">
   <meta property="og:description" content="互動式地理資訊地圖">

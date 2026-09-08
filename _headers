@@ -1,0 +1,32 @@
+# Cloudflare Pages 標頭設定。每次部署會自動清除邊緣快取，因此 s-maxage 可以放長；
+# 瀏覽器端的 max-age 保守，避免使用者拿到過期資產。
+
+# GitHub Pages 過去無條件回傳此標頭，其他專案可能跨網域取用這些資料檔。
+/*
+  Access-Control-Allow-Origin: *
+
+# Service Worker 是 PWA 更新的入口，任何快取都會延遲使用者收到新版。
+/sw.js
+  Cache-Control: no-store
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+# sw.js 以 staleWhileRevalidate 管理資料，瀏覽器端不需要長期保留。
+/geojson/*
+  Cache-Control: public, max-age=300, s-maxage=86400, stale-while-revalidate=604800
+
+/static/geojson/*
+  Cache-Control: public, max-age=300, s-maxage=86400, stale-while-revalidate=604800
+
+/static/js/*
+  Cache-Control: public, max-age=3600, s-maxage=2592000
+
+/static/css/*
+  Cache-Control: public, max-age=3600, s-maxage=2592000
+
+/static/assets/*
+  Cache-Control: public, max-age=604800, s-maxage=2592000

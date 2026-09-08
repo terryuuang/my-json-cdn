@@ -18,6 +18,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 const CHANGELOG = [
   {
     date: '2026年09月08日',
+    description: '網域與供應調整（v0.6.2）：站台改由 Cloudflare Pages 供應，資料檔（GeoJSON／JSON）自此進入邊緣快取，不再每次回源；快取策略改以 repo 內的 _headers 管理，Service Worker 不再被中間層快取，新版可即時送達。正式網域轉為 rnap.watchember.cc，舊網域 rnap.riotoolkit.cc 仍持續供應資料以免既有依賴中斷，但瀏覽時會自動導向新網域，舊網域上的離線安裝會自行退場。另修正手機版 App 按鈕遮擋左下角繪圖工具列的問題。'
+  },
+  {
+    date: '2026年09月08日',
     description: 'PWA 體驗更新（v0.6.1）：新增 App 安裝與離線設定面板、品牌延伸插圖、安全範圍 App 圖示、離線資料儲存狀態與時間。更新改為使用者選擇後才重新開啟，分享支援系統分享選單。改善手機安全區域、觸控尺寸與無障礙焦點，移除安裝提示、搜尋與天氣介面的裝飾 Emoji。離線保留介面、已下載地理資料與個人筆記；底圖與即時查詢仍需連線。'
   },
   {

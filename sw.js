@@ -1,5 +1,8 @@
 /** App shell updates are atomic; live APIs and map tiles are never archived. */
-const APP_VERSION = '0.6.1';
+const APP_VERSION = '0.6.2';
+// 退場中的舊網域：不預載、不攔截、主動註銷，讓訪客拿到帶有導向邏輯的最新頁面。
+const LEGACY_HOST = 'rnap.riotoolkit.cc';
+const IS_LEGACY_HOST = self.location.hostname === LEGACY_HOST;
 const CACHE_NAME = `apeintel-atlas-shell-v${APP_VERSION}`;
 const DATA_CACHE = 'apeintel-atlas-data-v1';
 const CORE_ASSETS = [
@@ -59,6 +62,11 @@ const assetURLs = new Set(ASSETS.map(path => new URL(path, self.location.origin)
 const MAIN_DATA = '/geojson/joseph_w.geojson';
 
 self.addEventListener('install', event => {
+  if (IS_LEGACY_HOST) {
+    // Retirement is not a feature update, so it must not wait for the user's consent.
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
   // A missing dependency must not replace a working offline installation.
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
@@ -71,6 +79,16 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
+  if (IS_LEGACY_HOST) {
+    event.waitUntil((async () => {
+      await Promise.all((await caches.keys()).map(key => caches.delete(key)));
+      await self.registration.unregister();
+      const windows = await self.clients.matchAll({ type: 'window' });
+      // The reload lands on the canonical host; the page's own guard does the hop.
+      await Promise.all(windows.map(client => client.navigate(client.url).catch(() => {})));
+    })());
+    return;
+  }
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.filter(key => key.startsWith('apeintel-atlas-') &&
@@ -110,6 +128,7 @@ async function refreshData(request) {
 }
 
 self.addEventListener('fetch', event => {
+  if (IS_LEGACY_HOST) return;
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== 'GET' || !/^https?:$/.test(url.protocol)) return;

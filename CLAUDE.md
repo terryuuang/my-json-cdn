@@ -201,9 +201,32 @@ Equipment parsing is **asynchronous and lazy**:
 - Init timing logged to console
 
 ### Service Worker
-- `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, `pwa.js` `currentAppVersion`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
+- `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, the `version` fallback in `pwa.js`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
 - CORE_ASSETS: `notes.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
+
+## Deployment
+
+Served by **Cloudflare Pages**, deployed automatically on every push to `main`
+(no build step: build command empty, output directory `/`).
+
+- **`_headers`** is the single source of truth for cache and CORS policy. Pages purges
+  the edge on every deploy, so `s-maxage` can be long while browser `max-age` stays short.
+- `Access-Control-Allow-Origin: *` on `/*` is deliberate. Both GitHub Pages and Cloudflare
+  Pages happen to send it by default today, but other projects consume these datasets
+  cross-origin, so the rule pins the behaviour instead of trusting a platform default.
+- `/sw.js` must stay `no-store`. Any intermediary cache on it delays every PWA update.
+
+### Domains
+
+- **`rnap.watchember.cc`** — canonical. `og:url` and `<link rel="canonical">` point here.
+- **`rnap.riotoolkit.cc`** — retiring. Still serves identical content so existing
+  dependencies keep working; a guard at the top of `index.html` hops human visitors to the
+  canonical host, and `sw.js` (`IS_LEGACY_HOST`) skips precaching, stops intercepting,
+  clears its caches and unregisters itself there.
+- Do **not** put a 301 on the legacy host yet: a redirected `/sw.js` makes Service Worker
+  updates fail permanently, freezing existing installs where nothing can reach them.
+  The legacy host only becomes a redirect once its traffic has drained.
 
 ## Coding Conventions
 
