@@ -177,8 +177,11 @@ function togglePanel() {
   }
 }
 
+let panelLayoutIsMobile = null;
+
 // 初始化面板顯示狀態
 function initializePanelState() {
+  panelLayoutIsMobile = isMobileDevice();
   const panel = document.getElementById('controlPanel');
   const mobileHint = document.getElementById('mobileHint');
   const toggleBtn = document.querySelector('.toggle-panel:not(.toggle-panel-mobile)');
@@ -209,38 +212,13 @@ function initializePanelState() {
 
 // 監聽視窗大小變化
 function handleResize() {
-const panel = document.getElementById('controlPanel');
-const mobileHint = document.getElementById('mobileHint');
-const toggleBtn = document.querySelector('.toggle-panel');
-
-if (isMobileDevice()) {
-    // 切換到手機版
-    panel.classList.remove('hidden');
-    if (mobileHint) {
-        mobileHint.style.display = 'block';
-    }
-    if (!panel.classList.contains('show-mobile')) {
-    // 如果面板是開啟狀態，保持開啟
-    const wasVisible = !panel.classList.contains('hidden');
-    if (wasVisible) {
-        panel.classList.add('show-mobile');
-    }
-    }
-    if (toggleBtn) {
-        toggleBtn.style.zIndex = panel.classList.contains('show-mobile') ? '1400' : '1600';
-    }
-} else {
-    // 切換到桌面版
-    panel.classList.remove('show-mobile');
-    if (mobileHint) {
-        mobileHint.style.display = 'none';
-    }
-    // 桌面版預設顯示
-    panel.classList.remove('hidden');
-    if (toggleBtn) {
-        toggleBtn.style.zIndex = '1400';
-    }
-}
+  const mobile = isMobileDevice();
+  // 軟鍵盤、網址列與同一版型內旋轉不應重新打開面板並遮住搜尋。
+  if (mobile === panelLayoutIsMobile) return;
+  closeControlPanel();
+  document.getElementById('panelBackdrop')?.classList.remove('show');
+  if (window.closeAllDropdowns) window.closeAllDropdowns();
+  initializePanelState();
 }
 
 // 清除目前繪製的圖形

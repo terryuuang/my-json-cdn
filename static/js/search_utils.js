@@ -222,7 +222,8 @@
     const results = [];
 
     for (let feature of features) {
-      if (!feature.properties) continue;
+      if (!feature.properties || feature.geometry?.type !== 'Point') continue;
+      if (!feature.geometry.coordinates?.slice(0, 2).every(Number.isFinite)) continue;
 
       let matched = false;
       let matchedField = '';

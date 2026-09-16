@@ -381,7 +381,10 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
 }
 function applyUnitVisibility() {
   const toggleBtn = document.getElementById('toggleUnitsBtn');
-  if (toggleBtn) toggleBtn.classList.toggle('active', unitsVisible);
+  if (toggleBtn) {
+    toggleBtn.classList.toggle('active', unitsVisible);
+    toggleBtn.setAttribute('aria-checked', String(unitsVisible));
+  }
   if (!map) return;
   if (unitsVisible) {
     currentMarkers.addTo(map);
@@ -446,6 +449,8 @@ function updateUrlAndRenderAtCoords(lat, lng, radius, selectedLayers) {
   // 如果沒有選中任何圖層，刪除 layers 參數（表示顯示所有圖層）
   if (selectedLayers.length === 0) {
     urlParams.delete('layers');
+  } else {
+    urlParams.set('layers', selectedLayers.join(','));
   }
 
   const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;

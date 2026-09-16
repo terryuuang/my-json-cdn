@@ -4853,3 +4853,78 @@ select.input-field:hover {
   .border-beam::after { animation: none; opacity: 0; }
   .thinking-orbs circle { animation: none; opacity: 0.55; }
 }
+
+/* v0.6.5 動態島：一致的觸控操作與可讀的結果。 */
+.search-island-close {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #bfdbfe;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.search-island-input { min-width: 0; }
+.search-island-clear { min-width: 44px; min-height: 44px; }
+.search-home-hint {
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+.search-result-item {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  white-space: normal;
+  touch-action: manipulation;
+}
+.search-result-name { overflow-wrap: anywhere; }
+.search-result-layer { line-height: 1.5; }
+.search-result-item:focus-visible,
+.search-island-close:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: -3px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.search-result-item:active, .search-island-close:active { background: rgba(255, 255, 255, 0.16); }
+.search-results { overscroll-behavior: contain; }
+@media (max-width: 768px) {
+  .search-island-input-row { gap: 2px; padding: 6px 8px; }
+  .search-island-input-row > .bi-search { display: none; }
+  .search-result-item { padding: 12px 14px; }
+  .search-result-name { font-size: 15px; line-height: 1.5; }
+  .search-result-layer { font-size: 12px; }
+  .search-results.show {
+    max-height: max(0px, min(60dvh, calc(var(--vv-height, 100dvh) - 92px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .search-results { scroll-behavior: auto; transition: none; }
+}
+.search-shortcuts { display: flex; gap: 8px; padding: 8px 14px 0; flex-wrap: wrap; }
+.search-shortcuts button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.search-shortcuts button:focus-visible { outline: 2px solid #93c5fd; }
+.search-shortcuts button:active { background: rgba(255, 255, 255, 0.16); }

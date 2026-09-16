@@ -68,3 +68,44 @@ entries were removed because they were not screenshots of the app.
 
 Platform behaviour follows [WebKit's Safari 26 web-app guidance](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/)
 and [MDN's service-worker lifecycle documentation](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers).
+
+## 0.6.5 dynamic island search
+
+Search now includes military layers, public facilities and reference overlays.
+Selecting a military layer selects that layer and fits its full dataset; selecting
+an individual point enables its layer and unit visibility. Facility actions use
+the current map area. Overlay actions enable (never toggle off) the matching
+control and move to its reference area. Existing controls remain available to hide
+these layers. Local point and catalog search also work offline with cached data.
+
+The empty search view offers shortcuts and three free public OSINT sources,
+verified on 2026-09-16:
+
+- [Taiwan MND military updates](https://www.mnd.gov.tw/newslist/2): published
+  PLA activity around Taiwan.
+- [CSIS AMTI China Island Tracker](https://amti.csis.org/island-tracker/china/):
+  South China Sea outpost profiles and imagery analysis.
+- [CSIS ChinaPower](https://chinapower.csis.org/): China capability research and
+  supporting data.
+
+These are clearly labeled outbound links, require a connection, and open the
+original publisher in a new tab. They are not live feeds or copied datasets;
+no article content, imagery or third-party API is added to the offline cache.
+Check source publication dates when using their reports.
+
+Typing searches local content; Enter or the search button explicitly requests
+online geocoding. This avoids autocomplete requests prohibited by the existing
+[Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
+
+Release QA: exercise each shortcut, select a disabled military layer and point,
+repeat an overlay selection (it must remain enabled), clear during a pending
+query, and check keyboard navigation. At 320/390 px and landscape sizes, check
+44 px controls, readable results and scrolling above the on-screen keyboard.
+Physical iOS keyboard/installation testing remains necessary.
+
+Chromium release checks passed for 320/390 px, landscape and desktop layouts,
+overlay enablement without toggling off, layer/URL synchronization, hidden-point
+visibility, explicit geocoding, stale response clearing, keyboard selection,
+shape URL preservation, and local offline search. A real service worker installed
+`apeintel-atlas-shell-v0.6.5` and reloaded the new search interface offline.
+Viewport resizing no longer opens the mobile control panel over the search island.

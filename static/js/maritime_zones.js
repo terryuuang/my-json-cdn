@@ -75,6 +75,7 @@ const MaritimeZones = (() => {
 
   function updateBtn() {
     if (!_btnEl) return;
+    _btnEl.setAttribute('aria-checked', String(_visible));
     if (_visible) {
       _btnEl.classList.add('active');
       _btnEl.title = '隱藏 12/24 海浬線';

@@ -424,3 +424,9 @@ window.toggleOSMDropdown = toggleOSMDropdown;
 window.setupDropdowns = setupDropdowns;
 window.renderMapWithMultipleLayers = renderMapWithMultipleLayers;
 window.getSelectedLayers = function() { return Array.from(selectedLayers); };
+
+// 搜尋點位時同步啟用其分層，不先觸發額外重繪。
+window.enableSearchLayer = function(layer) {
+  selectedLayers.add(layer);
+  updateLayerCount();
+};

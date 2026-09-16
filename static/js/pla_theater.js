@@ -68,6 +68,7 @@ const PLA_THEATER = (() => {
 
   function updateBtn() {
     if (!_btnEl) return;
+    _btnEl.setAttribute('aria-checked', String(_visible));
     if (_visible) {
       _btnEl.classList.add('active');
       _btnEl.title = '隱藏共軍戰區';

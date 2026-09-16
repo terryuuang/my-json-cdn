@@ -231,17 +231,19 @@
 
   <!-- 搜尋動態島：置頂置中，桌面/手機共用同一套搜尋 UI -->
   <div id="searchIsland" class="search-island">
-    <button type="button" class="search-island-compact" id="searchIslandTrigger" aria-label="開啟搜尋">
+    <button type="button" class="search-island-compact" id="searchIslandTrigger" aria-label="開啟搜尋" aria-expanded="false" aria-controls="searchResults">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="search-island-compact-label" id="searchIslandLabel"><span class="island-label-text" id="searchIslandLabelText">搜尋地點</span></span>
     </button>
     <div class="search-island-expanded">
       <div class="search-island-input-row">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" class="search-island-input" placeholder="輸入地點名稱..." autocomplete="off" aria-label="搜尋地點">
+        <input type="text" id="searchInput" class="search-island-input" placeholder="搜尋地點、圖層、OSINT" enterkeyhint="search" autocomplete="off" aria-label="搜尋地點、圖層與 OSINT">
         <button type="button" id="searchClearBtn" class="search-island-clear" aria-label="清除搜尋" style="display: none;">✕</button>
+        <button type="button" id="searchSubmitBtn" class="search-island-close" aria-label="搜尋線上地名"><i class="bi bi-search" aria-hidden="true"></i></button>
+        <button type="button" id="searchCloseBtn" class="search-island-close" aria-label="收合搜尋">完成</button>
       </div>
-      <div id="searchResults" class="search-results" role="listbox" aria-label="搜尋結果"></div>
+      <div id="searchResults" class="search-results" role="region" aria-label="搜尋結果"></div>
     </div>
   </div>
 
