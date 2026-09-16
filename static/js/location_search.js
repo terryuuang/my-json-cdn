@@ -72,7 +72,9 @@ function expandSearchIsland({ focusInput = true } = {}) {
   releaseIslandWidthNextFrame(island);
   if (focusInput) {
     const input = document.getElementById('searchInput');
-    if (input) input.focus();
+    // preventScroll：iOS 預設會為了把輸入框捲進可視區而捲動整份文件，
+    // body 是 position:fixed，捲動後所有固定元素會一起錯位、收起鍵盤後也不會自己回來
+    if (input) input.focus({ preventScroll: true });
   }
 }
 
@@ -157,6 +159,14 @@ async function performSearch() {
   }
 }
 
+// 使用者最近是否正在操作結果清單（按下、捲動）。只有這段期間插入/變高的內容會讓點擊座標對不上
+const RESULTS_INTERACTION_GRACE_MS = 800;
+function isUserInteractingWithResults(searchResults) {
+  if (searchResults.scrollTop > 0) return true;
+  const last = Number(searchResults.dataset.lastInteraction || 0);
+  return Date.now() - last < RESULTS_INTERACTION_GRACE_MS;
+}
+
 // 百科卡片理想上放在地點清單「上方」（比起地點清單，查專有名詞時通常最想先看到百科摘要），
 // 但百科查詢常常比地點搜尋慢，而且內容還會隨查詢進度變高（loading spinner → 摘要卡片／消歧義清單）。
 // 只要百科區塊還壓在地點清單上面，它每次變高都會把已經顯示、可能正要被點擊的地點項目往下推，
@@ -165,21 +175,37 @@ async function performSearch() {
 // 一旦地點清單已經有項目，就固定改放最下面——不只是建立當下判斷一次，
 // 而是每次更新都重新檢查並視需要搬移，這樣就算百科區塊是在地點清單出現「之前」就已經卡在最上面，
 // 之後地點清單一出現，下一次百科內容更新也會把它搬到最下面，不會再讓後續的內容變高波及地點項目
+//
+// v0.6.4 修正：原本「地點清單一有項目就把百科搬到最下面」，在手機上等於百科卡片永遠看不到
+// （20 筆結果、45vh 高的清單，卡片被擠到最底）。真正的風險只在「使用者正在點/捲」的那一刻，
+// 所以改成：沒在操作 → 放最上面；正在操作 → 位置不動，若在上方就用 scrollTop 抵銷高度變化，
+// 讓地點項目在畫面上的位置保持不變。
 function placeWikiSection(searchResults) {
   let section = searchResults.querySelector('.search-wiki-section');
+  const interacting = isUserInteractingWithResults(searchResults);
   if (!section) {
     section = document.createElement('div');
     section.className = 'search-wiki-section';
-  }
-  const list = searchResults.querySelector('.search-location-list');
-  const hasRenderedResults = !!(list && list.querySelector('.search-result-item'));
-  if (hasRenderedResults) {
-    if (searchResults.lastElementChild !== section) searchResults.appendChild(section);
-  } else if (searchResults.firstElementChild !== section) {
+    if (interacting) searchResults.appendChild(section);
+    else searchResults.prepend(section);
+  } else if (!interacting && searchResults.firstElementChild !== section) {
     searchResults.prepend(section);
   }
   return section;
 }
+
+// 更新百科區塊內容；區塊在清單上方且使用者正在操作時，補償高度差避免地點項目位移
+function updateWikiSection(searchResults, html) {
+  const section = placeWikiSection(searchResults);
+  const isAbove = searchResults.firstElementChild === section;
+  const compensate = isAbove && isUserInteractingWithResults(searchResults);
+  const before = compensate ? section.offsetHeight : 0;
+  section.innerHTML = html;
+  if (compensate) searchResults.scrollTop += section.offsetHeight - before;
+  return section;
+}
+
+const WIKI_LOADING_HTML = `<div class="search-wiki-loading">${thinkingOrbsHtml('查詢中')}正在查詢維基百科...</div>`;
 
 // 查詢並顯示專有名詞的維基百科摘要（OSINT 用途：地名/單位/人名等查詢時順便附上百科簡介）
 // 跟地點結果各自獨立一個 request id，避免使用者連續輸入時，較慢回來的百科結果蓋掉最新查詢
@@ -191,27 +217,33 @@ async function fetchAndRenderWikiSummary(query, searchId) {
   const isStale = () => searchId !== searchRequestId || currentWikiId !== wikiRequestId;
 
   const renderSection = (innerHtml) => {
-    if (isStale()) return;
-    const section = placeWikiSection(searchResults);
-    section.innerHTML = `<div class="search-wiki-section-label">百科</div>${innerHtml}`;
+    if (isStale()) return null;
+    return updateWikiSection(searchResults, `<div class="search-wiki-section-label">維基百科</div>${innerHtml}`);
   };
 
-  renderSection(`<div class="search-wiki-loading"><span class="search-wiki-spinner"></span>正在查詢維基百科...</div>`);
+  renderSection(WIKI_LOADING_HTML);
 
   // 一般摘要卡片（含消歧義選完之後、回頭再查一次確切條目的情境，兩處共用同一個渲染函式）
   function renderWikiCard(info, fallbackTitle) {
+    const title = info.title || fallbackTitle;
+    // 縮圖以「顯影」方式浮現（參考 img-fx 的 reveal：影像從模糊、去飽和逐步清晰），
+    // 比起載入完成瞬間跳出來更不突兀；載入失敗就整個縮圖框收掉
     const mediaHtml = info.thumbnail
-      ? `<div class="search-wiki-card-media"><img src="${info.thumbnail}" alt="${escapeHtml(info.title || fallbackTitle)}" loading="lazy"></div>`
+      ? `<div class="search-wiki-card-media"><img src="${escapeAttr(info.thumbnail)}" alt="${escapeAttr(escapeHtml(title))}" loading="lazy" decoding="async" onload="this.classList.add('is-loaded')" onerror="this.parentNode.remove()"></div>`
       : '';
     const linkHtml = info.wikipediaUrl
-      ? `<a href="${info.wikipediaUrl}" target="_blank" rel="noopener noreferrer" class="search-wiki-card-link">維基百科原文</a>`
+      ? `<a href="${escapeAttr(info.wikipediaUrl)}" target="_blank" rel="noopener noreferrer" class="search-wiki-card-link">維基百科原文</a>`
       : '';
+    // 正文摘要比 Wikidata 短描述有資訊量；兩者都有時短描述當副標
+    const body = info.extract || info.description || '（無簡介）';
+    const subtitle = info.extract && info.shortDescription ? info.shortDescription : '';
     renderSection(`
       <div class="search-wiki-card">
         ${mediaHtml}
         <div class="search-wiki-card-body">
-          <div class="search-wiki-card-title">${escapeHtml(info.title || fallbackTitle)}</div>
-          <div class="search-wiki-card-desc">${escapeHtml(info.description || '（無簡介）')}</div>
+          <div class="search-wiki-card-title">${escapeHtml(title)}</div>
+          ${subtitle ? `<div class="search-wiki-card-subtitle">${escapeHtml(subtitle)}</div>` : ''}
+          <div class="search-wiki-card-desc">${escapeHtml(body)}</div>
           ${linkHtml}
         </div>
       </div>
@@ -222,9 +254,7 @@ async function fetchAndRenderWikiSummary(query, searchId) {
     // 如果地點清單這時已經顯示出可點擊項目，使用者的點擊座標可能還沒反應過來這個橫移，
     // 導致點下去偏移到旁邊——所以只在地點清單「還沒有實際項目」時才加寬，
     // 已經有項目的話寧可百科卡片維持原本寬度（頂多文字換行多一點），優先保證點擊穩定
-    const list = searchResults.querySelector('.search-location-list');
-    const hasRenderedResults = !!(list && list.querySelector('.search-result-item'));
-    if (!hasRenderedResults) {
+    if (!isUserInteractingWithResults(searchResults)) {
       document.getElementById('searchIsland')?.classList.add('island-wide');
     }
   }
@@ -232,8 +262,8 @@ async function fetchAndRenderWikiSummary(query, searchId) {
   // 消歧義候選清單：直接列出前 3 個候選條目讓使用者自己點，不盲猜第一個避免選錯
   function renderDisambiguation(info) {
     const itemsHtml = info.candidates.map(c => `
-      <button type="button" class="search-wiki-disambig-item" data-title="${escapeHtml(c.title)}">
-        <span class="search-wiki-disambig-title">${escapeHtml(c.title)}</span>
+      <button type="button" class="search-wiki-disambig-item" data-title="${escapeAttr(escapeHtml(c.title))}">
+        <span class="search-wiki-disambig-title">${escapeHtml(c.displayTitle || c.title)}</span>
         <span class="search-wiki-disambig-arrow">›</span>
       </button>
     `).join('');
@@ -248,13 +278,13 @@ async function fetchAndRenderWikiSummary(query, searchId) {
       btn.addEventListener('click', async () => {
         if (isStale()) return;
         const title = btn.dataset.title;
-        renderSection(`<div class="search-wiki-loading"><span class="search-wiki-spinner"></span>正在查詢維基百科...</div>`);
+        renderSection(WIKI_LOADING_HTML);
         try {
           const picked = await window.equipmentParser.fetchPageSummaryByLangTitle('zh', title);
           if (isStale()) return;
           if (!picked) {
             // 理論上候選已過濾掉查無資料的條目，這裡是保底：查失敗時給明確提示而不是整塊悄悄消失
-            renderSection(`<div class="search-wiki-empty">查無「${escapeHtml(title)}」的摘要資料</div>`);
+            renderSection(`<div class="search-wiki-empty">查無「${escapeHtml(btn.textContent.trim())}」的摘要資料</div>`);
             return;
           }
           renderWikiCard(picked, title);
@@ -389,6 +419,14 @@ function setupSearchIsland() {
   let searchTimeout;
   let selectedResultIndex = -1;
 
+  const searchResultsEl = document.getElementById('searchResults');
+  const markInteraction = () => { searchResultsEl.dataset.lastInteraction = String(Date.now()); };
+  ['pointerdown', 'touchstart', 'wheel', 'scroll'].forEach(type => {
+    searchResultsEl?.addEventListener(type, markInteraction, { passive: true });
+  });
+
+  setupViewportStabilizer(island);
+
   trigger?.addEventListener('click', () => expandSearchIsland());
 
   // 桌面滑鼠 hover 展開，比照 macOS 選單列／Dock 靠近即放大的手感——
@@ -469,12 +507,16 @@ function setupSearchIsland() {
     searchInput.value = '';
     clearBtn.style.display = 'none';
     document.getElementById('searchResults').classList.remove('show');
-    searchInput.focus();
+    document.getElementById('searchIsland')?.classList.remove('island-wide');
+    searchInput.focus({ preventScroll: true });
   });
 
   // 點擊外部收合動態島
+  // 用 composedPath() 而不是 island.contains(e.target)：點擊處理器可能在事件冒泡到 document 之前
+  // 就把被點的元素換掉（例如點消歧義候選後整塊重繪成載入中），此時 e.target 已脫離 DOM，
+  // contains() 會回傳 false，島就被誤判為「點了外面」而收合
   document.addEventListener('click', function (e) {
-    if (!island.contains(e.target)) {
+    if (!e.composedPath().includes(island)) {
       collapseSearchIsland();
       selectedResultIndex = -1;
     }
@@ -490,4 +532,36 @@ function setupSearchIsland() {
       }
     });
   }
+}
+
+// 手機鍵盤彈出時的版面穩定：
+// 1. iOS 開鍵盤會平移 visual viewport，position:fixed 的元素是相對 layout viewport 定位，
+//    島會被推到畫面外。把 visualViewport 的偏移與可視高度同步成 CSS 變數，讓島貼著「看得到的頂端」，
+//    結果清單高度也不會超出鍵盤上方的剩餘空間。
+// 2. 收起鍵盤後 iOS 常留下殘餘的文件捲動量（body 是 fixed，使用者自己捲不回來），
+//    所有輸入框失焦後把它歸零——這就是「點一下動態島整個 UI 跑掉」的主要來源。
+function setupViewportStabilizer(island) {
+  const vv = window.visualViewport;
+  if (vv) {
+    const sync = () => {
+      island.style.setProperty('--vv-offset-top', `${Math.max(0, vv.offsetTop)}px`);
+      island.style.setProperty('--vv-height', `${Math.round(vv.height)}px`);
+    };
+    vv.addEventListener('resize', sync);
+    vv.addEventListener('scroll', sync);
+    sync();
+  }
+
+  document.addEventListener('focusout', () => {
+    // 等焦點真的落定：輸入框之間切換（例如緯度 → 經度）時不該歸零，免得鍵盤閃一下
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (active && active.matches && active.matches('input, textarea, select, [contenteditable="true"]')) return;
+      if (window.scrollX || window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }
+    }, 60);
+  });
 }

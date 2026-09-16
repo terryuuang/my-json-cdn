@@ -306,6 +306,12 @@ CSS `stroke` **overrides the `stroke` presentation attribute Leaflet writes on t
 
 **Do not add `scrollbar-width` / `scrollbar-color` to elements styled with `::-webkit-scrollbar`.** Chrome disables the `::-webkit-scrollbar` pseudo-elements entirely once a standard scrollbar property is present, reverting the element to the native scrollbar. Pick one system per element; the popups use the `::-webkit-scrollbar` route.
 
+**Mobile inputs must render at ≥16px.** iOS zooms the page when a focused input is below 16px. `pwa.css` sets `input { font-size: max(16px, 1rem) }` on mobile, but any class selector (e.g. `.search-island-input`) outranks it, so class-styled inputs need their own mobile 16px rule.
+
+**Gooey (`#liquid-goo`) goes on SVG content only.** Use the SVG `filter="url(#liquid-goo)"` attribute inside an `<svg>` (see `thinkingOrbsHtml()` in `map_state.js`), never CSS `filter: url(#…)` on HTML elements — WebKit renders the latter wrong.
+
+**Viewport meta is comma-separated.** A missing comma silently invalidates `viewport-fit=cover`, which zeroes every `env(safe-area-inset-*)`.
+
 ## Known Constraints
 
 - No build system or package manager

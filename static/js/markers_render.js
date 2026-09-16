@@ -110,7 +110,7 @@ async function processFacilityWikiAsync(layer, wikiLinks) {
   const loadingTimer = setTimeout(() => {
     injectIntoPopup((tempDiv) => {
       if (tempDiv.querySelector('.facility-wiki-info')) return false;
-      const loadingHTML = `<div class="osint-wiki-section facility-wiki-info">${sectionLabel}<div class="osint-wiki-loading"><span class="osint-spinner"></span>正在查詢維基百科資料...</div></div>`;
+      const loadingHTML = `<div class="osint-wiki-section facility-wiki-info">${sectionLabel}<div class="osint-wiki-loading">${thinkingOrbsHtml()}正在查詢維基百科資料...</div></div>`;
       const linksDiv = tempDiv.querySelector('.popup-links');
       if (linksDiv) {
         linksDiv.insertAdjacentHTML('beforebegin', loadingHTML);

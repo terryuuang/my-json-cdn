@@ -17,6 +17,10 @@ const GEOJSON_FILENAME = 'joseph_w.geojson';
 // ==========================================================
 const CHANGELOG = [
   {
+    date: '2026年09月16日',
+    description: '手機體驗與維基百科查詢修正（v0.6.4）：修正手機點擊動態島後整體 UI 錯位——viewport 設定少了一個逗號導致「禁止縮放」與瀏海安全範圍同時失效、搜尋框字級低於 16px 觸發 iOS 自動放大、收起鍵盤後殘留的頁面捲動量無法復原，現改為鍵盤開啟時動態島貼齊可見頂端、結果清單不再被鍵盤遮住，收起後自動歸位；手機開啟控制面板時動態島自動讓位。動態島維基百科查詢：繁體輸入（如「東部戰區」）現可正確對應簡體標題條目，摘要與標題改顯示臺灣正體、連結改開 zh-tw 頁面，卡片顯示正文摘要而非只有一句短描述；全文搜尋只採用標題真正涵蓋查詢字串的條目，不再把「空軍第某旅」配成不相干的條目、也不再把裝備「YLC-20」誤配成「YLC-2 雷達」；手機上百科卡片不再被擠到 20 筆地點結果最底部；點選消歧義候選時動態島不再意外收合。介面：參考 Libraries.dev——動態島展開／收合時內容隨形變由模糊轉清晰（liquid-gooey 的 contentBlur 概念）、百科縮圖以顯影方式浮現（img-fx reveal 概念）、跑馬燈兩端淡出不再切半字；三點液態脈動改以 SVG 濾鏡實作，修正 Safari 上顯示異常，並取代維基查詢中殘留的舊式轉圈圖示。'
+  },
+  {
     date: '2026年09月08日',
     description: '離線功能修復（v0.6.3）：修正遷站後 Service Worker 無法安裝的問題。Cloudflare Pages 會將 /index.html 重新導向至 /，而快取 API 拒絕任何被重新導向的回應，導致整批預先快取失敗，離線瀏覽與 App 安裝因此失效。改以 / 作為應用外殼的快取鍵後恢復正常。'
   },
@@ -241,6 +245,13 @@ function escapeHtml(text) {
 // 用於 HTML 屬性值（雙引號/單引號跳脫），與 escapeHtml 分開是因為屬性值不需要跳脫 < >
 function escapeAttr(str) {
   return String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// 三點液態脈動（見 main.css「液態 UI 系統」）。刻意用 SVG 圓點 + SVG 內的 filter 屬性，
+// 而不是對 HTML 元素套 CSS filter:url(#liquid-goo)：WebKit 對後者渲染錯誤，Safari 上圓點會被裁掉或整組消失
+function thinkingOrbsHtml(label = '載入中') {
+  return `<svg class="thinking-orbs" viewBox="0 0 44 16" role="img" aria-label="${escapeAttr(label)}">`
+    + '<g filter="url(#liquid-goo)"><circle cx="8" cy="8" r="5"/><circle cx="22" cy="8" r="5"/><circle cx="36" cy="8" r="5"/></g></svg>';
 }
 
 function extractReferenceLinks(rawText) {

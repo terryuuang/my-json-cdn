@@ -1055,7 +1055,8 @@ select.input-field:hover {
    ======================================== */
 .search-island {
     position: fixed;
-    top: 10px;
+    /* --vv-offset-top 由 location_search.js 依 visualViewport 同步：iOS 開鍵盤平移可視區時島仍貼齊可見頂端 */
+    top: calc(10px + env(safe-area-inset-top, 0px) + var(--vv-offset-top, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 2500;
@@ -1071,7 +1072,8 @@ select.input-field:hover {
        因為 spring 的 overshoot 會讓 border-radius 瞬間跌到 0 或負值（呈現直角），
        ease-decelerate 確保值永遠在起點與目標之間單調遞減，不會出現尖角閃爍 */
     transition: width 0.4s var(--ease-spring), border-radius 0.3s var(--ease-decelerate),
-        max-width 0.35s var(--ease-spring), background-color 0.2s ease;
+        max-width 0.35s var(--ease-spring), background-color 0.2s ease,
+        opacity var(--motion-base) var(--ease-standard), transform var(--motion-slow) var(--ease-decelerate);
     will-change: width, border-radius;
     contain: layout style;
 }
@@ -1113,6 +1115,12 @@ select.input-field:hover {
 
 .search-island-compact-label.island-label-fade {
     opacity: 0;
+}
+
+/* 跑馬燈捲動時兩端淡出，文字不會被裁切框硬生生切成半個字 */
+.search-island-compact-label:has(.marquee) {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 10px), transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 10px, #000 calc(100% - 10px), transparent);
 }
 
 /* 內層實際文字：靜態時原地顯示；.marquee 時由 JS 依文字長度算好距離/時間，
@@ -1219,6 +1227,19 @@ select.input-field:hover {
 
 .search-island.expanded .search-island-expanded {
     display: flex;
+}
+
+/* v0.6.4 形變時的內容交叉模糊（參考 liquid-gooey Morph 的 contentBlur）：
+   外框在跑寬度/圓角的彈簧動畫時，內容先帶一點模糊淡入、隨形變落定而清晰，
+   取代「外框還在變形、裡面的字已經硬切換好」的割裂感。只動 opacity/filter/transform，不影響版面與點擊區。 */
+.search-island.expanded .search-island-expanded,
+.search-island:not(.expanded) .search-island-compact {
+    animation: islandContentSettle 0.34s var(--ease-decelerate) both;
+}
+
+@keyframes islandContentSettle {
+    from { opacity: 0; filter: blur(6px); transform: scale(0.97); }
+    to   { opacity: 1; filter: blur(0);   transform: none; }
 }
 
 .search-island-input-row {
@@ -1448,14 +1469,9 @@ select.input-field:hover {
     font-size: 12.5px;
 }
 
-.search-wiki-spinner {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #60a5fa;
-    animation: spin 0.8s linear infinite;
+.search-wiki-loading .thinking-orbs {
+    color: #60a5fa;
+    font-size: 14px;
 }
 
 .search-wiki-card {
@@ -1484,6 +1500,18 @@ select.input-field:hover {
     height: 100%;
     object-fit: cover;
     display: block;
+    /* 顯影式浮現（參考 img-fx reveal 的「由模糊到清晰」，以單純 transition 實作，無 WebGL） */
+    opacity: 0;
+    filter: blur(8px) saturate(0);
+    transform: scale(1.08);
+    transition: opacity var(--motion-base) ease, filter var(--motion-slow) var(--ease-decelerate),
+        transform var(--motion-slow) var(--ease-decelerate);
+}
+
+.search-wiki-card-media img.is-loaded {
+    opacity: 1;
+    filter: none;
+    transform: none;
 }
 
 .search-wiki-card-body {
@@ -1497,6 +1525,13 @@ select.input-field:hover {
     color: #f1f5f9;
     margin-bottom: 3px;
     line-height: 1.35;
+}
+
+.search-wiki-card-subtitle {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.35;
+    margin-bottom: 4px;
 }
 
 .search-wiki-card-desc {
@@ -1579,8 +1614,22 @@ select.input-field:hover {
 @media (max-width: 768px) {
     /* 需要跟 .show 同時出現才會贏過桌面版 .search-results.show 的 50vh（class 數量相同時後宣告者勝出，
        但寫成 .search-results.show 讓意圖更明確，避免未來誤刪 .show 又忘記這裡的依賴關係） */
+    /* 鍵盤開啟時以實際可視高度為上限（--vv-height 由 JS 同步），清單底部不會藏在鍵盤後面 */
     .search-results.show {
-        max-height: 45vh;
+        max-height: min(45vh, calc(var(--vv-height, 100vh) - 96px - env(safe-area-inset-top, 0px)));
+    }
+
+    /* 16px 是 iOS 不自動放大輸入框的門檻。pwa.css 雖已對 input 設 16px，
+       但 .search-island-input 的 class 選擇器權重較高，原本的 15px 會蓋過去 */
+    .search-island-input {
+        font-size: 16px;
+    }
+
+    /* 手機控制面板與動態島同在頂端，面板開啟時島讓位，避免疊在面板內容上擋住操作 */
+    body:has(.control-panel.show-mobile) .search-island {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-50%) translateY(-12px) scale(0.96);
     }
 
     .search-result-item {
@@ -1619,6 +1668,7 @@ select.input-field:hover {
 }
 
 .loading .thinking-orbs {
+    display: block;
     color: var(--color-accent);
     margin: 2px auto 12px;
     font-size: 15px;
@@ -2888,7 +2938,7 @@ select.input-field:hover {
 
   /* 搜尋動態島位置調整 */
   .search-island {
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    top: calc(env(safe-area-inset-top, 0px) + 10px + var(--vv-offset-top, 0px));
   }
 
   /* Leaflet 控制項調整 */
@@ -2908,7 +2958,7 @@ select.input-field:hover {
 @media (display-mode: standalone) and (max-width: 768px) {
   /* 確保手機版 APP 體驗最佳 */
   .search-island {
-    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    top: calc(env(safe-area-inset-top, 0px) + 8px + var(--vv-offset-top, 0px));
   }
 
   .control-panel {
@@ -3726,14 +3776,9 @@ select.input-field:hover {
   font-size: 13px;
 }
 
-.osint-spinner {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 2px solid var(--color-fill-secondary);
-  border-top-color: var(--color-accent);
-  animation: spin 0.8s linear infinite;
+.osint-wiki-loading .thinking-orbs {
+  color: var(--color-accent);
+  font-size: 14px;
 }
 
 .osint-wiki-empty {
@@ -4727,23 +4772,26 @@ select.input-field:hover {
    #liquid-goo 濾鏡短暫黏合＝「液態思考」指示器。color 用 currentColor，
    自動吃深/淺色。 */
 .thinking-orbs {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.28em;
-  filter: url(#liquid-goo);
-  line-height: 0;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2.75em;
+  height: 1em;
+  overflow: visible;
+  fill: currentColor;
+  vertical-align: middle;
 }
 
-.thinking-orbs i {
-  width: 0.5em;
-  height: 0.5em;
-  border-radius: 50%;
-  background: currentColor;
+/* v0.6.4：由 HTML <i> + CSS filter:url() 改為 SVG 圓點 + SVG filter 屬性。
+   Libraries.dev liquid-gooey 指出 WebKit 對「HTML 元素套 CSS url() 濾鏡」渲染錯誤，
+   濾鏡只套在 SVG 內容上才能跨瀏覽器一致（Safari 包含在內） */
+.thinking-orbs circle {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: thinkingOrb 1.1s var(--ease-standard) infinite;
 }
 
-.thinking-orbs i:nth-child(2) { animation-delay: 0.14s; }
-.thinking-orbs i:nth-child(3) { animation-delay: 0.28s; }
+.thinking-orbs circle:nth-child(2) { animation-delay: 0.14s; }
+.thinking-orbs circle:nth-child(3) { animation-delay: 0.28s; }
 
 @keyframes thinkingOrb {
   0%, 80%, 100% { opacity: 0.25; transform: scale(0.62); }
@@ -4803,6 +4851,5 @@ select.input-field:hover {
     scroll-behavior: auto !important;
   }
   .border-beam::after { animation: none; opacity: 0; }
-  .thinking-orbs { filter: none; }
-  .thinking-orbs i { animation: none; opacity: 0.55; }
+  .thinking-orbs circle { animation: none; opacity: 0.55; }
 }

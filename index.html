@@ -18,7 +18,7 @@
   <!-- ============================================
        基礎 Meta 標籤
        ============================================ -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="APEINTEL ATLAS - 互動式地理資訊地圖">
   <meta name="author" content="APEINTEL">
   <meta name="keywords" content="地圖,軍事,設施,OSINT,情報,GeoJSON">
@@ -198,11 +198,11 @@
       </div>
     </div>
   </dialog>
-  <!-- 液態 UI 系統：全站共用的 gooey 濾鏡（thinking-orbs 三點脈動、iOS 開關液滴用）
-       純內嵌 SVG，不佔版面；載入失敗時相關元素會自然退化為無濾鏡外觀 -->
+  <!-- 液態 UI 系統：全站共用的 gooey 濾鏡（thinking-orbs 三點脈動用）
+       只套在 SVG 內容上（filter 屬性），不套在 HTML 元素上——WebKit 對 HTML 的 CSS filter:url() 渲染有誤 -->
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
     <defs>
-      <filter id="liquid-goo">
+      <filter id="liquid-goo" x="-20%" y="-60%" width="140%" height="220%">
         <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
         <feColorMatrix in="blur" mode="matrix"
           values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
@@ -220,7 +220,7 @@
   <!-- 載入指示器（v0.6.0：環繞光束 + 三點液態脈動） -->
   <div id="loading" class="loading border-beam">
     <img class="app-loading-mark" src="static/assets/APP_LOGO_192x192.png" width="64" height="64" alt="APEINTEL ATLAS">
-    <div class="thinking-orbs" role="img" aria-label="載入中"><i></i><i></i><i></i></div>
+    <svg class="thinking-orbs" viewBox="0 0 44 16" role="img" aria-label="載入中"><g filter="url(#liquid-goo)"><circle cx="8" cy="8" r="5"/><circle cx="22" cy="8" r="5"/><circle cx="36" cy="8" r="5"/></g></svg>
     <div>載入地圖資料中...</div>
   </div>
 

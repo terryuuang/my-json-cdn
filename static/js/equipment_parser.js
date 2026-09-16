@@ -14,7 +14,9 @@ class EquipmentParser {
     // 讓快取能跨頁面重新整理存活，減少重複的 Wikipedia 請求
     this.cache = new Map();
     this.cacheExpiry = 30 * 60 * 1000; // 30分鐘快取
-    this.storagePrefix = 'equipmentCache:';
+    // v2：摘要改取臺灣正體變體、加入 extract 欄位，舊版（簡體、欄位不同）快取一律作廢
+    this.storagePrefix = 'equipmentCache:v2:';
+    this.purgeLegacyCache('equipmentCache:');
     
     // 效能限制
     this.maxEquipmentItems = this.isMobileDevice() ? 3 : 5; // 手機版最多3個，桌面版5個裝備項目
@@ -40,15 +42,18 @@ class EquipmentParser {
   // 「Sentinel-6 Michael Freilich」、BOEING 787-9 Dreamliner 的實際標題是「Boeing 787 Dreamliner」），
   // 讓衛星/機型這類非固定格式名稱也能查到摘要，而不是直接判定「查無資料」。
   // lang 參數供動態島搜尋的通用百科查詢（fetchGenericSummary）重用，預設仍為英文維基（武器查詢原用法）。
+  // 全文搜尋的第一筆常常只是「字面沾邊」的條目（例如 YLC-20 搜到 YLC-2、「空軍第某旅」搜到空降兵軍），
+  // 直接採用會把錯的條目當成答案，比查無資料更糟。所以多取幾筆，只接受標題真的涵蓋查詢字串的結果。
   async searchWikipediaTitle(query, lang = 'en') {
-    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`;
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=5`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
     try {
       const response = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'application/json' } });
       if (!response.ok) return null;
       const data = await response.json();
-      return data?.query?.search?.[0]?.title || null;
+      const hit = (data?.query?.search || []).find(item => this.isRelevantTitle(query, item.title));
+      return hit ? hit.title : null;
     } catch (_) {
       return null;
     } finally {
@@ -60,7 +65,9 @@ class EquipmentParser {
   // 這是維基百科官方定義的別名對照表（例如「HQ-9」重定向到實際條目），比全文搜尋更精準、
   // 也更快；優先於 searchWikipediaTitle 的全文搜尋使用，找不到重定向才退回全文搜尋。
   async resolveWikipediaRedirect(query, lang = 'en') {
-    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(query)}&redirects=1&format=json&origin=*`;
+    // converttitles：中文維基的條目標題多為簡體，不開的話繁體輸入（如「東部戰區」）永遠對不到重定向，
+    // 只能退回模糊的全文搜尋
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(query)}&redirects=1&converttitles=1&format=json&origin=*`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
     try {
@@ -75,6 +82,58 @@ class EquipmentParser {
       return null;
     } finally {
       clearTimeout(timeoutId);
+    }
+  }
+
+  // 比對用正規化：統一大小寫、繁轉簡，去掉空白與標點，讓「HQ-9」「HQ 9」「hq9」視為相同
+  normalizeForMatch(text) {
+    let s = String(text || '').toLowerCase();
+    if (window.searchUtils?.traditional2Simplified) s = window.searchUtils.traditional2Simplified(s);
+    return s.replace(/[\s\-_–—·・.,，、:：'"“”‘’()（）\[\]]+/g, '');
+  }
+
+  // 標題是否涵蓋查詢字串。數字邊界要特別處理：「HQ-1」不該命中「HQ-16」、「YLC-20」不該命中「YLC-2」
+  isRelevantTitle(query, title) {
+    const q = this.normalizeForMatch(query);
+    const t = this.normalizeForMatch(String(title || '').replace(/[（(][^）)]*[）)]\s*$/, ''));
+    if (q.length < 2 || !t) return false;
+    let from = 0;
+    while (true) {
+      const idx = t.indexOf(q, from);
+      if (idx === -1) break;
+      const before = t[idx - 1];
+      const after = t[idx + q.length];
+      const digitClash = (/\d/.test(q[0]) && before && /\d/.test(before)) ||
+        (/\d/.test(q[q.length - 1]) && after && /\d/.test(after));
+      if (!digitClash) return true;
+      from = idx + 1;
+    }
+    return false;
+  }
+
+  // 中文維基回傳的標題、Wikidata 短描述不一定跟著 Accept-Language 轉成正體，顯示前統一再轉一次
+  toTraditional(text, lang) {
+    if (lang !== 'zh' || !text) return text;
+    return window.searchUtils?.simplified2Traditional ? window.searchUtils.simplified2Traditional(text) : text;
+  }
+
+  // 中文條目連結指向臺灣正體變體頁，其餘語言維持原本 /wiki/ 路徑
+  buildWikipediaUrl(lang, title) {
+    const path = lang === 'zh' ? 'zh-tw' : 'wiki';
+    return `https://${lang}.wikipedia.org/${path}/${encodeURIComponent(String(title).replace(/ /g, '_'))}`;
+  }
+
+  // 移除舊版前綴的 localStorage 快取項目（只在前綴改版後的第一次載入真的刪到東西）
+  purgeLegacyCache(legacyPrefix) {
+    try {
+      const stale = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(legacyPrefix) && !key.startsWith(this.storagePrefix)) stale.push(key);
+      }
+      stale.forEach(key => localStorage.removeItem(key));
+    } catch (_) {
+      // localStorage 不可用時沒有東西需要清
     }
   }
 
@@ -108,18 +167,26 @@ class EquipmentParser {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
     try {
+      // Accept-Language 是 CORS 安全標頭，不會觸發 preflight；中文維基依它把摘要轉成臺灣正體，
+      // 不指定的話會跟著瀏覽器語系走，英文系統上拿到的是簡體
+      const headers = { 'Accept': 'application/json' };
+      if (lang === 'zh') headers['Accept-Language'] = 'zh-TW';
       const response = await fetch(
         `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
-        { signal: controller.signal, headers: { 'Accept': 'application/json' } }
+        { signal: controller.signal, headers }
       );
       if (!response.ok) return null;
       const data = await response.json();
       if (data.type === 'Internal error') return null;
+      const displayTitle = this.stripHtml(data.titles?.display) || data.title || title;
       const result = {
-        title: data.title || title,
-        description: this.truncateDescription(data.description || data.extract),
+        title: this.toTraditional(displayTitle, lang),
+        description: this.toTraditional(this.truncateDescription(data.description || data.extract), lang),
+        // 短描述（Wikidata）常只有一句「某某的五個戰區之一」，搜尋卡片另外需要正文摘要才有資訊量
+        shortDescription: this.toTraditional(data.description || '', lang),
+        extract: this.toTraditional(this.truncateDescription(data.extract || ''), lang),
         thumbnail: data.thumbnail?.source || null,
-        wikipediaUrl: data.content_urls?.desktop?.page || `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title)}`,
+        wikipediaUrl: this.buildWikipediaUrl(lang, data.title || title),
         // 消歧義頁（例如查詢過於籠統，同名條目不只一個）沒有實際摘要可用，
         // type 讓呼叫方（fetchGenericSummary）決定要不要改抓候選條目清單
         type: data.type || null
@@ -132,6 +199,11 @@ class EquipmentParser {
     } finally {
       clearTimeout(timeoutId);
     }
+  }
+
+  stripHtml(html) {
+    if (!html) return '';
+    return new DOMParser().parseFromString(html, 'text/html').body.textContent.trim();
   }
 
   // 消歧義頁的候選條目：抓該頁面內連往其他條目（namespace 0）的前 N 個連結，
@@ -168,7 +240,8 @@ class EquipmentParser {
         .slice(0, limit)
         .map(t => ({
           title: t,
-          wikipediaUrl: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, '_'))}`
+          displayTitle: this.toTraditional(t, lang),
+          wikipediaUrl: this.buildWikipediaUrl(lang, t)
         }));
     } catch (_) {
       return [];
