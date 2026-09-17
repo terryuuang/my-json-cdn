@@ -269,6 +269,9 @@ input, textarea, [contenteditable="true"] {
     z-index: 3600;
 }
 
+/* The transformed map pane must sit above the control corners as well. */
+.popup-elevated .leaflet-map-pane { z-index: 1100; }
+
 .leaflet-popup-content {
     font-size: 14px;
     line-height: 1.5;
@@ -1625,11 +1628,9 @@ select.input-field:hover {
         font-size: 16px;
     }
 
-    /* 手機控制面板與動態島同在頂端，面板開啟時島讓位，避免疊在面板內容上擋住操作 */
+    /* 手機控制面板直接覆蓋動態島，保持島的位置不變。 */
     body:has(.control-panel.show-mobile) .search-island {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(-50%) translateY(-12px) scale(0.96);
+        z-index: 1300;
     }
 
     .search-result-item {
@@ -4863,7 +4864,7 @@ select.input-field:hover {
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: #bfdbfe;
+  color: #8fc7ff;
   font: inherit;
   cursor: pointer;
   touch-action: manipulation;
@@ -4928,3 +4929,11 @@ select.input-field:hover {
 }
 .search-shortcuts button:focus-visible { outline: 2px solid #93c5fd; }
 .search-shortcuts button:active { background: rgba(255, 255, 255, 0.16); }
+
+/* Keep the search field quiet: keyboard submits, one trailing action dismisses. */
+.search-island-input-row { gap: 6px; }
+.search-island-field { display: flex; align-items: center; flex: 1; min-width: 0; gap: 6px; padding-left: 10px; min-height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.09); }
+.search-island-field > svg { flex-shrink: 0; }
+.search-island-close { font-size: 16px; font-weight: 500; }
+.search-island-clear { background: transparent; font-size: 16px; }
+.search-wiki-disambig-item { touch-action: manipulation; }

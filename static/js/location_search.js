@@ -300,9 +300,18 @@ async function fetchAndRenderWikiSummary(query, searchId) {
   const currentWikiId = ++wikiRequestId;
   const isStale = () => searchId !== searchRequestId || currentWikiId !== wikiRequestId;
 
+  let selectingCandidate = false;
   const renderSection = (innerHtml) => {
     if (isStale()) return null;
-    return updateWikiSection(searchResults, `<div class="search-wiki-section-label">維基百科</div>${innerHtml}`);
+    const html = `<div class="search-wiki-section-label">維基百科</div>${innerHtml}`;
+    if (!selectingCandidate) return updateWikiSection(searchResults, html);
+    // A deliberate selection must keep its summary in view, not compensate its
+    // height as if it were an unrelated background update above the place list.
+    const section = searchResults.querySelector('.search-wiki-section');
+    if (!section) return null;
+    section.innerHTML = html;
+    searchResults.scrollTo({ top: section.offsetTop - searchResults.offsetTop, behavior: 'instant' });
+    return section;
   };
 
   renderSection(WIKI_LOADING_HTML);
@@ -359,8 +368,10 @@ async function fetchAndRenderWikiSummary(query, searchId) {
     `);
     const section = searchResults.querySelector('.search-wiki-section');
     section?.querySelectorAll('.search-wiki-disambig-item').forEach(btn => {
+      btn.addEventListener('mousedown', event => event.preventDefault());
       btn.addEventListener('click', async () => {
         if (isStale()) return;
+        selectingCandidate = true;
         const title = btn.dataset.title;
         renderSection(WIKI_LOADING_HTML);
         try {
@@ -421,7 +432,7 @@ function displaySearchResults(results, query) {
   if (!results?.length) {
     const empty = document.createElement('div');
     empty.className = 'search-no-results';
-    empty.textContent = navigator.onLine ? '沒有結果。可按 Enter 或搜尋按鈕查詢線上地名。' : '沒有本地結果。連線後可查詢線上地名。';
+    empty.textContent = navigator.onLine ? '沒有結果。可按鍵盤的搜尋鍵或 Enter 查詢線上地名。' : '沒有本地結果。連線後可查詢線上地名。';
     list.appendChild(empty);
   }
   results?.forEach((result, index) => {
@@ -516,7 +527,6 @@ function setupSearchIsland() {
 
   trigger?.addEventListener('click', () => expandSearchIsland());
   document.getElementById('searchCloseBtn')?.addEventListener('click', () => { collapseSearchIsland(); trigger?.focus({ preventScroll: true }); });
-  document.getElementById('searchSubmitBtn')?.addEventListener('click', () => { clearTimeout(searchTimeout); performSearch({ online: true }); });
 
   // 桌面滑鼠 hover 展開，比照 macOS 選單列／Dock 靠近即放大的手感——
   // 觸控裝置沒有真正的 hover 概念（長按會被誤判成 hover），用 (hover:hover) + (pointer:fine)

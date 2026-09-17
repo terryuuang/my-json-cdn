@@ -1,10 +1,10 @@
 /* App surfaces share the map's system typography and colour tokens. */
 /* Launcher height + offset + gap; bottom-left map controls clear this much space. */
-:root { --app-launcher-clearance: 84px; }
+:root { --app-launcher-clearance: 64px; }
 .app-launcher {
   position: fixed;
   left: max(12px, env(safe-area-inset-left));
-  bottom: calc(28px + env(safe-area-inset-bottom));
+  bottom: max(8px, env(safe-area-inset-bottom));
   z-index: 1400;
   display: flex;
   align-items: center;
@@ -94,9 +94,10 @@
   .toggle-panel.toggle-panel-mobile { top: calc(10px + env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); min-width: 44px; min-height: 44px; }
   .leaflet-top { top: env(safe-area-inset-top); }
   .leaflet-right { right: env(safe-area-inset-right); }
-  .leaflet-bottom { bottom: env(safe-area-inset-bottom); }
+  .leaflet-bottom { bottom: max(0px, calc(env(safe-area-inset-bottom) - 2px)); }
+  .leaflet-bottom .leaflet-control-attribution { margin-bottom: 2px; }
   /* Leaflet.draw sits at bottomleft on mobile, exactly where the launcher is. */
-  .leaflet-bottom.leaflet-left .leaflet-control { margin-bottom: var(--app-launcher-clearance, 84px); }
+  .leaflet-bottom.leaflet-left .leaflet-control { margin-bottom: var(--app-launcher-clearance, 64px); }
   .leaflet-control-zoom a { min-width: 44px; min-height: 44px; display: grid !important; place-items: center; }
   input, textarea, select { font-size: max(16px, 1rem); }
 }
@@ -106,3 +107,9 @@
   .app-launcher, .app-card, .app-actions button { background: var(--color-surface-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .app-sheet::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background: #09121dcc; }
 }
+
+.app-launcher.has-update::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); }
+#app-changelog summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-size: 15px; font-weight: 600; }
+#app-changelog summary::after { content: "+"; margin-left: auto; }
+#app-changelog[open] summary::after { content: "−"; }
+#app-changelog summary::-webkit-details-marker { display: none; }

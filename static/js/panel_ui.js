@@ -12,7 +12,6 @@ function updateInfoPanel(message) {
   infoText.innerHTML = `
     <div class="info-panel-content">
       <span class="info-message">${message}</span>
-      <span class="changelog-link" onclick="showChangelog(event)">更新資訊</span>
     </div>
   `;
   infoPanel.style.display = 'block';
@@ -163,6 +162,7 @@ function togglePanel() {
   if (isMobileDevice()) {
     // 手機版使用 show-mobile class
     panel.classList.toggle('show-mobile');
+    if (panel.classList.contains('show-mobile')) collapseSearchIsland();
   } else {
     // 桌面版使用 hidden class
     panel.classList.toggle('hidden');

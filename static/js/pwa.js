@@ -5,7 +5,7 @@
   let updateRequested = false;
   let dataOffline = false;
   let installedThisSession = false;
-  let version = '0.6.5';
+  let version = '0.6.6';
   let lastFocus;
   let toastTimer;
   const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
@@ -79,6 +79,14 @@
     if (sheet.open) return;
     lastFocus = document.activeElement;
     renderInstall();
+    const changelog = byId('app-changelog-body');
+    if (!changelog.hasChildNodes()) {
+      CHANGELOG.forEach(item => {
+        const entry = document.createElement('p');
+        entry.textContent = `${item.date}：${item.description}`;
+        changelog.appendChild(entry);
+      });
+    }
     refreshStatus();
     if (registration) showUpdate();
     sheet.appendChild(byId('app-feedback'));
@@ -108,6 +116,8 @@
       registration?.waiting?.state === 'installed' &&
       registration.waiting !== navigator.serviceWorker.controller;
     byId('app-update').hidden = !ready;
+    byId('app-launcher').classList.toggle('has-update', ready);
+    byId('app-launcher').setAttribute('aria-label', ready ? 'App：有新版本可用' : 'App 安裝、更新與離線設定');
     byId('app-check').textContent = ready ? '有新版本可用' : '檢查更新';
   }
 
