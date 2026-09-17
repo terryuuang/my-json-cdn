@@ -206,6 +206,8 @@ async function fetchGeoJSON(url, stallTimeoutMs = 15000) {
         if (loadingEl) {
           const pct = total > 0 ? Math.min(99, Math.floor(loaded / total * 100)) : 0;
           loadingEl.textContent = `載入地圖資料中... ${pct}%`;
+          const progress = document.getElementById('loadingProgress');
+          if (progress) progress.value = pct;
         }
       }
 
@@ -216,6 +218,8 @@ async function fetchGeoJSON(url, stallTimeoutMs = 15000) {
         pos += chunk.length;
       }
       if (loadingEl) loadingEl.textContent = '載入地圖資料中... 100%';
+      const progress = document.getElementById('loadingProgress');
+      if (progress) progress.value = 100;
       return JSON.parse(new TextDecoder().decode(allChunks));
     }
 
@@ -425,7 +429,8 @@ function syncAisHashState() {
 function showLoading() {
 const loading = document.getElementById('loading');
 if (!loading) return;
-loading.style.display = 'block';
+loading.style.display = 'flex';
+document.getElementById('loadingProgress')?.removeAttribute('value');
 const label = loading.querySelector('div:last-child');
 if (label) label.textContent = '初始化地圖...';
 }

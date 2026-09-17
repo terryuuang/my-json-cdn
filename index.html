@@ -137,6 +137,7 @@
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
   <link rel="stylesheet" href="static/css/main.css">
   <link rel="stylesheet" href="static/css/pwa.css">
+  <link rel="stylesheet" href="static/css/osint_data.css">
   <!-- Cloudflare Web Analytics（僅正式環境載入：beacon 的 token 綁定正式網域，
        本機開發時的 origin 一定不符，載入只會產生無意義的 CORS 錯誤訊息） -->
   <script>
@@ -193,13 +194,13 @@
         </div>
         <section id="app-changelog" class="app-card" aria-labelledby="app-changelog-title">
           <h2 id="app-changelog-title">更新資訊</h2>
-          <p id="app-changelog-latest">v0.6.7：搜尋框移除操作按鈕，輸入即顯示結果；新增圖層與公開情報來源的搜尋說明，更新資訊直接顯示最新內容。</p>
+          <p id="app-changelog-latest">v0.6.8：單一戰區搜尋、目前畫面附近機場查詢；新增機艦繞臺每日統計、PLATracker 試算表閱覽與臺海海象圖層。</p>
           <details class="app-changelog-history">
             <summary>歷次更新</summary>
             <div id="app-changelog-body"></div>
           </details>
         </section>
-        <p id="app-version" class="app-version">版本 0.6.7</p>
+        <p id="app-version" class="app-version">版本 0.6.8</p>
         <div class="app-actions">
           <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
           <button id="app-check" type="button">檢查更新</button>
@@ -226,11 +227,12 @@
   </div>
   <div id="map"></div>
 
-  <!-- 載入指示器（v0.6.0：環繞光束 + 三點液態脈動） -->
-  <div id="loading" class="loading border-beam">
-    <img class="app-loading-mark" src="static/assets/APP_LOGO_192x192.png" width="64" height="64" alt="APEINTEL ATLAS">
-    <svg class="thinking-orbs" viewBox="0 0 44 16" role="img" aria-label="載入中"><g filter="url(#liquid-goo)"><circle cx="8" cy="8" r="5"/><circle cx="22" cy="8" r="5"/><circle cx="36" cy="8" r="5"/></g></svg>
-    <div>載入地圖資料中...</div>
+  <!-- 啟動畫面：固定大小品牌圖示與進度，不依賴 SVG 濾鏡。 -->
+  <div id="loading" class="loading" role="status" aria-live="polite">
+    <img class="app-loading-mark" src="static/assets/APP_LOGO_192x192.png" width="64" height="64" alt="">
+    <strong>APEINTEL ATLAS</strong>
+    <progress id="loadingProgress" max="100" aria-label="地理資料載入進度"></progress>
+    <div>正在準備圖臺…</div>
   </div>
 
   <!-- 手機版開啟控制面板按鈕（桌面版另有獨立的 .toggle-panel，見文件底部） -->
@@ -513,6 +515,7 @@
   <script src="static/js/map_init.js" defer></script>
   <script src="static/js/markers_render.js" defer></script>
   <script src="static/js/panel_ui.js" defer></script>
+  <script src="static/js/osint_data.js" defer></script>
   <script src="static/js/location_search.js" defer></script>
   <script src="static/js/bootstrap.js" defer></script>
 </body>

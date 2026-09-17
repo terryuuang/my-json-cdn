@@ -109,3 +109,9 @@ visibility, explicit geocoding, stale response clearing, keyboard selection,
 shape URL preservation, and local offline search. A real service worker installed
 `apeintel-atlas-shell-v0.6.5` and reloaded the new search interface offline.
 Viewport resizing no longer opens the mobile control panel over the search island.
+
+### v0.6.8 圖臺情報與啟動畫面
+
+啟動畫面改為固定 64px 標誌與原生進度條，已移除三圓 SVG 及裝飾外框。手動 QA 請涵蓋深淺色、減少動態效果、慢速載入與離線重啟。
+
+機艦繞臺日報、PLATracker 內嵌試算表、Open-Meteo 海象需連線；不加入 app shell 或離線資料快取。新模組的 JS/CSS 已列入 CORE_ASSETS；資料來源與排程見 `OSINT.md`。

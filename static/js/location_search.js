@@ -42,12 +42,13 @@ if (isMobileDevice()) {
 let searchRequestId = 0;
 let wikiRequestId = 0;
 
-// 公開研究入口：只連到原始發布者，不抓取或離線保存其文章。
+// Search entries open data in the map; original sources remain available in each view.
 const OSINT_RESOURCES = [
-  { displayName: '國防部 · 臺海周邊海空域動態', keywords: '中共 共軍 解放軍 軍機 軍艦 台海 臺海 國防部 MND OSINT 公開情報來源 情報', url: 'https://www.mnd.gov.tw/newslist/2', detail: '公開情報來源 · 開啟國防部通報網站（非全文搜尋）' },
-  { displayName: 'AMTI · 中國南海島礁追蹤', keywords: '中共 中國 南海 西沙 南沙 島礁 填海 衛星 CSIS AMTI OSINT 公開情報來源 情報', url: 'https://amti.csis.org/island-tracker/china/', detail: '公開情報來源 · 開啟 AMTI 島礁資料網站（非全文搜尋）' },
-  { displayName: 'ChinaPower · 中國軍力與臺海研究', keywords: '中共 中國 共軍 解放軍 軍力 台海 臺海 軍演 CSIS ChinaPower OSINT 公開情報來源 情報', url: 'https://chinapower.csis.org/', detail: '公開情報來源 · 開啟 ChinaPower 研究網站（非全文搜尋）' }
+  { displayName: '機艦繞臺 · 每日統計與官方示意圖', keywords: '中共 共軍 解放軍 軍機 軍艦 共機 共艦 繞台 繞臺 台海 臺海 國防部 MND OSINT 情報', osint: 'mnd', detail: '圖臺資料 · 最新通報、近期統計與當日示意圖' },
+  { displayName: 'PLATracker · 機艦繞臺試算表', keywords: 'ADIZ Google Sheet sheets 試算表 統計 Ben Lewis 共機 共艦 繞台 繞臺 OSINT', osint: 'sheet', detail: '圖臺內閱覽 · 作者維護的公開 Google Sheet' },
+  { displayName: '臺海海象 · 浪高與浪向', keywords: '台海 臺海 中國沿岸 海象 海況 浪高 浪向 巴士海峽 Open-Meteo OSINT', osint: 'marine', detail: '圖臺資料 · 海象 API 與五個固定模型參考點' }
 ];
+const THEATER_NAMES = ['東部戰區', '南部戰區', '西部戰區', '北部戰區', '中部戰區'];
 
 function getSearchCatalog(query = '') {
   const entries = [];
@@ -58,13 +59,14 @@ function getSearchCatalog(query = '') {
       source: 'action', control, military, detail: military ? '資料圖層 · 顯示此分層並定位' : '資料圖層 · 在目前地圖範圍啟用' });
   });
   [
-    ['theaterToggleBtn', '五大戰區', '中共 共軍 解放軍 東部戰區 南部戰區 西部戰區 北部戰區 中部戰區', [[18, 73], [54, 135]]],
     ['adizToggleBtn', '防空識別區／臺海中線', 'ADIZ 台海 中線', [[21, 117.3], [29, 123]]],
     ['maritimeZonesToggleBtn', '12 / 24 海浬線', '領海 鄰接區 十二 二十四 海里', [[20, 117], [27, 124]]]
   ].forEach(([id, displayName, keywords, bounds]) => {
     entries.push({ displayName, keywords: `${keywords} 圖層 疊加範圍`, source: 'action', control: document.getElementById(id), bounds, detail: '疊加範圍 · 開啟並定位' });
   });
-  entries.push(...OSINT_RESOURCES.map(resource => ({ ...resource, source: 'resource' })));
+  THEATER_NAMES.forEach(theater => entries.unshift({ displayName: theater, theater, source: 'action', keywords: `${theater} 共軍 戰區 圖層 範圍`, detail: `只顯示${theater}範圍並定位` }));
+  entries.push({ displayName: '五大戰區', theater: 'all', source: 'action', keywords: '全部戰區 中共 共軍 解放軍 圖層', detail: '顯示全部五大戰區' });
+  entries.push(...OSINT_RESOURCES.map(resource => ({ ...resource, source: 'action' })));
   return query ? entries.filter(entry => window.searchUtils.fuzzyMatch(`${entry.displayName} ${entry.keywords}`, query)) : entries;
 }
 
@@ -72,15 +74,24 @@ function showSearchHome() {
   const results = document.getElementById('searchResults');
   results.innerHTML = `<div id="searchGuide" class="search-home-hint">
     <p>直接輸入，結果會隨文字更新。點地圖空白處可收合。</p>
-    <p><strong>圖層</strong>：試試「機場」、「五大戰區」或「防空識別區」。點選結果即可開啟對應圖層。</p>
-    <p><strong>公開情報來源（OSINT）</strong>：試試「國防部」、「南海」或「OSINT」。結果連往國防部、AMTI、ChinaPower 原站，不搜尋文章全文。</p>
+    <p><strong>圖層</strong>：試試「東部戰區」只顯示該區範圍；「機場」會查詢目前畫面附近的設施並定位。</p>
+    <p><strong>圖臺情報（OSINT）</strong>：試試「機艦繞臺」查看每日統計與官方示意圖、「試算表」閱覽 PLATracker，或「海象」顯示浪高參考點。</p>
   </div><div class="search-location-list"></div>`;
   // Start with guidance, rather than a list that looks like another toolbar.
   window.currentSearchResults = [];
   results.classList.add('show');
 }
 
-function activateSearchAction(result) {
+async function activateSearchAction(result) {
+  if (result.theater || result.osint) {
+    collapseSearchIsland();
+    if (isMobileDevice()) closeControlPanel();
+    try {
+      if (result.theater) await window.PLATheater.show(result.theater === 'all' ? null : result.theater);
+      else await window.OsintData.open(result.osint);
+    } catch (_) { window.IslandActivity?.transient('資料載入失敗，請再試一次', 'error'); }
+    return;
+  }
   const control = result.control;
   if (!control || !map) return;
   if (result.military) {
@@ -102,6 +113,25 @@ function activateSearchAction(result) {
     document.getElementById('radiusInput').value = radius;
     updateUrlAndRenderAtCoords(center.lat, center.lng, radius, [control.value]);
     map.fitBounds(bounds, { padding: [32, 72], maxZoom: 12, animate: false });
+  } else if (control.type === 'checkbox' && window.OSM_FACILITY_TYPES?.[control.value]) {
+    collapseSearchIsland();
+    if (isMobileDevice()) closeControlPanel();
+    control.checked = true;
+    // Bound expensive Overpass queries to the current viewport, at most 200 km
+    // from its center, rather than the old coordinate inputs or URL center.
+    const viewport = map.getBounds();
+    const center = map.getCenter();
+    const latSpan = 200 / 111;
+    const lngSpan = 200 / (111 * Math.max(0.1, Math.cos(center.lat * Math.PI / 180)));
+    const bounds = L.latLngBounds([
+      Math.max(-85, viewport.getSouth(), center.lat - latSpan),
+      Math.max(-180, viewport.getWest(), center.lng - lngSpan)
+    ], [
+      Math.min(85, viewport.getNorth(), center.lat + latSpan),
+      Math.min(180, viewport.getEast(), center.lng + lngSpan)
+    ]);
+    await window.handleOSMFacilityChange(control, { bounds, fit: true });
+    return;
   } else if (control.type === 'checkbox') {
     if (!control.checked) {
       control.checked = true;
@@ -213,10 +243,13 @@ async function performSearch({ online = false } = {}) {
   // 百科卡片一律插在地點清單「最上面」，若等地點結果顯示、使用者已經在點的時候才插入，
   // 會把清單往下推、造成點擊座標對不上（點下去沒反應）。提早並行發起可以讓百科區塊
   // 盡量在地點清單出現前就定位完成，縮小這個位移窗口
-  if (navigator.onLine) fetchAndRenderWikiSummary(query, currentRequestId);
+  const catalog = getSearchCatalog(query);
+  // Exact layer names should present their map action first, not a tall wiki card.
+  const exactAction = catalog.some(entry => window.searchUtils.fuzzyMatch(entry.displayName, query) &&
+    window.searchUtils.fuzzyMatch(query, entry.displayName));
+  if (navigator.onLine && !exactAction) fetchAndRenderWikiSummary(query, currentRequestId);
 
   try {
-    const catalog = getSearchCatalog(query);
     const options = { searchFields: ['名稱', 'name', '說明', 'layer'], maxResults: isMobileDevice() ? 20 : 50 };
     const local = window.searchUtils.searchFeatures(allFeatures, query, options);
     displaySearchResults([...catalog, ...local], query);
@@ -429,7 +462,7 @@ function displaySearchResults(results, query) {
   }
   let previousGroup = '';
   results?.forEach((result, index) => {
-    const group = result.source === 'action' ? '圖層 · 點選開啟'
+    const group = result.osint ? '圖臺情報 · 點選查看' : result.source === 'action' ? '圖層 · 點選開啟'
       : result.source === 'resource' ? '公開情報來源 · 開啟原站' : '地點 · 點選定位';
     if (group !== previousGroup) {
       const heading = document.createElement('div');

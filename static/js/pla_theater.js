@@ -24,7 +24,10 @@ const PLA_THEATER = (() => {
   let _map = null;
   let _layerGroup = null;
   let _visible = false;
-  let _loaded = false;
+  let _data = null;
+  let _loading = null;
+  let _selection = null;
+  let _revision = 0;
   let _btnEl = null;
 
   function getStyle(name) {
@@ -39,31 +42,43 @@ const PLA_THEATER = (() => {
   }
 
   async function load() {
-    if (_loaded) return;
-    try {
-      const res = await fetch(GEOJSON_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      L.geoJSON(data, {
-        style: (feature) => ({ ...getStyle(feature.properties.name || ''), className: 'theater-path' }),
-        onEachFeature: (feature, layer) => {
-          const name = feature.properties.name || '未知戰區';
-          layer.bindPopup(`<strong>${name}</strong>`, { className: 'custom-popup' });
-          layer.on('mouseover', function () {
-            this.setStyle({ fillOpacity: 0.25, weight: 3 });
-          });
-          layer.on('mouseout', function () {
-            this.setStyle({ fillOpacity: LAYER_FILL_OPACITY, weight: LAYER_WEIGHT });
-          });
-        },
-      }).addTo(_layerGroup);
-
-      _loaded = true;
-      console.log('[PLA Theater] 圖層載入完成');
-    } catch (err) {
-      console.error('[PLA Theater] 載入失敗:', err);
+    if (_data) return _data;
+    if (!_loading) {
+      _loading = (async () => {
+        const res = await fetch(GEOJSON_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!Array.isArray(data.features)) throw new Error('戰區資料格式錯誤');
+        _data = data;
+        return data;
+      })().finally(() => { _loading = null; });
     }
+    return _loading;
+  }
+
+  function syncUrl() {
+    const url = new URL(location.href);
+    if (_visible) url.searchParams.set('theater', _selection || 'all');
+    else url.searchParams.delete('theater');
+    history.replaceState(history.state, '', url);
+  }
+
+  async function show(name = null, { fit = true } = {}) {
+    if (!_map) throw new Error('地圖尚未載入');
+    if (name && !THEATER_STYLES[name]) throw new Error('未知戰區');
+    const revision = ++_revision;
+    const data = await load();
+    if (revision !== _revision) return;
+    const features = data.features.filter(feature => !name || feature.properties.name === name);
+    if (!features.length) throw new Error('找不到此戰區範圍');
+    _layerGroup.clearLayers();
+    _layerGroup.addData({ type: 'FeatureCollection', features });
+    _layerGroup.addTo(_map);
+    _selection = name;
+    _visible = true;
+    updateBtn();
+    syncUrl();
+    if (fit) _map.fitBounds(_layerGroup.getBounds(), { padding: [24, 72], animate: false });
   }
 
   function updateBtn() {
@@ -71,7 +86,7 @@ const PLA_THEATER = (() => {
     _btnEl.setAttribute('aria-checked', String(_visible));
     if (_visible) {
       _btnEl.classList.add('active');
-      _btnEl.title = '隱藏共軍戰區';
+      _btnEl.title = `隱藏${_selection || '共軍戰區'}`;
     } else {
       _btnEl.classList.remove('active');
       _btnEl.title = '顯示共軍戰區';
@@ -80,19 +95,30 @@ const PLA_THEATER = (() => {
 
   async function toggle() {
     if (!_map) return;
-    _visible = !_visible;
     if (_visible) {
-      _layerGroup.addTo(_map);
-      await load();
-    } else {
+      ++_revision;
       _map.removeLayer(_layerGroup);
+      _visible = false;
+      updateBtn();
+      syncUrl();
+    } else {
+      try { await show(null, { fit: false }); }
+      catch (_) { window.IslandActivity?.transient('戰區載入失敗，請再試一次', 'error'); }
     }
-    updateBtn();
   }
 
   function init(map) {
     _map = map;
-    _layerGroup = L.layerGroup();
+    _layerGroup = L.geoJSON(null, {
+      style: feature => ({ ...getStyle(feature.properties.name), className: 'theater-path' }),
+      onEachFeature: (feature, layer) => {
+        const title = document.createElement('strong');
+        title.textContent = feature.properties.name;
+        layer.bindPopup(title, { className: 'custom-popup' });
+        layer.on('mouseover', () => layer.setStyle({ fillOpacity: 0.25, weight: 3 }));
+        layer.on('mouseout', () => layer.setStyle({ fillOpacity: LAYER_FILL_OPACITY, weight: LAYER_WEIGHT }));
+      }
+    });
 
     // 建立切換按鈕
     _btnEl = document.getElementById('theaterToggleBtn');
@@ -100,9 +126,15 @@ const PLA_THEATER = (() => {
       _btnEl.addEventListener('click', toggle);
       updateBtn();
     }
+    const initial = new URLSearchParams(location.search).get('theater');
+    if (initial === 'all' || THEATER_STYLES[initial]) {
+      show(initial === 'all' ? null : initial, { fit: false }).catch(() => {
+        window.IslandActivity?.transient('戰區載入失敗，請再試一次', 'error');
+      });
+    }
   }
 
-  return { init, toggle };
+  return { init, toggle, show };
 })();
 
 window.PLATheater = PLA_THEATER;

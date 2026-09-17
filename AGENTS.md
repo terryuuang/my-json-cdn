@@ -62,3 +62,8 @@
 - `static/js/pwa.js` and `static/css/pwa.css` implement the App dialog, installation guidance, connectivity feedback and update controls. Use text or Bootstrap Icons, not decorative Emoji.
 - `static/assets/atlas-companion.webp` is AI-generated artwork derived from `APP_LOGO_512x512.png` (2026-09-08, approximately 44 KB). `app-maskable.svg` embeds the unchanged logo inside the maskable safe circle; `app-maskable-512.png` is its rendered manifest icon. `launch-*.png` are branded iOS startup screens matched by device-size media queries in `index.html`.
 - Serve over HTTPS (localhost is supported for development). See `PWA.md` for offline limits and manual device QA.
+
+## OSINT Data Maintenance
+- `static/js/osint_data.js` / `static/css/osint_data.css` own the in-map public report, source sheet and marine views. See `OSINT.md` for sources and limits.
+- `data/mnd_activity.json` is refreshed by `scripts/update_mnd_activity.py` and `.github/workflows/update_osint.yml`; keep report dates and fetch/check timestamps distinct. Missing values are null, not zero, unless the report explicitly states none were detected. Do not infer aircraft/vessel positions from daily totals.
+- `theater=all|東部戰區|南部戰區|西部戰區|北部戰區|中部戰區` preserves the selected theater overlay.

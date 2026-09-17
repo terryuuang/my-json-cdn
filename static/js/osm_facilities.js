@@ -156,7 +156,7 @@ function buildOverpassQuery(facilityType, bounds) {
     });
   });
 
-  return `[out:json][timeout:25];(${parts.join('\n')});out body;>;out skel qt;`;
+  return `[out:json][timeout:25];(${parts.join('\n')});out body center;>;out skel qt;`;
 }
 
 // 讀取 localStorage 中的持久化快取（跨分頁載入/重新整理仍有效，減少重複打 API）
@@ -340,7 +340,8 @@ function toGeoJSON(overpassData, facilityType) {
 
   const features = [];
   overpassData.elements.forEach(el => {
-    if (el.type === 'node' && !el.tags) return;
+    // Recurse output also contains runway/building nodes; keep only the requested facility.
+    if (!FACILITY_TYPES[facilityType].tags.some(tag => el.tags?.[tag.key] === tag.value)) return;
 
     let geometry = null;
     if (el.type === 'node' && el.lat && el.lon) {
@@ -386,9 +387,11 @@ const layers = {
 
 function initLayers(map) {
   Object.keys(FACILITY_TYPES).forEach(type => {
-    layers.groups[type] = L.layerGroup();
-    layers.visibility[type] = false;
-    layers.data[type] = null;
+    if (!layers.groups[type]) {
+      layers.groups[type] = L.layerGroup();
+      layers.visibility[type] = false;
+      layers.data[type] = null;
+    }
   });
 }
 
@@ -602,16 +605,18 @@ function calculateShapeCenter(urlParams) {
 }
 
 // 載入並顯示圖層
-async function loadLayer(type, map) {
+async function loadLayer(type, map, options = {}) {
   if (layers.activeQueries.has(type)) return null;
   layers.activeQueries.add(type);
 
   try {
     const { center, radius } = getCurrentSearchContext(map);
-    const bounds = calculateBounds(center, radius);
+    const bounds = options.bounds || calculateBounds(center, radius);
     const query = buildOverpassQuery(type, bounds);
     const data = await queryOverpass(query);
     const geoJSON = toGeoJSON(data, type);
+    if (!selectedFacilities.has(type)) return geoJSON;
+    if (!layers.groups[type]) layers.groups[type] = L.layerGroup();
     renderLayer(type, geoJSON, map);
     layers.visibility[type] = true;
     layers.groups[type].addTo(map);
@@ -659,7 +664,7 @@ function syncFacilitiesToUrl() {
     urlParams.delete('osm');
   }
   const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-  window.history.pushState({}, '', newUrl);
+  window.history.pushState({}, '', newUrl + window.location.hash);
 }
 
 function setFacilityVisualState(type, state = 'idle', detail = '') {
@@ -680,7 +685,7 @@ function setFacilityVisualState(type, state = 'idle', detail = '') {
 
 // toggleDropdown function is now provided by unified_dropdown.js
 
-async function handleFacilityChange(checkbox) {
+async function handleFacilityChange(checkbox, options = {}) {
   const type = checkbox.value;
   const map = window.map;
   
@@ -691,13 +696,26 @@ async function handleFacilityChange(checkbox) {
   }
   
   if (checkbox.checked) {
+    if (layers.activeQueries.has(type)) {
+      showStatus(`${FACILITY_TYPES[type].name}查詢中，請稍候`, 'loading');
+      return;
+    }
     selectedFacilities.add(type);
     setFacilityVisualState(type, 'loading', '正在查詢');
     currentOsmActivityId = null;
     const activityId = showStatus(`正在查詢 ${FACILITY_TYPES[type].name}`, 'loading');
 
     try {
-      const data = await loadLayer(type, map);
+      const data = await loadLayer(type, map, options);
+      if (!checkbox.checked) {
+        currentOsmActivityId = null;
+        if (activityId && window.IslandActivity) window.IslandActivity.finish(activityId, '已取消設施顯示', 'success');
+        return;
+      }
+      if (options.fit && data?.features?.length) {
+        const bounds = L.geoJSON(data).getBounds();
+        if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 72], maxZoom: 13, animate: false });
+      }
       currentOsmActivityId = null;
       setFacilityVisualState(type, 'success', data?.features?.length > 0 ? `已載入 ${data.features.length} 筆` : '查無資料');
       setTimeout(() => setFacilityVisualState(type, checkbox.checked ? 'idle' : 'idle'), 1600);

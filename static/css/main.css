@@ -1631,30 +1631,29 @@ select.input-field:hover {
     }
 }
 
-/* 載入指示器（v0.6.0：自適應玻璃卡片，深色模式不再爆白；三點脈動 + 環繞光束見檔尾「液態 UI 系統」） */
+/* 啟動畫面使用固定尺寸標誌與原生進度條，避免 SVG 無尺寸時放大。 */
 .loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--glass-panel-bg);
-    backdrop-filter: var(--glass-vibrancy);
-    -webkit-backdrop-filter: var(--glass-vibrancy);
-    border: 1px solid var(--glass-panel-hairline);
-    color: var(--color-label);
-    padding: 20px 24px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glass-panel-shadow);
-    z-index: 2000;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    box-sizing: border-box;
+    padding: 24px;
+    background: var(--color-surface-solid, #f8fafc);
+    color: var(--color-label, #0f172a);
     text-align: center;
 }
-
-.loading .thinking-orbs {
-    display: block;
-    color: var(--color-accent);
-    margin: 2px auto 12px;
-    font-size: 15px;
-}
+.loading .app-loading-mark { width: 64px; height: 64px; margin: 0; border-radius: 16px; }
+.loading strong { font-size: 15px; font-weight: 600; letter-spacing: .08em; }
+.loading > div { font-size: 13px; color: var(--color-label-secondary, #64748b); }
+.loading progress { width: 160px; height: 4px; border: 0; border-radius: 4px; overflow: hidden; accent-color: #176f69; }
+.loading progress::-webkit-progress-bar { background: var(--color-separator, #e2e8f0); border-radius: 4px; }
+.loading progress::-webkit-progress-value { background: #176f69; border-radius: 4px; }
+.loading progress::-moz-progress-bar { background: #176f69; border-radius: 4px; }
 
 /* 隱藏控制面板的按鈕（統一樣式，與 control-panel 同一套毛玻璃語言） */
 .toggle-panel {

@@ -1,0 +1,27 @@
+.osint-data-panel { position: fixed; z-index: 3500; top: max(72px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: min(400px, calc(100vw - 24px)); max-height: calc(100dvh - 100px - env(safe-area-inset-bottom)); display: flex; flex-direction: column; overflow: hidden; background: var(--color-surface-solid); color: var(--color-label); border: 1px solid var(--color-panel-border); border-radius: 20px; box-shadow: var(--shadow-lg); font: 14px/1.6 system-ui, sans-serif; }
+.osint-data-panel[hidden] { display: none; }
+.osint-data-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--color-separator); }
+.osint-data-header h2 { margin: 0; flex: 1; font-size: 16px; line-height: 1.4; }
+.osint-data-panel button, .osint-data-panel select { min-height: 44px; border: 0; border-radius: 10px; padding: 8px; color: var(--color-accent); background: transparent; font: inherit; cursor: pointer; touch-action: manipulation; }
+.osint-data-panel select { background: var(--color-surface-solid); }
+.osint-data-panel button:active { background: var(--color-separator); }
+.osint-data-panel :focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+.osint-data-content { padding: 0 16px 16px; overflow-y: auto; overscroll-behavior: contain; }
+.osint-data-content p { margin: 12px 0; font-size: 13px; }
+.osint-data-content h3 { margin: 16px 0 8px; font-size: 15px; }
+.osint-data-content a { color: var(--color-accent); }
+.osint-data-content img { width: 100%; height: auto; border-radius: 8px; }
+.osint-data-content iframe { width: 100%; height: 350px; border: 1px solid var(--color-separator); background: white; }
+.osint-data-content summary { min-height: 44px; padding-top: 12px; cursor: pointer; }
+.osint-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 12px; }
+.osint-metrics > div { padding: 10px; background: var(--color-separator); border-radius: 12px; }
+.osint-metrics dt { font-size: 12px; }
+.osint-metrics dd { margin: 4px 0 0; font-size: 24px; font-weight: 600; }
+.osint-data-content table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.osint-data-content caption { font-size: 12px; text-align: left; padding: 8px 0; }
+.osint-data-content th, .osint-data-content td { text-align: right; border-bottom: 1px solid var(--color-separator); padding: 4px; }
+.osint-data-content th:first-child, .osint-data-content td:first-child { text-align: left; }
+.osint-sea-item { display: block; width: 100%; text-align: left; }
+@media (max-width: 768px) {
+  .osint-data-panel { top: auto; bottom: max(8px, env(safe-area-inset-bottom)); left: 8px; right: 8px; width: auto; max-height: 48dvh; border-radius: 20px; }
+}
