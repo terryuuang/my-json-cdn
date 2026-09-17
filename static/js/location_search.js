@@ -44,9 +44,9 @@ let wikiRequestId = 0;
 
 // 公開研究入口：只連到原始發布者，不抓取或離線保存其文章。
 const OSINT_RESOURCES = [
-  { displayName: '國防部 · 臺海周邊海空域動態', keywords: '中共 共軍 解放軍 軍機 軍艦 台海 臺海 國防部 MND OSINT 情報', url: 'https://www.mnd.gov.tw/newslist/2', detail: '國防部公開通報 · 線上開啟原始發布頁' },
-  { displayName: 'AMTI · 中國南海島礁追蹤', keywords: '中共 中國 南海 西沙 南沙 島礁 填海 衛星 CSIS AMTI OSINT 情報', url: 'https://amti.csis.org/island-tracker/china/', detail: 'CSIS 島礁資料與影像分析 · 線上開啟原站' },
-  { displayName: 'ChinaPower · 中國軍力與臺海研究', keywords: '中共 中國 共軍 解放軍 軍力 台海 臺海 軍演 CSIS ChinaPower OSINT 情報', url: 'https://chinapower.csis.org/', detail: 'CSIS 公開研究與資料 · 線上開啟原站' }
+  { displayName: '國防部 · 臺海周邊海空域動態', keywords: '中共 共軍 解放軍 軍機 軍艦 台海 臺海 國防部 MND OSINT 公開情報來源 情報', url: 'https://www.mnd.gov.tw/newslist/2', detail: '公開情報來源 · 開啟國防部通報網站（非全文搜尋）' },
+  { displayName: 'AMTI · 中國南海島礁追蹤', keywords: '中共 中國 南海 西沙 南沙 島礁 填海 衛星 CSIS AMTI OSINT 公開情報來源 情報', url: 'https://amti.csis.org/island-tracker/china/', detail: '公開情報來源 · 開啟 AMTI 島礁資料網站（非全文搜尋）' },
+  { displayName: 'ChinaPower · 中國軍力與臺海研究', keywords: '中共 中國 共軍 解放軍 軍力 台海 臺海 軍演 CSIS ChinaPower OSINT 公開情報來源 情報', url: 'https://chinapower.csis.org/', detail: '公開情報來源 · 開啟 ChinaPower 研究網站（非全文搜尋）' }
 ];
 
 function getSearchCatalog(query = '') {
@@ -62,7 +62,7 @@ function getSearchCatalog(query = '') {
     ['adizToggleBtn', '防空識別區／臺海中線', 'ADIZ 台海 中線', [[21, 117.3], [29, 123]]],
     ['maritimeZonesToggleBtn', '12 / 24 海浬線', '領海 鄰接區 十二 二十四 海里', [[20, 117], [27, 124]]]
   ].forEach(([id, displayName, keywords, bounds]) => {
-    entries.push({ displayName, keywords: `${keywords} 疊加範圍`, source: 'action', control: document.getElementById(id), bounds, detail: '疊加範圍 · 開啟並定位' });
+    entries.push({ displayName, keywords: `${keywords} 圖層 疊加範圍`, source: 'action', control: document.getElementById(id), bounds, detail: '疊加範圍 · 開啟並定位' });
   });
   entries.push(...OSINT_RESOURCES.map(resource => ({ ...resource, source: 'resource' })));
   return query ? entries.filter(entry => window.searchUtils.fuzzyMatch(`${entry.displayName} ${entry.keywords}`, query)) : entries;
@@ -70,22 +70,14 @@ function getSearchCatalog(query = '') {
 
 function showSearchHome() {
   const results = document.getElementById('searchResults');
-  results.innerHTML = '<div class="search-home-hint">搜尋地點、圖層或 OSINT；選取圖層即可顯示於圖臺。</div><div class="search-location-list"></div>';
-  const shortcuts = document.createElement('div');
-  shortcuts.className = 'search-shortcuts';
-  ['資料圖層', '疊加範圍', 'OSINT'].forEach(query => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = query;
-    button.addEventListener('click', () => {
-      const input = document.getElementById('searchInput');
-      input.value = query;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    shortcuts.appendChild(button);
-  });
-  results.prepend(shortcuts);
-  displaySearchResults(getSearchCatalog().filter(entry => entry.bounds || entry.source === 'resource'), '');
+  results.innerHTML = `<div id="searchGuide" class="search-home-hint">
+    <p>直接輸入，結果會隨文字更新。點地圖空白處可收合。</p>
+    <p><strong>圖層</strong>：試試「機場」、「五大戰區」或「防空識別區」。點選結果即可開啟對應圖層。</p>
+    <p><strong>公開情報來源（OSINT）</strong>：試試「國防部」、「南海」或「OSINT」。結果連往國防部、AMTI、ChinaPower 原站，不搜尋文章全文。</p>
+  </div><div class="search-location-list"></div>`;
+  // Start with guidance, rather than a list that looks like another toolbar.
+  window.currentSearchResults = [];
+  results.classList.add('show');
 }
 
 function activateSearchAction(result) {
@@ -435,7 +427,17 @@ function displaySearchResults(results, query) {
     empty.textContent = navigator.onLine ? '沒有結果。可按鍵盤的搜尋鍵或 Enter 查詢線上地名。' : '沒有本地結果。連線後可查詢線上地名。';
     list.appendChild(empty);
   }
+  let previousGroup = '';
   results?.forEach((result, index) => {
+    const group = result.source === 'action' ? '圖層 · 點選開啟'
+      : result.source === 'resource' ? '公開情報來源 · 開啟原站' : '地點 · 點選定位';
+    if (group !== previousGroup) {
+      const heading = document.createElement('div');
+      heading.className = 'search-result-group';
+      heading.textContent = group;
+      list.appendChild(heading);
+      previousGroup = group;
+    }
     const item = document.createElement(result.source === 'resource' ? 'a' : 'button');
     item.className = 'search-result-item';
     if (result.source === 'resource') {
@@ -511,7 +513,6 @@ function setupSearchIsland() {
   const island = document.getElementById('searchIsland');
   const trigger = document.getElementById('searchIslandTrigger');
   const searchInput = document.getElementById('searchInput');
-  const clearBtn = document.getElementById('searchClearBtn');
   if (!island || !searchInput) return;
 
   let searchTimeout;
@@ -526,7 +527,6 @@ function setupSearchIsland() {
   setupViewportStabilizer(island);
 
   trigger?.addEventListener('click', () => expandSearchIsland());
-  document.getElementById('searchCloseBtn')?.addEventListener('click', () => { collapseSearchIsland(); trigger?.focus({ preventScroll: true }); });
 
   // 桌面滑鼠 hover 展開，比照 macOS 選單列／Dock 靠近即放大的手感——
   // 觸控裝置沒有真正的 hover 概念（長按會被誤判成 hover），用 (hover:hover) + (pointer:fine)
@@ -562,8 +562,6 @@ function setupSearchIsland() {
     const query = this.value.trim();
     selectedResultIndex = -1;
 
-    if (clearBtn) clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
-
     if (!query) {
       showSearchHome();
       return;
@@ -573,6 +571,10 @@ function setupSearchIsland() {
     searchTimeout = setTimeout(() => {
       performSearch();
     }, 300);
+  });
+
+  searchInput.addEventListener('compositionend', () => {
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
   searchInput.addEventListener('keydown', function (e) {
@@ -605,18 +607,6 @@ function setupSearchIsland() {
         performSearch({ online: true });
       }
     }
-  });
-
-  clearBtn?.addEventListener('click', () => {
-    clearTimeout(searchTimeout);
-    searchRequestId++;
-    wikiRequestId++;
-    selectedResultIndex = -1;
-    searchInput.value = '';
-    clearBtn.style.display = 'none';
-    showSearchHome();
-    document.getElementById('searchIsland')?.classList.remove('island-wide');
-    searchInput.focus({ preventScroll: true });
   });
 
   // 點擊外部收合動態島

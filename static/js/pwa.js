@@ -5,7 +5,7 @@
   let updateRequested = false;
   let dataOffline = false;
   let installedThisSession = false;
-  let version = '0.6.6';
+  let version = '0.6.7';
   let lastFocus;
   let toastTimer;
   const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
@@ -80,12 +80,14 @@
     lastFocus = document.activeElement;
     renderInstall();
     const changelog = byId('app-changelog-body');
-    if (!changelog.hasChildNodes()) {
-      CHANGELOG.forEach(item => {
+    // Render on every open: whitespace or a stale placeholder is not a loaded log.
+    if (typeof CHANGELOG !== 'undefined' && CHANGELOG.length) {
+      byId('app-changelog-latest').textContent = `${CHANGELOG[0].date}：${CHANGELOG[0].description}`;
+      changelog.replaceChildren(...CHANGELOG.slice(1).map(item => {
         const entry = document.createElement('p');
         entry.textContent = `${item.date}：${item.description}`;
-        changelog.appendChild(entry);
-      });
+        return entry;
+      }));
     }
     refreshStatus();
     if (registration) showUpdate();

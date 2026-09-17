@@ -191,11 +191,15 @@
           <p>更新會重新開啟目前連結；請先儲存尚未完成的繪圖或筆記。</p>
           <button id="app-apply-update" class="app-primary" type="button">更新並重新開啟</button>
         </div>
-        <details id="app-changelog" class="app-card">
-          <summary>更新資訊</summary>
-          <div id="app-changelog-body"></div>
-        </details>
-        <p id="app-version" class="app-version">版本 0.6.6</p>
+        <section id="app-changelog" class="app-card" aria-labelledby="app-changelog-title">
+          <h2 id="app-changelog-title">更新資訊</h2>
+          <p id="app-changelog-latest">v0.6.7：搜尋框移除操作按鈕，輸入即顯示結果；新增圖層與公開情報來源的搜尋說明，更新資訊直接顯示最新內容。</p>
+          <details class="app-changelog-history">
+            <summary>歷次更新</summary>
+            <div id="app-changelog-body"></div>
+          </details>
+        </section>
+        <p id="app-version" class="app-version">版本 0.6.7</p>
         <div class="app-actions">
           <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
           <button id="app-check" type="button">檢查更新</button>
@@ -244,10 +248,8 @@
       <div class="search-island-input-row">
         <div class="search-island-field">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" class="search-island-input" placeholder="搜尋地點、圖層、OSINT" enterkeyhint="search" autocomplete="off" aria-label="搜尋地點、圖層與 OSINT">
-          <button type="button" id="searchClearBtn" class="search-island-clear" aria-label="清除搜尋" style="display: none;">✕</button>
+          <input type="text" id="searchInput" class="search-island-input" placeholder="搜尋地點、圖層或公開情報來源" enterkeyhint="search" autocomplete="off" aria-label="搜尋地點、圖層與公開情報來源">
         </div>
-        <button type="button" id="searchCloseBtn" class="search-island-close" aria-label="收合搜尋">取消</button>
       </div>
       <div id="searchResults" class="search-results" role="region" aria-label="搜尋結果"></div>
     </div>

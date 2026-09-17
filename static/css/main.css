@@ -1267,25 +1267,6 @@ select.input-field:hover {
     color: rgba(255, 255, 255, 0.5);
 }
 
-.search-island-clear {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-island-clear:active {
-    transform: scale(0.9);
-}
-
 .search-results {
     border-top: 1px solid transparent;
     max-height: 0;
@@ -4855,22 +4836,7 @@ select.input-field:hover {
   .thinking-orbs circle { animation: none; opacity: 0.55; }
 }
 
-/* v0.6.5 動態島：一致的觸控操作與可讀的結果。 */
-.search-island-close {
-  flex-shrink: 0;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #8fc7ff;
-  font: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.search-island-input { min-width: 0; }
-.search-island-clear { min-width: 44px; min-height: 44px; }
+/* 動態島結果清單：一致的觸控操作與可讀字級。 */
 .search-home-hint {
   padding: 12px 16px;
   font-size: 13px;
@@ -4893,13 +4859,12 @@ select.input-field:hover {
 }
 .search-result-name { overflow-wrap: anywhere; }
 .search-result-layer { line-height: 1.5; }
-.search-result-item:focus-visible,
-.search-island-close:focus-visible {
+.search-result-item:focus-visible {
   outline: 2px solid #93c5fd;
   outline-offset: -3px;
   background: rgba(255, 255, 255, 0.1);
 }
-.search-result-item:active, .search-island-close:active { background: rgba(255, 255, 255, 0.16); }
+.search-result-item:active { background: rgba(255, 255, 255, 0.16); }
 .search-results { overscroll-behavior: contain; }
 @media (max-width: 768px) {
   .search-island-input-row { gap: 2px; padding: 6px 8px; }
@@ -4914,26 +4879,14 @@ select.input-field:hover {
 @media (prefers-reduced-motion: reduce) {
   .search-results { scroll-behavior: auto; transition: none; }
 }
-.search-shortcuts { display: flex; gap: 8px; padding: 8px 14px 0; flex-wrap: wrap; }
-.search-shortcuts button {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.06);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.search-shortcuts button:focus-visible { outline: 2px solid #93c5fd; }
-.search-shortcuts button:active { background: rgba(255, 255, 255, 0.16); }
-
-/* Keep the search field quiet: keyboard submits, one trailing action dismisses. */
+/* A single search field; results update while typing. */
 .search-island-input-row { gap: 6px; }
-.search-island-field { display: flex; align-items: center; flex: 1; min-width: 0; gap: 6px; padding-left: 10px; min-height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.09); }
+.search-island-field { display: flex; align-items: center; flex: 1; min-width: 0; gap: 6px; padding: 0 10px; min-height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.09); }
 .search-island-field > svg { flex-shrink: 0; }
-.search-island-close { font-size: 16px; font-weight: 500; }
-.search-island-clear { background: transparent; font-size: 16px; }
 .search-wiki-disambig-item { touch-action: manipulation; }
+
+.search-home-hint p { margin: 0 0 10px; }
+.search-home-hint p:last-child { margin-bottom: 0; }
+.search-home-hint strong { color: #f1f5f9; font-weight: 600; }
+
+.search-result-group { padding: 12px 14px 4px; color: #cbd5e1; font-size: 12px; font-weight: 600; }

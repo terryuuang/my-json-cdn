@@ -55,7 +55,7 @@
 - Keep changes minimal and in-scope; do not introduce build tools. Preserve structure and style; update this guide if conventions change.
 
 ## PWA Maintenance
-- `sw.js` owns the app-shell version (`APP_VERSION`). Bump it for changes to cached HTML, CSS, JavaScript or artwork; also update `manifest.json` and the fallback version in `pwa.js`.
+- `sw.js` owns the app-shell version (`APP_VERSION`). Bump it for changes to cached HTML, CSS, JavaScript or artwork; also update `manifest.json`, the fallback version in `pwa.js`, and the visible version/latest-release fallback in `index.html`.
 - Keep every required local script/style and pinned CDN dependency in `CORE_ASSETS` / `CDN_ASSETS`. Installation is atomic: a failed dependency leaves the previous version in use.
 - App shells are versioned separately from downloaded local datasets. Do not cache live APIs, analytics or Google map tiles. Dataset cache is bounded to the main GeoJSON plus 24 optional local files.
 - Updates wait for explicit activation or closure of all previous tabs. Only the tab requesting an update reloads. Cache clearing must preserve the shell and IndexedDB notes.

@@ -109,7 +109,7 @@
 }
 
 .app-launcher.has-update::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); }
-#app-changelog summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-size: 15px; font-weight: 600; }
-#app-changelog summary::after { content: "+"; margin-left: auto; }
-#app-changelog[open] summary::after { content: "−"; }
-#app-changelog summary::-webkit-details-marker { display: none; }
+.app-changelog-history summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-size: 15px; font-weight: 600; }
+.app-changelog-history summary::after { content: "+"; margin-left: auto; }
+.app-changelog-history[open] summary::after { content: "−"; }
+.app-changelog-history summary::-webkit-details-marker { display: none; }
