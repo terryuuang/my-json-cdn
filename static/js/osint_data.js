@@ -139,6 +139,21 @@
       if (source) detail.append(link('國防部原始通報', source));
       const imageUrl = officialUrl(row.imageUrl, '/NewUpload/');
       if (imageUrl) {
+        // 官方示意圖本身是帶經緯格線的麥卡托製圖，可以精準貼回地圖上
+        // （換算基準與安全閥見 mnd_overlay.js）
+        if (window.MndOverlay) {
+          const overlay = node('button', '在地圖上疊加此日示意圖', 'osint-sea-item');
+          overlay.type = 'button';
+          overlay.addEventListener('click', () => {
+            if (window.MndOverlay.isVisible() && window.MndOverlay.getDate() === row.date) {
+              window.MndOverlay.hide();
+            } else {
+              window.MndOverlay.show(imageUrl, row.date);
+            }
+          });
+          detail.append(overlay);
+          detail.append(node('p', '疊加後圖上的紅色航跡框與官方標註會落在實際經緯度上；符號為官方示意，不是即時位置。'));
+        }
         const figure = node('details');
         figure.append(node('summary', '查看當日官方示意圖'));
         const image = node('img');

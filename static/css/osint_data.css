@@ -27,3 +27,59 @@
 @media (max-width: 768px) {
   .osint-data-panel { top: auto; bottom: max(8px, env(safe-area-inset-bottom)); left: 8px; right: 8px; width: auto; max-height: 48dvh; border-radius: 20px; }
 }
+
+/* ==========================================================
+   國防部示意圖疊加（mnd_overlay.js）
+   ========================================================== */
+/* multiply：示意圖的白底在相乘後等於不改變底圖，黑色圖框線與紅色航跡框則保留，
+   海域（衛星）底圖上也能看得到地形，不必先切成空域底圖。
+   clip-path 把圖框以外的標題、圖例、指北針與留白裁掉——它們在地圖上只會擋住底圖；
+   數值即格線在原圖中的位置（左 124/720、右 612.5/720、上 181/1040、下 901/1040），
+   與 mnd_overlay.js 的換算基準同一組量測，改其中一邊就要同步改另一邊 */
+.mnd-overlay-image {
+  mix-blend-mode: multiply;
+  clip-path: inset(17.404% 14.931% 13.365% 17.222%);
+}
+
+.mnd-overlay-bar {
+  position: fixed;
+  z-index: 2650;
+  left: 50%;
+  bottom: max(16px, calc(env(safe-area-inset-bottom) + 16px));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 24px);
+  padding: 8px 8px 8px 14px;
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-solid);
+  color: var(--color-label);
+  box-shadow: var(--shadow-lg);
+  font: 13px/1.4 system-ui, sans-serif;
+}
+
+.mnd-overlay-bar[hidden] { display: none; }
+.mnd-overlay-title { font-weight: 600; white-space: nowrap; }
+.mnd-overlay-opacity { display: flex; align-items: center; gap: 6px; color: var(--color-label-secondary); }
+.mnd-overlay-opacity input { width: 110px; accent-color: var(--color-accent); }
+.mnd-overlay-close {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-fill-secondary);
+  color: var(--color-label);
+  font: inherit;
+  cursor: pointer;
+}
+.mnd-overlay-close:hover { background: var(--color-separator); }
+
+@media (max-width: 768px) {
+  /* App 入口在左下角，往上讓開；滑桿縮短讓標題與按鈕留得住 */
+  .mnd-overlay-bar { bottom: calc(var(--app-launcher-clearance, 64px) + max(8px, env(safe-area-inset-bottom))); gap: 8px; padding: 6px 6px 6px 12px; font-size: 12px; }
+  .mnd-overlay-opacity span { display: none; }
+  .mnd-overlay-opacity input { width: 78px; }
+  .mnd-overlay-close { min-height: 40px; padding: 6px 12px; }
+}

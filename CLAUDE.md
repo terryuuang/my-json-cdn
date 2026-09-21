@@ -103,6 +103,12 @@ jq . joseph_w.geojson
 - `sheet`: PLATracker's public ADIZ database, read as CSV through Google's `gviz/tq?tqx=out:csv` endpoint (which sends CORS headers) and laid out by the app — metrics, an inline-SVG bar chart and a table. It is deliberately **not** an iframe of Google's `htmlview`: that embed carries its own horizontal and vertical scrollbars inside the panel
 - `marine`: Open-Meteo marine model samples rendered as map markers
 
+**`static/js/mnd_overlay.js`** (Official Chart Overlay)
+- Places MND's daily 臺海周邊海、空域活動示意圖 on the map as a georeferenced `L.imageOverlay`
+- It is not a guess: the chart is drawn in Web Mercator with a 1° graticule, so it lines up with Leaflet exactly. Measured on the official 720×1040 originals (identical across every day sampled): 117°E at x=124, 123°E at x=612.5 (81.42 px/°), 29°N at y=181, 21°N at y=901, with every other parallel within 0.4 px of the Mercator prediction. Extrapolating the full image gives `IMAGE_BOUNDS` = SW 19.39890, 115.47697 / NE 30.92455, 124.32037; in-browser checks put known graticule crossings within 0.6 px
+- **Guard**: every load verifies the source image is still 720×1040 and removes the overlay otherwise — if MND changes the template the pixel baseline no longer holds, and a silently misplaced chart is worse than no chart
+- `.mnd-overlay-image` in `osint_data.css` clips the title, table margins and legend away with `clip-path`, using the same measurements. **Change one and you must change the other.**
+
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
 - CRUD operations, map markers, export/import
@@ -212,7 +218,7 @@ Equipment parsing is **asynchronous and lazy**:
 
 ### Service Worker
 - `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, the `version` fallback in `pwa.js`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
-- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
+- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `mnd_overlay.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Deployment
