@@ -125,15 +125,20 @@
   <!-- ============================================
        樣式表預載與載入
        ============================================ -->
-  <!-- 以 preload + onload swap 手法避免這些外部樣式表阻塞首次繪製，
-       並用 <noscript> 提供 JS 停用時的備援 -->
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <!-- 以 media="print" + onload 改回 all 的手法避免這些外部樣式表阻塞首次繪製：
+       瀏覽器仍以低優先度下載，但不列入算繪阻擋資源。
+       不用 rel="preload" as="style" + rel 互換，是因為 Chrome 會在 load 事件後
+       幾秒內檢查「preload 的資源是否真的被用到」，而互換發生在樣式表下載完成的
+       onload 才做，慢速網路下必定晚於檢查點，於是每次開站 console 都噴
+       "preloaded using link preload but not used within a few seconds"。
+       <noscript> 保留 JS 停用時的備援 -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.onload=null;this.media='all'">
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
   <!-- Plugin: Leaflet.draw -->
-  <link rel="preload" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" media="print" onload="this.onload=null;this.media='all'">
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"></noscript>
   <!-- Bootstrap Icons for OSM facility markers -->
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.onload=null;this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
   <link rel="stylesheet" href="static/css/main.css">
   <link rel="stylesheet" href="static/css/pwa.css">
@@ -194,13 +199,13 @@
         </div>
         <section id="app-changelog" class="app-card" aria-labelledby="app-changelog-title">
           <h2 id="app-changelog-title">更新資訊</h2>
-          <p id="app-changelog-latest">v0.6.8：單一戰區搜尋、目前畫面附近機場查詢；新增機艦繞臺每日統計、PLATracker 試算表閱覽與臺海海象圖層。</p>
+          <p id="app-changelog-latest">v0.6.9：地圖控制改為預設收起並蓋在動態島之上；動態島提示不再被提早裁切；App 面板的歷次更新改為原地展開。</p>
           <details class="app-changelog-history">
             <summary>歷次更新</summary>
             <div id="app-changelog-body"></div>
           </details>
         </section>
-        <p id="app-version" class="app-version">版本 0.6.8</p>
+        <p id="app-version" class="app-version">版本 0.6.9</p>
         <div class="app-actions">
           <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
           <button id="app-check" type="button">檢查更新</button>
@@ -261,7 +266,9 @@
   <div id="panelBackdrop" class="panel-backdrop" onclick="closePanel()"></div>
 
   <!-- 控制面板 -->
-  <div id="controlPanel" class="control-panel" onclick="event.stopPropagation();">
+  <!-- 預設帶 hidden：桌面版也是使用者自己點開，先上 class 可避免 JS 初始化前閃現整塊面板
+       （手機版走 show-mobile，initializePanelState() 會把 hidden 拿掉） -->
+  <div id="controlPanel" class="control-panel hidden" onclick="event.stopPropagation();">
     <div class="control-title">地圖控制</div>
 
     <!-- ① 定位 -->
@@ -464,19 +471,6 @@
   <button class="toggle-panel" onclick="togglePanel()" aria-label="開啟地圖控制">
     <i class="bi bi-list"></i>
   </button>
-
-  <!-- 更新日誌 Modal -->
-  <div id="changelogModal" class="changelog-modal" onclick="closeChangelog()">
-    <div class="changelog-content" onclick="event.stopPropagation()">
-      <div class="changelog-header">
-        <h3>更新日誌</h3>
-        <button class="changelog-close" onclick="closeChangelog()" aria-label="關閉">✕</button>
-      </div>
-      <div class="changelog-body">
-        <!-- 內容將由 JavaScript 動態生成 -->
-      </div>
-    </div>
-  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>

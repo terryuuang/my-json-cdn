@@ -690,7 +690,8 @@ input, textarea, [contenteditable="true"] {
     bottom: 0;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
-    z-index: 1400;
+    /* 介於動態島（2500）與控制面板（2600）之間：遮住島，但不遮住面板 */
+    z-index: 2550;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -712,7 +713,9 @@ input, textarea, [contenteditable="true"] {
     border-radius: var(--radius-lg);
     box-shadow: var(--glass-panel-shadow);
     border: 1px solid var(--glass-panel-hairline);
-    z-index: 1500;
+    /* 必須高於搜尋動態島的 z-index: 2500——面板展開時應該蓋在島上面，
+       而不是被島壓住（桌機視窗較窄時兩者會重疊） */
+    z-index: 2600;
     min-width: 320px;
     max-width: 380px;
     max-height: calc(100vh - 30px);
@@ -1105,13 +1108,16 @@ select.input-field:hover {
     }
 }
 
-/* 外層裁切框：固定寬度上限 + overflow:hidden，超出的文字交給內層 .island-label-text 用跑馬燈滑出來，
+/* 外層裁切框：寬度上限 + overflow:hidden，超出的文字交給內層 .island-label-text 用跑馬燈滑出來，
    而不是像原本的 text-overflow:ellipsis 直接截斷——天氣提示常常比「搜尋地點」長很多，
-   截斷會讓 OSINT 判讀提示（起霧/強風等）整段看不到 */
+   截斷會讓 OSINT 判讀提示（起霧/強風等）整段看不到。
+   上限必須跟著島本身的 max-width（min(560px, 100vw - 20px)）走：扣掉 .search-island-compact
+   的左右 padding 20px×2、放大鏡 18px 與 gap 8px 共 66px，還有一點餘裕。原本寫死 200px 時，
+   島明明還有三百多 px 的空間，文字卻先被裁掉並開始跑馬燈，看起來就是「字無緣無故被切掉」 */
 .search-island-compact-label {
     display: inline-block;
     overflow: hidden;
-    max-width: min(200px, 46vw);
+    max-width: min(470px, calc(100vw - 86px));
     vertical-align: bottom;
     transition: opacity 0.18s ease;
 }
@@ -1609,11 +1615,6 @@ select.input-field:hover {
         font-size: 16px;
     }
 
-    /* 手機控制面板直接覆蓋動態島，保持島的位置不變。 */
-    body:has(.control-panel.show-mobile) .search-island {
-        z-index: 1300;
-    }
-
     .search-result-item {
         padding: 8px 10px;
     }
@@ -1727,7 +1728,8 @@ select.input-field:hover {
         position: fixed;
         top: 10px;
         left: 10px;
-        z-index: 1400;
+        /* 高於背景遮罩（2550），面板開著時這顆按鈕仍可按下收起 */
+        z-index: 2560;
         padding: 8px;
         background: rgba(40, 40, 60, 0.7);
         backdrop-filter: blur(12px) saturate(150%);
@@ -2735,37 +2737,6 @@ select.input-field:hover {
   flex: 1;
 }
 
-.changelog-link {
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--color-danger-hover);
-  font-weight: 500;
-  white-space: nowrap;
-  transition: opacity 0.2s, color 0.2s;
-  user-select: none;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
-}
-
-.changelog-link:hover {
-  color: var(--color-danger);
-  opacity: 0.8;
-}
-
-.changelog-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-overlay);
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s ease-in-out;
-}
 
 @keyframes fadeIn {
   from {
@@ -2776,129 +2747,8 @@ select.input-field:hover {
   }
 }
 
-.changelog-content {
-  background: var(--color-surface);
-  backdrop-filter: blur(var(--blur-panel)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(180%);
-  border: 1px solid var(--color-panel-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  animation: slideIn 0.35s var(--ease-spring);
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.changelog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--color-separator);
-}
-
-.changelog-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-label);
-}
-
-.changelog-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: var(--color-label-secondary);
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.changelog-close:hover {
-  background-color: var(--color-fill-secondary);
-  color: var(--color-label);
-}
-
-.changelog-body {
-  padding: 20px 24px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.changelog-item {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-separator);
-  line-height: 1.6;
-}
-
-.changelog-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.changelog-date {
-  font-weight: 600;
-  color: var(--color-danger-hover);
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-}
-
-.changelog-desc {
-  color: var(--color-label-secondary);
-  font-size: 14px;
-  display: block;
-}
-
 /* 手機版樣式調整 */
 @media (max-width: 768px) {
-  .changelog-content {
-    width: 95%;
-    max-height: 70vh;
-  }
-
-  .changelog-header {
-    padding: 16px 20px;
-  }
-
-  .changelog-header h3 {
-    font-size: 18px;
-  }
-
-  .changelog-body {
-    padding: 16px 20px;
-  }
-
-  .changelog-date,
-  .changelog-desc {
-    font-size: 13px;
-  }
-
-  .changelog-link {
-    font-size: 12px;
-  }
-
   .info-panel-content {
     gap: 8px;
   }
@@ -3697,33 +3547,27 @@ select.input-field:hover {
 }
 
 /* ========================================
-   OSINT 對話框／變更日誌的 Apple 風格細滾動軸
-   （原與已移除的 ADS-B／衛星結果清單共用一組規則，這裡只留仍在使用的兩個目標）
+   OSINT 對話框的 Apple 風格細滾動軸
    ======================================== */
-.note-dialog-body::-webkit-scrollbar,
-.changelog-body::-webkit-scrollbar {
+.note-dialog-body::-webkit-scrollbar {
   width: 6px;
 }
 
-.note-dialog-body::-webkit-scrollbar-track,
-.changelog-body::-webkit-scrollbar-track {
+.note-dialog-body::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.note-dialog-body::-webkit-scrollbar-thumb,
-.changelog-body::-webkit-scrollbar-thumb {
+.note-dialog-body::-webkit-scrollbar-thumb {
   background: var(--color-scroll-thumb);
   border-radius: var(--radius-full);
   transition: background-color 0.2s ease;
 }
 
-.note-dialog-body::-webkit-scrollbar-thumb:hover,
-.changelog-body::-webkit-scrollbar-thumb:hover {
+.note-dialog-body::-webkit-scrollbar-thumb:hover {
   background: var(--color-scroll-thumb-hover);
 }
 
-.note-dialog-body,
-.changelog-body {
+.note-dialog-body {
   scrollbar-width: thin;
   scrollbar-color: var(--color-scroll-thumb) transparent;
   -webkit-overflow-scrolling: touch;

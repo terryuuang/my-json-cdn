@@ -310,6 +310,13 @@ CSS `stroke` **overrides the `stroke` presentation attribute Leaflet writes on t
 
 **Gooey (`#liquid-goo`) goes on SVG content only.** Use the SVG `filter="url(#liquid-goo)"` attribute inside an `<svg>` (see `thinkingOrbsHtml()` in `map_state.js`), never CSS `filter: url(#…)` on HTML elements — WebKit renders the latter wrong.
 
+**Non-blocking external stylesheets use `media="print"`, not `rel="preload"`.** Chrome checks a
+few seconds after `load` whether every `rel="preload"` was actually used; the `as="style"` +
+`rel` swap only happens in the sheet's own `onload`, which on a slow connection lands after that
+check, so each visit logged `preloaded using link preload but not used within a few seconds`.
+`<link rel="stylesheet" media="print" onload="this.media='all'">` downloads at low priority
+without blocking render and never triggers the warning.
+
 **Viewport meta is comma-separated.** A missing comma silently invalidates `viewport-fit=cover`, which zeroes every `env(safe-area-inset-*)`.
 
 ## Known Constraints

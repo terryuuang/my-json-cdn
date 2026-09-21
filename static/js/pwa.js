@@ -5,7 +5,7 @@
   let updateRequested = false;
   let dataOffline = false;
   let installedThisSession = false;
-  let version = '0.6.8';
+  let version = '0.6.9';
   let lastFocus;
   let toastTimer;
   const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
@@ -214,6 +214,11 @@
     byId('app-sheet').addEventListener('close', () => {
       document.body.appendChild(byId('app-feedback'));
       lastFocus?.focus();
+    });
+    // 展開後把整段帶進視線內：summary 常常剛好停在面板底部，
+    // 不捲動的話使用者看不到剛長出來的清單。
+    document.querySelector('.app-changelog-history')?.addEventListener('toggle', event => {
+      if (event.target.open) event.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
     byId('app-install').addEventListener('click', install);
     byId('app-check').addEventListener('click', checkUpdate);

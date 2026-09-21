@@ -1,5 +1,5 @@
 /** App shell updates are atomic; live APIs and map tiles are never archived. */
-const APP_VERSION = '0.6.8';
+const APP_VERSION = '0.6.9';
 // 退場中的舊網域：不預載、不攔截、主動註銷，讓訪客拿到帶有導向邏輯的最新頁面。
 const LEGACY_HOST = 'rnap.riotoolkit.cc';
 const IS_LEGACY_HOST = self.location.hostname === LEGACY_HOST;

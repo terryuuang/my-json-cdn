@@ -113,3 +113,9 @@
 .app-changelog-history summary::after { content: "+"; margin-left: auto; }
 .app-changelog-history[open] summary::after { content: "−"; }
 .app-changelog-history summary::-webkit-details-marker { display: none; }
+/* 歷次更新有數十則，整段展開時高度上看數千 px。summary 本來就落在面板底部，
+   展開後內容全部長在可視範圍之外，看起來就像「點開沒東西」。
+   給它自己的捲動區，展開後在原地長出一塊固定高度的清單。 */
+#app-changelog-body { max-height: 260px; overflow-y: auto; overscroll-behavior: contain; margin-top: 4px; }
+#app-changelog-body p { margin: 0 0 12px; }
+#app-changelog-body p:last-child { margin-bottom: 0; }

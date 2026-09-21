@@ -1,9 +1,8 @@
 // ==========================================================
-// panel_ui.js - 控制面板顯示/隱藏、資訊面板、變更日誌 modal
+// panel_ui.js - 控制面板顯示/隱藏、資訊面板
+// 更新紀錄已統一由 App 面板（pwa.js）呈現，這裡不再有變更日誌 modal
 // ==========================================================
 
-
-// 更新資訊面板
 // 更新資訊面板，顯示點位統計資訊
 function updateInfoPanel(message) {
   const infoPanel = document.getElementById('infoPanel');
@@ -15,44 +14,6 @@ function updateInfoPanel(message) {
     </div>
   `;
   infoPanel.style.display = 'block';
-}
-
-// 顯示更新日誌彈窗
-function showChangelog(event) {
-  event.stopPropagation();
-  
-  // 關閉控制面板（如果是手機版）
-  const controlPanel = document.getElementById('controlPanel');
-  const panelBackdrop = document.getElementById('panelBackdrop');
-  if (window.innerWidth <= 768) {
-    controlPanel.classList.remove('active');
-    panelBackdrop.style.display = 'none';
-  }
-  
-  // 動態生成更新日誌內容
-  const changelogBody = document.querySelector('.changelog-body');
-  if (changelogBody) {
-    changelogBody.innerHTML = CHANGELOG.map(item => `
-      <div class="changelog-item">
-        <span class="changelog-date">${item.date}：</span>
-        <span class="changelog-desc">${item.description}</span>
-      </div>
-    `).join('');
-  }
-  
-  // 顯示更新日誌 modal
-  const modal = document.getElementById('changelogModal');
-  if (modal) {
-    modal.style.display = 'flex';
-  }
-}
-
-// 關閉更新日誌彈窗
-function closeChangelog() {
-  const modal = document.getElementById('changelogModal');
-  if (modal) {
-    modal.style.display = 'none';
-  }
 }
 
 // 組出可還原「目前畫面狀態」的分享連結
@@ -196,12 +157,12 @@ function initializePanelState() {
       mobileHint.style.display = 'block';
     }
   } else {
-    // 桌面版預設顯示
-    panel.classList.remove('hidden');
+    // 桌面版也預設收起：地圖才是主角，控制面板由使用者自己點開
+    panel.classList.add('hidden');
     panel.classList.remove('show-mobile');
-    // 面板預設展開，按鈕需要隱藏
+    // 面板收起時要看得到開啟按鈕
     if (toggleBtn) {
-      toggleBtn.classList.add('panel-open');
+      toggleBtn.classList.remove('panel-open');
     }
     // 隱藏手機版提示（如果存在）
     if (mobileHint) {
