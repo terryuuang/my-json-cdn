@@ -93,6 +93,11 @@ jq . joseph_w.geojson
 - `beginRender()` clears the layer registry on each `renderShapeMode()`; `register()` records a per-shape `apply(color)` callback and remembers the link's original colour for "重設顏色"
 - Entirely optional — if this script fails to load, `geo_shapes.js` skips the picker and everything else works unchanged
 
+**`static/js/map_context_menu.js`** (Map Context Menu)
+- Right-click on desktop, 500ms long-press on touch → menu showing the point's coordinates plus 「搜尋此座標」
+- The long press is hand-rolled on `touchstart`/`touchmove`: Android Chrome emits a native `contextmenu` on long press, iOS Safari usually does not on a non-link element
+- The action fills `latInput`/`lngInput` and calls `searchLocation()`, reusing the panel's current radius — it never changes the radius on the user's behalf
+
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
 - CRUD operations, map markers, export/import
@@ -202,7 +207,7 @@ Equipment parsing is **asynchronous and lazy**:
 
 ### Service Worker
 - `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, the `version` fallback in `pwa.js`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
-- CORE_ASSETS: `notes.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
+- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Deployment

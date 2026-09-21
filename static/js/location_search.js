@@ -70,16 +70,50 @@ function getSearchCatalog(query = '') {
   return query ? entries.filter(entry => window.searchUtils.fuzzyMatch(`${entry.displayName} ${entry.keywords}`, query)) : entries;
 }
 
+// 首頁提示裡的例子改成可點的 chip：原本只是引號包起來的純文字，使用者得自己把字打進去才知道
+// 會發生什麼事。chip 按下去就是把該關鍵字填進搜尋框並立刻查詢，等同「示範一次」。
+const SEARCH_HINT_CHIPS = {
+  layer: [
+    { query: '東部戰區', label: '東部戰區', hint: '只顯示該戰區範圍' },
+    { query: '機場', label: '機場', hint: '查詢目前畫面附近的機場並定位' },
+    { query: '防空識別區', label: '防空識別區', hint: '開啟 ADIZ／臺海中線並定位' }
+  ],
+  osint: [
+    { query: '機艦繞臺', label: '機艦繞臺', hint: '每日統計與官方示意圖' },
+    { query: '試算表', label: '試算表', hint: '圖臺內閱覽 PLATracker' },
+    { query: '海象', label: '海象', hint: '臺海浪高與浪向參考點' }
+  ]
+};
+
+function hintChipsHtml(group) {
+  return SEARCH_HINT_CHIPS[group].map(chip =>
+    `<button type="button" class="search-hint-chip" data-query="${escapeHtml(chip.query)}" title="${escapeHtml(chip.hint)}">${escapeHtml(chip.label)}</button>`
+  ).join('');
+}
+
 function showSearchHome() {
   const results = document.getElementById('searchResults');
   results.innerHTML = `<div id="searchGuide" class="search-home-hint">
-    <p>直接輸入，結果會隨文字更新。點地圖空白處可收合。</p>
-    <p><strong>圖層</strong>：試試「東部戰區」只顯示該區範圍；「機場」會查詢目前畫面附近的設施並定位。</p>
-    <p><strong>圖臺情報（OSINT）</strong>：試試「機艦繞臺」查看每日統計與官方示意圖、「試算表」閱覽 PLATracker，或「海象」顯示浪高參考點。</p>
+    <p>直接輸入，結果會隨文字更新。點地圖空白處可收合。也可以直接點下面的例子試試看。</p>
+    <p><strong>圖層</strong></p>
+    <div class="search-hint-chips">${hintChipsHtml('layer')}</div>
+    <p><strong>圖臺情報（OSINT）</strong></p>
+    <div class="search-hint-chips">${hintChipsHtml('osint')}</div>
   </div><div class="search-location-list"></div>`;
   // Start with guidance, rather than a list that looks like another toolbar.
   window.currentSearchResults = [];
   results.classList.add('show');
+
+  results.querySelector('#searchGuide')?.addEventListener('click', event => {
+    const chip = event.target.closest('.search-hint-chip');
+    if (!chip) return;
+    const input = document.getElementById('searchInput');
+    if (!input) return;
+    input.value = chip.dataset.query;
+    // 桌面版把焦點還給輸入框，使用者可以直接續打；手機版不搶焦點，免得彈出鍵盤把結果蓋掉
+    if (!isMobileDevice()) input.focus({ preventScroll: true });
+    performSearch();
+  });
 }
 
 async function activateSearchAction(result) {
