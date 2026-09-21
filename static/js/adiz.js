@@ -109,7 +109,7 @@ const ADIZ = (() => {
     updateBtn();
   }
 
-  return { init, toggle };
+  return { init, toggle, isVisible: () => _visible };
 })();
 
 window.ADIZ = ADIZ;

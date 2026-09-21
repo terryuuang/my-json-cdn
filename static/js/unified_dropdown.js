@@ -296,52 +296,9 @@ function closeAllDropdowns() {
   });
 }
 
-// 更新 togglePanel 函數以支持背景遮罩
-function togglePanel() {
-  const panel = document.getElementById('controlPanel');
-  const backdrop = document.getElementById('panelBackdrop');
-  const toggleBtn = document.querySelector('.toggle-panel');
-
-  if (isMobileDevice()) {
-    const isOpen = panel.classList.contains('show-mobile');
-
-    if (isOpen) {
-      // 關閉面板
-      panel.classList.remove('show-mobile');
-      backdrop.classList.remove('show');
-      if (toggleBtn) toggleBtn.style.zIndex = '1600';
-    } else {
-      // 開啟面板
-      panel.classList.add('show-mobile');
-      backdrop.classList.add('show');
-      if (toggleBtn) toggleBtn.style.zIndex = '1400';
-    }
-  } else {
-    // 桌面版
-    panel.classList.toggle('hidden');
-    if (!panel.classList.contains('hidden')) {
-      if (toggleBtn) toggleBtn.style.zIndex = '1400';
-    } else {
-      if (toggleBtn) toggleBtn.style.zIndex = '1600';
-    }
-  }
-}
-
-// 關閉面板 (供背景遮罩點擊使用)
-function closePanel() {
-  const panel = document.getElementById('controlPanel');
-  const backdrop = document.getElementById('panelBackdrop');
-  const toggleBtn = document.querySelector('.toggle-panel');
-
-  if (isMobileDevice()) {
-    panel.classList.remove('show-mobile');
-    backdrop.classList.remove('show');
-    if (toggleBtn) toggleBtn.style.zIndex = '1600';
-  }
-
-  // 同時關閉所有下拉選單
-  closeAllDropdowns();
-}
+// togglePanel()／closePanel() 由 panel_ui.js 統一提供。這裡原本留著一份也會操作
+// #panelBackdrop 的複本，但兩邊都是函式宣告，後載入的 panel_ui.js 一定覆蓋這裡，
+// 結果是遮罩的顯示邏輯永遠沒被執行到（手機版開面板時從來沒有變暗、也點不到外面關閉）。
 
 // 從 URL 載入圖層選擇狀態
 function loadLayerSelectionFromUrl() {
@@ -418,8 +375,6 @@ if (document.readyState === 'loading') {
 window.toggleLayerDropdown = toggleLayerDropdown;
 window.handleLayerChange = handleLayerChange;
 window.clearAllLayerSelections = clearAllLayerSelections;
-window.togglePanel = togglePanel;
-window.closePanel = closePanel;
 window.toggleOSMDropdown = toggleOSMDropdown;
 window.setupDropdowns = setupDropdowns;
 window.renderMapWithMultipleLayers = renderMapWithMultipleLayers;

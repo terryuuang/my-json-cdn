@@ -98,6 +98,11 @@ jq . joseph_w.geojson
 - The long press is hand-rolled on `touchstart`/`touchmove`: Android Chrome emits a native `contextmenu` on long press, iOS Safari usually does not on a non-link element
 - The action fills `latInput`/`lngInput` and calls `searchLocation()`, reusing the panel's current radius — it never changes the radius on the user's behalf
 
+**`static/js/osint_data.js`** (Public OSINT Views)
+- `mnd`: the daily MND report snapshot in `data/mnd_activity.json`, refreshed by `.github/workflows/update_osint.yml` (3×/day)
+- `sheet`: PLATracker's public ADIZ database, read as CSV through Google's `gviz/tq?tqx=out:csv` endpoint (which sends CORS headers) and laid out by the app — metrics, an inline-SVG bar chart and a table. It is deliberately **not** an iframe of Google's `htmlview`: that embed carries its own horizontal and vertical scrollbars inside the panel
+- `marine`: Open-Meteo marine model samples rendered as map markers
+
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
 - CRUD operations, map markers, export/import

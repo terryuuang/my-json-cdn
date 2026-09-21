@@ -2,7 +2,10 @@
 (() => {
   const SOURCES = {
     mnd: './data/mnd_activity.json',
-    sheet: 'https://docs.google.com/spreadsheets/d/1qbfYF0VgDBJoFZN5elpZwNTiKZ4nvCUcs5a7oYwm52g/htmlview/sheet?headers=false',
+    // gviz 的 CSV 匯出帶 CORS 標頭，可以直接讀進圖臺自己排版，
+    // 不必再嵌一整頁 Google 試算表（iframe 裡有自己的橫縱捲軸，手機上幾乎不能用）
+    sheetCsv: 'https://docs.google.com/spreadsheets/d/1qbfYF0VgDBJoFZN5elpZwNTiKZ4nvCUcs5a7oYwm52g/gviz/tq?tqx=out:csv&gid=905433190',
+    sheetView: 'https://docs.google.com/spreadsheets/d/1qbfYF0VgDBJoFZN5elpZwNTiKZ4nvCUcs5a7oYwm52g/htmlview',
     sheetSource: 'https://www.platracker.com/trackers',
     marine: 'https://marine-api.open-meteo.com/v1/marine',
     marineSource: 'https://open-meteo.com/en/docs/marine-weather-api'
@@ -41,7 +44,6 @@
     revision++;
     controller?.abort();
     if (panel) panel.hidden = true;
-    if (currentKind === 'sheet') content?.replaceChildren();
     lastFocus?.focus({ preventScroll: true });
   }
 
@@ -73,6 +75,36 @@
     const response = await fetch(url, { signal, cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
+  }
+
+  async function text(url, signal) {
+    const response = await fetch(url, { signal, cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  }
+
+  // 只夠用的 CSV 解析：Google 的匯出一律用雙引號包欄位，跳脫是連續兩個雙引號
+  function parseCsv(input) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let quoted = false;
+    for (let i = 0; i < input.length; i++) {
+      const char = input[i];
+      if (quoted) {
+        if (char !== '"') { field += char; continue; }
+        if (input[i + 1] === '"') { field += '"'; i++; continue; }
+        quoted = false;
+        continue;
+      }
+      if (char === '"') { quoted = true; continue; }
+      if (char === ',') { row.push(field); field = ''; continue; }
+      if (char === '\n') { row.push(field); rows.push(row); row = []; field = ''; continue; }
+      if (char === '\r') continue;
+      field += char;
+    }
+    if (field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows;
   }
 
   function officialUrl(raw, path) {
@@ -161,26 +193,110 @@
     window.map.fitBounds([[20.5, 118], [27, 124]], { padding: [24, 60], animate: false });
   }
 
-  function renderSheet() {
-    content.replaceChildren(node('p', 'PLATracker · Gerald C. Brown／Ben Lewis。以下直接閱覽作者持續維護的試算表；資料下載須依作者的分享規則申請。'));
-    const label = node('label', '工作表 ');
-    const select = node('select');
-    [['168515562', '機艦總數（2022 年 8 月起）'], ['905433190', '每日 ADIZ 架次'], ['2051027998', '來源說明與更新日期']].forEach(([gid, name]) => {
-      const option = node('option', name);
-      option.value = gid;
-      select.append(option);
-    });
-    label.append(select);
-    const frame = node('iframe');
-    frame.title = 'PLATracker Taiwan ADIZ 公開試算表';
-    // Embed a specific public sheet; the local selector avoids Google's page switcher.
-    frame.sandbox = 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox';
-    frame.referrerPolicy = 'no-referrer';
-    const selectSheet = () => { frame.src = `${SOURCES.sheet}&gid=${select.value}`; };
-    select.addEventListener('change', selectSheet);
-    selectSheet();
-    content.append(label, node('p', '可在表內橫向及縱向捲動。若無法顯示，請由來源頁閱覽。圖臺統計另取自國防部日報。'), link('PLATracker 來源與資料說明', SOURCES.sheetSource), frame);
+  // PLATracker 的「每日 ADIZ 架次」工作表：A=日期(M/D/YYYY)、B=星期、C=當日進入 ADIZ 架次
+  function parseSheetRows(csv) {
+    const rows = parseCsv(csv).slice(1);
+    return rows.map(cells => {
+      const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec((cells[0] || '').trim());
+      const count = Number((cells[2] || '').trim());
+      if (!match || !Number.isFinite(count)) return null;
+      const [, month, day, year] = match;
+      return {
+        date: `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`,
+        count
+      };
+    }).filter(Boolean);
+  }
 
+  // 近 N 日長條圖。用 inline SVG 而不是圖表套件：這個專案沒有建置工具，
+  // 也不想為了一張小圖多拉一個 CDN 相依
+  function sparkBars(rows) {
+    const width = 320;
+    const height = 96;
+    const gap = 1;
+    const max = Math.max(...rows.map(row => row.count), 1);
+    const barWidth = (width - gap * (rows.length - 1)) / rows.length;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'osint-bars');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', `最近 ${rows.length} 日每日進入 ADIZ 架次，最高 ${max} 架次`);
+    rows.forEach((row, index) => {
+      const barHeight = Math.max(row.count > 0 ? 2 : 0, Math.round((row.count / max) * (height - 2)));
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', (index * (barWidth + gap)).toFixed(2));
+      rect.setAttribute('y', (height - barHeight).toFixed(2));
+      rect.setAttribute('width', barWidth.toFixed(2));
+      rect.setAttribute('height', String(barHeight));
+      rect.setAttribute('rx', '1');
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `${row.date}：${row.count} 架次`;
+      rect.append(title);
+      svg.append(rect);
+    });
+    return svg;
+  }
+
+  function renderSheet(csv) {
+    const rows = parseSheetRows(csv);
+    if (rows.length < 7) throw new Error('試算表格式不符');
+    const recent = rows.slice(-30);
+    const last7 = rows.slice(-7);
+    const latest = rows[rows.length - 1];
+    const peak = recent.reduce((best, row) => row.count > best.count ? row : best, recent[0]);
+    const sum = list => list.reduce((total, row) => total + row.count, 0);
+    const average = Math.round((sum(last7) / last7.length) * 10) / 10;
+
+    content.replaceChildren(node('p', 'PLATracker（Gerald C. Brown／Ben Lewis）持續維護的公開資料庫，記錄每日進入臺灣防空識別區的共機架次。以下由圖臺直接讀取並排版，數字為通報架次而非獨立機數。'));
+
+    const metrics = node('dl', undefined, 'osint-metrics');
+    [
+      [`最新一日（${latest.date}）`, `${latest.count}`],
+      ['近 7 日平均', `${average}`],
+      ['近 30 日合計', `${sum(recent)}`],
+      [`近 30 日單日最高（${peak.date}）`, `${peak.count}`]
+    ].forEach(([label, text]) => {
+      const item = node('div');
+      item.append(node('dt', label), node('dd', text));
+      metrics.append(item);
+    });
+    content.append(metrics);
+
+    content.append(node('h3', `最近 ${recent.length} 日每日架次`), sparkBars(recent));
+    const axis = node('p', `${recent[0].date} — ${latest.date}`, 'osint-bars-axis');
+    content.append(axis);
+
+    const table = node('details');
+    table.append(node('summary', '每日數字'));
+    const grid = node('table');
+    const head = node('tr');
+    ['日期', '架次'].forEach(text => { const th = node('th', text); th.scope = 'col'; head.append(th); });
+    const thead = node('thead');
+    thead.append(head);
+    const tbody = node('tbody');
+    [...recent].reverse().forEach(row => {
+      const tr = node('tr');
+      tr.append(node('td', row.date), node('td', String(row.count)));
+      tbody.append(tr);
+    });
+    grid.append(thead, tbody);
+    table.append(grid);
+    content.append(table);
+
+    // 把數字接回地圖：這些架次講的就是防空識別區，一鍵把該範圍畫出來
+    if (window.ADIZ) {
+      const adiz = node('button', '在地圖上顯示防空識別區', 'osint-sea-item');
+      adiz.type = 'button';
+      adiz.addEventListener('click', () => {
+        if (!window.ADIZ.isVisible?.()) window.ADIZ.toggle();
+        window.map.fitBounds([[21, 117.3], [29, 123]], { padding: [24, 60], animate: false });
+      });
+      content.append(adiz);
+    }
+
+    content.append(node('p', `資料範圍 ${rows[0].date} 起，共 ${rows.length} 日。圖臺另有國防部每日通報可對照；兩者統計口徑不同。`));
+    content.append(link('PLATracker 來源與資料說明', SOURCES.sheetSource));
+    content.append(link('在 Google 試算表開啟完整資料', SOURCES.sheetView));
   }
 
   function renderMarine(payload) {
@@ -226,13 +342,15 @@
     panel.hidden = false;
     content.replaceChildren(node('p', '正在載入資料…'));
     window.map.closePopup();
-    if (kind === 'sheet') { renderSheet(); return; }
     const activeController = controller;
     const timer = setTimeout(() => activeController.abort(), 15000);
     try {
       if (kind === 'mnd') {
         const data = await json(SOURCES.mnd, controller.signal);
         if (request === revision) renderReport(data);
+      } else if (kind === 'sheet') {
+        const csv = await text(SOURCES.sheetCsv, controller.signal);
+        if (request === revision) renderSheet(csv);
       } else {
         const url = new URL(SOURCES.marine);
         url.search = new URLSearchParams({ latitude: SEA_POINTS.map(p => p.lat).join(','), longitude: SEA_POINTS.map(p => p.lng).join(','), current: 'wave_height,wave_direction,wave_period', timezone: 'Asia/Taipei', cell_selection: 'sea' });

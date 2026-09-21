@@ -5,7 +5,7 @@
   let updateRequested = false;
   let dataOffline = false;
   let installedThisSession = false;
-  let version = '0.7.0';
+  let version = '0.7.1';
   let lastFocus;
   let toastTimer;
   const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
@@ -84,8 +84,13 @@
     if (typeof CHANGELOG !== 'undefined' && CHANGELOG.length) {
       byId('app-changelog-latest').textContent = `${CHANGELOG[0].date}：${CHANGELOG[0].description}`;
       changelog.replaceChildren(...CHANGELOG.slice(1).map(item => {
-        const entry = document.createElement('p');
-        entry.textContent = `${item.date}：${item.description}`;
+        const entry = document.createElement('div');
+        entry.className = 'app-changelog-entry';
+        const date = document.createElement('time');
+        date.textContent = item.date;
+        const body = document.createElement('p');
+        body.textContent = item.description;
+        entry.append(date, body);
         return entry;
       }));
     }

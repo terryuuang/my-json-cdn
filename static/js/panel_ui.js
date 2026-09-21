@@ -94,6 +94,11 @@ async function shareCurrentView() {
   await copyTextToClipboard(url);
 }
 
+// 手機版的半透明遮罩：面板展開時蓋住地圖，點一下即可關閉（#panelBackdrop 的 onclick）
+function setPanelBackdrop(visible) {
+  document.getElementById('panelBackdrop')?.classList.toggle('show', visible);
+}
+
 // 隱藏/顯示控制面板
 function closeControlPanel() {
   const panel = document.getElementById('controlPanel');
@@ -101,6 +106,7 @@ function closeControlPanel() {
   if (!panel) return;
 
   panel.classList.remove('show-mobile');
+  setPanelBackdrop(false);
   if (isMobileDevice()) {
     panel.classList.remove('hidden');
   } else {
@@ -123,7 +129,9 @@ function togglePanel() {
   if (isMobileDevice()) {
     // 手機版使用 show-mobile class
     panel.classList.toggle('show-mobile');
-    if (panel.classList.contains('show-mobile')) collapseSearchIsland();
+    const open = panel.classList.contains('show-mobile');
+    setPanelBackdrop(open);
+    if (open) collapseSearchIsland();
   } else {
     // 桌面版使用 hidden class
     panel.classList.toggle('hidden');
@@ -138,6 +146,12 @@ function togglePanel() {
   }
 }
 
+// 背景遮罩的點擊入口（index.html 的 #panelBackdrop onclick）
+function closePanel() {
+  closeControlPanel();
+  if (window.closeAllDropdowns) window.closeAllDropdowns();
+}
+
 let panelLayoutIsMobile = null;
 
 // 初始化面板顯示狀態
@@ -150,6 +164,7 @@ function initializePanelState() {
   if (isMobileDevice()) {
     // 手機版預設隱藏
     panel.classList.remove('show-mobile');
+    setPanelBackdrop(false);
     // 確保不使用桌面版的 hidden class
     panel.classList.remove('hidden');
     // 顯示手機版提示（如果存在）
@@ -177,7 +192,6 @@ function handleResize() {
   // 軟鍵盤、網址列與同一版型內旋轉不應重新打開面板並遮住搜尋。
   if (mobile === panelLayoutIsMobile) return;
   closeControlPanel();
-  document.getElementById('panelBackdrop')?.classList.remove('show');
   if (window.closeAllDropdowns) window.closeAllDropdowns();
   initializePanelState();
 }

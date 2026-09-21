@@ -94,8 +94,11 @@ window.MapContextMenu = (() => {
       longPressStart = { x: touch.clientX, y: touch.clientY };
       longPressTimer = setTimeout(() => {
         longPressTimer = null;
-        // 長按結束後瀏覽器仍會補送一次 click，會被判定成「點地圖空白處」而立刻關掉選單
+        // 長按結束後瀏覽器仍會補送一次 click，會被判定成「點地圖空白處」而立刻關掉選單。
+        // 但不是每個瀏覽器都補送（iOS 常常不送），旗標留著會把下一次真正的點擊吃掉，
+        // 所以短暫時間後自動歸零
         suppressNextClick = true;
+        setTimeout(() => { suppressNextClick = false; }, 700);
         const point = map.mouseEventToContainerPoint(touch);
         show(map.containerPointToLatLng(point), touch.clientX, touch.clientY);
       }, LONG_PRESS_MS);

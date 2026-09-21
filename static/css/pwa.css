@@ -113,9 +113,12 @@
 .app-changelog-history summary::after { content: "+"; margin-left: auto; }
 .app-changelog-history[open] summary::after { content: "−"; }
 .app-changelog-history summary::-webkit-details-marker { display: none; }
-/* 歷次更新有數十則，整段展開時高度上看數千 px。summary 本來就落在面板底部，
-   展開後內容全部長在可視範圍之外，看起來就像「點開沒東西」。
-   給它自己的捲動區，展開後在原地長出一塊固定高度的清單。 */
-#app-changelog-body { max-height: 260px; overflow-y: auto; overscroll-behavior: contain; margin-top: 4px; }
-#app-changelog-body p { margin: 0 0 12px; }
-#app-changelog-body p:last-child { margin-bottom: 0; }
+/* 歷次更新只跟著面板本身捲動：巢狀捲動區（面板一個、清單自己一個）在觸控上很難操作，
+   展開後改由 pwa.js 把 summary 捲進視線即可。
+   overflow-wrap 是必要的：更新紀錄裡有 bootstrap/map_init/markers_render/... 這種
+   沒有空白的長字串，預設不會斷行，會把整塊撐寬而多出一條橫向捲軸。 */
+#app-changelog-body { margin-top: 4px; }
+.app-changelog-entry { padding: 12px 0; border-top: 1px solid var(--color-separator); }
+.app-changelog-entry:first-child { border-top: 0; padding-top: 4px; }
+.app-changelog-entry time { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--color-label); }
+.app-sheet .app-changelog-entry p { margin: 0; overflow-wrap: anywhere; }
