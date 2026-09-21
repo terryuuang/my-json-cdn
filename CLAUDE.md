@@ -109,6 +109,12 @@ jq . joseph_w.geojson
 - **Guard**: every load verifies the source image is still 720×1040 and removes the overlay otherwise — if MND changes the template the pixel baseline no longer holds, and a silently misplaced chart is worse than no chart
 - `.mnd-overlay-image` in `osint_data.css` clips the title, table margins and legend away with `clip-path`, using the same measurements. **Change one and you must change the other.**
 
+**`static/js/mnd_areas.js`** (Reported Activity Areas — on by default)
+- Draws the red activity outlines from MND's daily chart as real polygons, read from the `areas` field of `data/mnd_activity.json`
+- The vectorisation happens in `scripts/mnd_chart_areas.py` during the data refresh, **not** in the browser: mnd.gov.tw sends no CORS header, so a canvas read of the chart is blocked
+- Shows the newest report that actually has areas (some days have none, some older reports have no chart at all) and always labels that date
+- Polygons carry `className: 'mnd-area-path'`, which must stay in the `:not()` list of the stroke rule in `main.css` — see CSS Gotchas
+
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
 - CRUD operations, map markers, export/import
@@ -123,6 +129,12 @@ jq . joseph_w.geojson
 - Browser script to extract Google Maps data and convert to GeoJSON
 - Run on `mymaps.google.com` to export custom map layers
 - Handles bidirectional text markers and multi-layer maps
+
+**`scripts/mnd_chart_areas.py`**
+- Turns the red outlines on the daily chart into lon/lat rings, using the same Mercator pixel basis as `mnd_overlay.js`
+- Run from `scripts/update_mnd_activity.py`, which stores the result per report as `areas` and only fetches charts it has not vectorised yet (capped per run)
+- Needs Pillow + numpy (installed by the workflow). Without them `extract_areas()` returns `None` and the numeric pipeline still publishes
+- Refuses any chart that is not 720×1040 — the pixel basis would not hold, and a plausible wrong polygon is worse than none
 
 **`classify_layer.py`**
 - Python utility to list unique layer names from GeoJSON
@@ -218,7 +230,7 @@ Equipment parsing is **asynchronous and lazy**:
 
 ### Service Worker
 - `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, the `version` fallback in `pwa.js`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
-- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `mnd_overlay.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
+- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `mnd_overlay.js`, `mnd_areas.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Deployment

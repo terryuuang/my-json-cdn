@@ -270,6 +270,9 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
           let referenceLinks = [];
           let mainTitle = cleanText(props['名稱'] || props['name'] || '軍事設施');
           popupContent += `<div class="popup-header"><div class="popup-icon">${iconData.svg}</div><h3 class="popup-title">${escapeHtml(mainTitle)}</h3></div>`;
+          // 這裡開始的欄位會被包進 .popup-split-main，與左側衛星縮圖並排（手機版改為上下）
+          const headerHtml = popupContent;
+          popupContent = '';
           popupContent += buildPopupFieldHtml('分層類別', toDisplayLayerName(layerName), { accentColor: iconData.color, accentColorDark: iconData.colorDark, valueClassName: 'popup-field-badge' });
           let equipmentText = '';
           let facilityWikiLinks = [];
@@ -325,6 +328,9 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
               <line x1="16" y1="17" x2="8" y2="17"/>
             </svg>筆記</a></div>`;
           
+          const satCoords = feature.geometry.coordinates;
+          popupContent = `${headerHtml}<div class="popup-split">${buildSatelliteThumb(satCoords[1], satCoords[0])}<div class="popup-split-main">${popupContent}</div></div>`;
+
           const popupOptions = { className: 'custom-popup' };
           if (isMobileDevice()) {
             popupOptions.maxWidth = Math.min(520, window.innerWidth - 24);
@@ -337,8 +343,9 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
             popupOptions.autoClose = false;
             popupOptions.closeOnEscapeKey = true;
           } else {
-            popupOptions.maxWidth = Math.min(560, window.innerWidth - 48);
-            popupOptions.minWidth = Math.min(360, window.innerWidth - 72);
+            // 衛星縮圖佔掉左欄 240px，右欄要留得下說明文字
+            popupOptions.maxWidth = Math.min(640, window.innerWidth - 48);
+            popupOptions.minWidth = Math.min(420, window.innerWidth - 72);
           }
           layer.bindPopup(popupContent, popupOptions);
           if (equipmentText && window.equipmentParser) {
@@ -442,6 +449,54 @@ if (loading) loading.style.display = 'none';
 }
 
 // 更新 URL 座標搜尋參數並依選中圖層重新渲染地圖（供 searchLocation / selectSearchResult 共用）
+// ==========================================================
+// Popup 衛星縮圖
+// 直接組 Google 圖磚（與底圖同一個端點，不需金鑰）。視窗小於 256px，所以每軸最多
+// 跨兩張圖磚，一次最多四個請求；popup 內容在打開時才進 DOM，關著的標記不會發請求。
+// z18 是這一帶真正有影像的層級：實測 z21 起已是放大模糊，貼再近也看不出更多東西。
+// ==========================================================
+// z17 的視窗約 260 公尺寬，剛好看得出跑道、陣地、碼頭這種尺度的輪廓；
+// z18 以上只剩樹冠與屋頂，反而看不出「那是什麼」
+const SATVIEW_ZOOM = 17;
+const SATVIEW_MAX_ZOOM = 20;   // 點「放大」時帶到的層級，超過這裡只是插值放大（實測 z21 起明顯模糊）
+
+function buildSatelliteThumb(lat, lng) {
+  // 圖磚以「相對於視窗中心」定位（calc(50% + n px)），所以外框不論被 RWD 拉成多寬多高，
+  // 目標點永遠落在正中央；涵蓋範圍取 384px 見方，足以填滿桌面與手機兩種尺寸
+  const COVER = 384;
+  const world = Math.pow(2, SATVIEW_ZOOM) * 256;
+  const worldX = (lng + 180) / 360 * world;
+  const latRad = lat * Math.PI / 180;
+  const worldY = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * world;
+  const tiles = [];
+  for (let tx = Math.floor((worldX - COVER / 2) / 256); tx <= Math.floor((worldX + COVER / 2) / 256); tx++) {
+    for (let ty = Math.floor((worldY - COVER / 2) / 256); ty <= Math.floor((worldY + COVER / 2) / 256); ty++) {
+      const url = `https://mt1.google.com/vt/lyrs=s&x=${tx}&y=${ty}&z=${SATVIEW_ZOOM}&hl=zh-TW`;
+      const offsetX = Math.round(tx * 256 - worldX);
+      const offsetY = Math.round(ty * 256 - worldY);
+      tiles.push(`<img src="${escapeAttr(url)}" alt="" aria-hidden="true" decoding="async" referrerpolicy="no-referrer" style="left:calc(50% + ${offsetX}px);top:calc(50% + ${offsetY}px)">`);
+    }
+  }
+  return `<div class="popup-satview">
+    <div class="popup-satview-frame">
+      ${tiles.join('')}
+      <span class="popup-satview-cross" aria-hidden="true"></span>
+    </div>
+    <button type="button" class="popup-satview-zoom" data-lat="${lat}" data-lng="${lng}"
+      onclick="zoomToPopupFeature(this);return false;">放大到最高解析度</button>
+    <span class="popup-satview-caption">衛星影像 · Google／z${SATVIEW_ZOOM}</span>
+  </div>`;
+}
+
+// popup 內的「放大」按鈕：把地圖帶到該點的最高有效解析度
+function zoomToPopupFeature(element) {
+  const lat = parseFloat(element.dataset.lat);
+  const lng = parseFloat(element.dataset.lng);
+  if (!map || !Number.isFinite(lat) || !Number.isFinite(lng)) return;
+  map.setView([lat, lng], Math.min(SATVIEW_MAX_ZOOM, map.getMaxZoom()));
+}
+window.zoomToPopupFeature = zoomToPopupFeature;
+
 function updateUrlAndRenderAtCoords(lat, lng, radius, selectedLayers) {
   // 更新 URL（保留既有 shape 參數，讓禁航區 overlay 能持續顯示）
   const urlParams = new URLSearchParams(window.location.search);

@@ -100,6 +100,7 @@ try {
       if (window.SubmarineCable) window.SubmarineCable.init(map);
       if (typeof initOsintToolbar === 'function') initOsintToolbar(map);
       if (window.MapContextMenu) window.MapContextMenu.init(map);
+      if (window.MndAreas) window.MndAreas.init(map);
       if (window.OsintWeather) window.OsintWeather.init();
     });
     

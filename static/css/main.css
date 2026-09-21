@@ -938,10 +938,10 @@ select.input-field:hover {
    注意：CSS 的 stroke 會蓋過 Leaflet 寫在 SVG 上的 stroke 屬性，因此任何需要
    自訂顏色的圖層都必須用 className 從這條規則排除（adiz / theater /
    submarine-cable / nfz-shape 皆是），否則 setStyle({color}) 不會生效 */
-.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path) {
+.leaflet-overlay-pane svg path.leaflet-interactive:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path):not(.mnd-area-path) {
   stroke: #ef4444;
 }
-.leaflet-overlay-pane svg path.leaflet-interactive + path:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path) {
+.leaflet-overlay-pane svg path.leaflet-interactive + path:not(.adiz-path):not(.theater-path):not(.submarine-cable-path):not(.nfz-shape-path):not(.mnd-area-path) {
   stroke: #ef4444;
 }
 /* 編輯控制點顏色（若外掛使用此類名） */
@@ -4821,3 +4821,109 @@ select.input-field:hover {
 }
 
 .search-result-group { padding: 12px 14px 4px; color: #cbd5e1; font-size: 12px; font-weight: 600; }
+
+/* ==========================================================
+   Popup 衛星縮圖（markers_render.js buildSatelliteThumb）
+   桌面版與內容並排、手機版改放在上方（RWD）
+   ========================================================== */
+.popup-split {
+    display: flex;
+    gap: 14px;
+    /* stretch：右欄內容多的時候，左邊的衛星縮圖跟著長高（圖磚以中心定位，
+       框變高只是露出更多影像，不需要重算），但仍有上限免得變成一長條 */
+    align-items: stretch;
+}
+
+.popup-split-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.popup-satview {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.popup-split > .popup-satview {
+    align-self: stretch;
+}
+
+/* 圖磚以絕對定位拼起來，再由外框裁出以目標點為中心的視窗 */
+.popup-satview-frame {
+    position: relative;
+    width: 240px;
+    /* 基準 180px，右欄內容多時最多長到 420px */
+    flex: 1 1 180px;
+    min-height: 180px;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-separator);
+    background: var(--color-fill-secondary);
+}
+
+.popup-satview-frame img {
+    position: absolute;
+    width: 256px;
+    height: 256px;
+    max-width: none;
+}
+
+/* 中心十字：讓人一眼看出點位落在影像的哪裡 */
+.popup-satview-cross {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(239, 68, 68, 0.95);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.popup-satview-zoom {
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--color-separator);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-label);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.popup-satview-zoom:hover {
+    background: var(--color-fill-secondary);
+}
+
+.popup-satview-caption {
+    font-size: 10px;
+    color: var(--color-label-secondary);
+}
+
+@media (max-width: 768px) {
+    .popup-split {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .popup-satview,
+    .popup-satview-frame {
+        width: 100% !important;
+    }
+
+    /* 手機是直向堆疊，縮圖再長高只會把說明文字一路推到畫面外，
+       所以這裡固定矮版本，不跟著右欄內容長 */
+    .popup-satview-frame {
+        flex: 0 0 auto;
+        height: 150px;
+        min-height: 0;
+        max-height: 150px;
+    }
+    .popup-satview-zoom { min-height: 44px; font-size: 13px; }
+}

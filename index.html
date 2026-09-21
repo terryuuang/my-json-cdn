@@ -199,13 +199,13 @@
         </div>
         <section id="app-changelog" class="app-card" aria-labelledby="app-changelog-title">
           <h2 id="app-changelog-title">更新資訊</h2>
-          <p id="app-changelog-latest">v0.7.2：國防部每日示意圖可直接疊到地圖上，紅色航跡框落在真實經緯度。</p>
+          <p id="app-changelog-latest">v0.7.3：官方通報的活動範圍改以向量圖層直接畫在地圖上（預設開啟）；點位 popup 新增衛星縮圖。</p>
           <details class="app-changelog-history">
             <summary>歷次更新</summary>
             <div id="app-changelog-body"></div>
           </details>
         </section>
-        <p id="app-version" class="app-version">版本 0.7.2</p>
+        <p id="app-version" class="app-version">版本 0.7.3</p>
         <div class="app-actions">
           <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
           <button id="app-check" type="button">檢查更新</button>
@@ -425,6 +425,10 @@
       <div class="settings-section-title">疊加範圍</div>
       <div class="settings-group">
         <div class="settings-row">
+          <span class="settings-row-label" id="mndAreasLabel">通報活動範圍</span>
+          <button type="button" class="ios-switch active" id="mndAreasToggleBtn" role="switch" aria-checked="true" title="隱藏國防部通報活動範圍"></button>
+        </div>
+        <div class="settings-row">
           <span class="settings-row-label">五大戰區</span>
           <button type="button" class="ios-switch" id="theaterToggleBtn" role="switch" aria-checked="false" title="顯示共軍戰區"></button>
         </div>
@@ -513,6 +517,8 @@
   <script src="static/js/map_context_menu.js" defer></script>
   <!-- 國防部每日示意圖地理疊加 -->
   <script src="static/js/mnd_overlay.js" defer></script>
+  <!-- 國防部通報活動範圍（向量，預設顯示） -->
+  <script src="static/js/mnd_areas.js" defer></script>
   <script src="static/js/osint_data.js" defer></script>
   <script src="static/js/location_search.js" defer></script>
   <script src="static/js/bootstrap.js" defer></script>

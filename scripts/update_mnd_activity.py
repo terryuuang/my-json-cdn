@@ -7,16 +7,57 @@ import json
 from pathlib import Path
 import re
 import time
-from urllib.parse import urljoin, urlparse
+from urllib.parse import quote, urljoin, urlparse, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
+
+from mnd_chart_areas import extract_areas
 
 BASE = 'https://www.mnd.gov.tw/'
 OUTPUT = Path(__file__).resolve().parents[1] / 'data/mnd_activity.json'
+# Vectorising the daily chart costs one image download each; cap a single run so a
+# cold start cannot stall the workflow. Remaining days are picked up next run.
+MAX_CHART_EXTRACTIONS = 25
+
+AGENT = {'User-Agent': 'APEINTEL-Atlas-public-data/0.7.3'}
 
 
 def fetch(url):
-    with urlopen(Request(url, headers={'User-Agent': 'APEINTEL-Atlas-public-data/0.6.8'}), timeout=30) as response:
+    with urlopen(Request(url, headers=AGENT), timeout=30) as response:
         return response.read().decode('utf-8')
+
+
+def fetch_bytes(url):
+    parts = urlsplit(url)
+    # Some report images carry unescaped Chinese in the path.
+    path = parts.path if '%' in parts.path else quote(parts.path)
+    with urlopen(Request(urlunsplit((parts.scheme, parts.netloc, path, '', '')), headers=AGENT), timeout=30) as response:
+        return response.read()
+
+
+def attach_areas(reports):
+    """Add the chart's red activity outlines as lon/lat rings, newest first.
+
+    Only reports that do not have them yet are fetched, so a normal run touches
+    one image. `areas` stays absent when extraction is unavailable (missing
+    Pillow/numpy) or refused (chart template changed), and is an empty list when
+    the chart genuinely shows no activity area that day.
+    """
+    done = 0
+    for row in reports:
+        if 'areas' in row or not row.get('imageUrl') or done >= MAX_CHART_EXTRACTIONS:
+            continue
+        try:
+            rings = extract_areas(fetch_bytes(row['imageUrl']))
+        except Exception as error:
+            print(f"Chart areas skipped for {row['date']}: {error}")
+            continue
+        done += 1
+        if rings is None:
+            print(f"Chart areas unavailable for {row['date']} (template or dependencies)")
+            continue
+        row['areas'] = rings
+        time.sleep(.3)
+    return reports
 
 
 class ReportParser(HTMLParser):
@@ -110,7 +151,8 @@ def update(pages=2, refresh_all=False):
         'checkedAt': datetime.now(timezone.utc).isoformat(),
         'timezone': 'Asia/Taipei',
         'periodNote': '各報告前一日 06:00 至當日 06:00（臺灣時間）；數字為通報架次／艘次，非獨立機艦數或即時位置。',
-        'reports': sorted(reports.values(), key=lambda row: row['date'], reverse=True)[:90],
+        'areaNote': '活動範圍由官方示意圖的紅色標註向量化而成（示意範圍，非航跡或即時位置）。',
+        'reports': attach_areas(sorted(reports.values(), key=lambda row: row['date'], reverse=True)[:90]),
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     temporary = OUTPUT.with_suffix('.tmp')
