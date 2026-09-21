@@ -9,13 +9,20 @@ window.MapContextMenu = (() => {
   const LONG_PRESS_MS = 500;
   const MOVE_TOLERANCE_PX = 10;
   const EDGE_GAP_PX = 8;
+  // 選單剛開啟後的緩衝：長按放開手指時，瀏覽器會補一次 click、Leaflet 也可能因為手指
+  // 微幅移動送出 movestart，兩者都會被當成「點到地圖別處」而立刻關掉選單——這正是手機
+  // 上選單閃一下就消失的原因。緩衝期內一律忽略這些關閉來源
+  const DISMISS_GUARD_MS = 600;
 
   let map = null;
   let menuEl = null;
   let currentLatLng = null;
   let longPressTimer = null;
   let longPressStart = null;
-  let suppressNextClick = false;
+  let openedAt = 0;
+  // 選單是被這一次長按叫出來的、而手指還沒離開螢幕：補送的 click 要等放開後才會來，
+  // 所以緩衝期從「放開手指」算起，長按握久一點也不會一放就關掉
+  let holdingAfterOpen = false;
 
   function buildMenu() {
     const el = document.createElement('div');
@@ -57,6 +64,7 @@ window.MapContextMenu = (() => {
     menuEl.style.top = `${top}px`;
     menuEl.style.visibility = '';
     menuEl.classList.add('is-open');
+    openedAt = Date.now();
   }
 
   function hide() {
@@ -64,6 +72,15 @@ window.MapContextMenu = (() => {
     menuEl.classList.remove('is-open');
     menuEl.hidden = true;
     currentLatLng = null;
+    openedAt = 0;
+    holdingAfterOpen = false;
+  }
+
+  // 使用者觸發的關閉（點空白處、拖曳地圖）：剛開啟的瞬間不理會，見 DISMISS_GUARD_MS
+  function dismiss() {
+    if (holdingAfterOpen) return;
+    if (openedAt && Date.now() - openedAt < DISMISS_GUARD_MS) return;
+    hide();
   }
 
   function searchHere() {
@@ -94,11 +111,7 @@ window.MapContextMenu = (() => {
       longPressStart = { x: touch.clientX, y: touch.clientY };
       longPressTimer = setTimeout(() => {
         longPressTimer = null;
-        // 長按結束後瀏覽器仍會補送一次 click，會被判定成「點地圖空白處」而立刻關掉選單。
-        // 但不是每個瀏覽器都補送（iOS 常常不送），旗標留著會把下一次真正的點擊吃掉，
-        // 所以短暫時間後自動歸零
-        suppressNextClick = true;
-        setTimeout(() => { suppressNextClick = false; }, 700);
+        holdingAfterOpen = true;
         const point = map.mouseEventToContainerPoint(touch);
         show(map.containerPointToLatLng(point), touch.clientX, touch.clientY);
       }, LONG_PRESS_MS);
@@ -112,8 +125,15 @@ window.MapContextMenu = (() => {
           Math.abs(touch.clientY - longPressStart.y) > MOVE_TOLERANCE_PX) cancelLongPress();
     }, { passive: true });
 
-    container.addEventListener('touchend', cancelLongPress, { passive: true });
-    container.addEventListener('touchcancel', cancelLongPress, { passive: true });
+    const endTouch = () => {
+      cancelLongPress();
+      if (holdingAfterOpen) {
+        holdingAfterOpen = false;
+        openedAt = Date.now();
+      }
+    };
+    container.addEventListener('touchend', endTouch, { passive: true });
+    container.addEventListener('touchcancel', endTouch, { passive: true });
   }
 
   function init(mapInstance) {
@@ -123,17 +143,17 @@ window.MapContextMenu = (() => {
     map.on('contextmenu', event => {
       const original = event.originalEvent;
       if (original) original.preventDefault();
+      // Android Chrome 長按時除了我們的計時器，還會再送一次原生 contextmenu；
+      // 選單剛開就重開會讓開場動畫重播、看起來像閃了一下
+      if (openedAt && Date.now() - openedAt < DISMISS_GUARD_MS) return;
       show(event.latlng, original?.clientX ?? 0, original?.clientY ?? 0);
     });
 
     // 地圖一動（拖曳、縮放、點其他地方）選單就失效，避免選單停在畫面上卻對應到舊位置
-    map.on('movestart zoomstart click', hide);
+    map.on('movestart zoomstart click', dismiss);
     bindLongPress(map.getContainer());
 
-    document.addEventListener('click', () => {
-      if (suppressNextClick) { suppressNextClick = false; return; }
-      hide();
-    });
+    document.addEventListener('click', dismiss);
     document.addEventListener('keydown', event => { if (event.key === 'Escape') hide(); });
     window.addEventListener('resize', hide);
     window.addEventListener('blur', hide);

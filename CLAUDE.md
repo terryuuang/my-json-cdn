@@ -332,6 +332,8 @@ External data: `submarinecablemap-cdn-json-20250618.json` (submarine cables)
 
 CSS `stroke` **overrides the `stroke` presentation attribute Leaflet writes on the SVG**, so `setStyle({ color })` silently has no visible effect on any path not excluded here. Symptom: fill changes colour but the border stays red. Any layer needing a custom stroke must pass a `className` and be added to the `:not()` list (`adiz` / `theater` / `submarine-cable` / `nfz-shape` already are).
 
+**Panel stacking order is `.panel-backdrop` (2550) < `.control-panel` (2600) < `.toggle-panel-mobile` (2610).** The mobile `.control-panel` rule carries its own `z-index`, so raising the desktop one is not enough. When the panel sits *below* the backdrop the symptom is not an invisible panel — it renders blurred and dimmed, and every tap lands on the backdrop, whose `onclick` closes the panel. It reads as "the panel is frozen".
+
 **Do not add `scrollbar-width` / `scrollbar-color` to elements styled with `::-webkit-scrollbar`.** Chrome disables the `::-webkit-scrollbar` pseudo-elements entirely once a standard scrollbar property is present, reverting the element to the native scrollbar. Pick one system per element; the popups use the `::-webkit-scrollbar` route.
 
 **Mobile inputs must render at ≥16px.** iOS zooms the page when a focused input is below 16px. `pwa.css` sets `input { font-size: max(16px, 1rem) }` on mobile, but any class selector (e.g. `.search-island-input`) outranks it, so class-styled inputs need their own mobile 16px rule.

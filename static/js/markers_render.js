@@ -449,14 +449,17 @@ function popupSizeOptions() {
   const mobile = isMobileDevice();
   return mobile
     ? {
-        maxWidth: Math.min(520, window.innerWidth - 24),
+        // 手機一律吃滿可用寬度（實際上限由 main.css 的 calc(100vw - 40px) 收尾），
+        // 上限放寬是為了橫放與平板，直放時本來就碰不到
+        maxWidth: Math.min(560, window.innerWidth - 24),
         minWidth: Math.min(320, window.innerWidth - 32),
         maxHeight: Math.min(500, window.innerHeight - 120)
       }
     : {
-        // 衛星縮圖佔掉左欄 240px，右欄要留得下說明文字
-        maxWidth: Math.min(640, window.innerWidth - 48),
-        minWidth: Math.min(420, window.innerWidth - 72)
+        // 衛星縮圖佔掉左欄 240px + 14px gap，右欄還要放說明文字與維基裝備縮圖，
+        // 所以整體給到 820：在 1280 寬的視窗仍只佔約 2/3，不會遮住半張地圖
+        maxWidth: Math.min(820, window.innerWidth - 48),
+        minWidth: Math.min(540, window.innerWidth - 72)
       };
 }
 window.popupSizeOptions = popupSizeOptions;

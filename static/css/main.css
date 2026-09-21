@@ -1792,8 +1792,8 @@ select.input-field:hover {
         position: fixed;
         top: 10px;
         left: 10px;
-        /* 高於背景遮罩（2550），面板開著時這顆按鈕仍可按下收起 */
-        z-index: 2560;
+        /* 高於面板（2600），面板開著時這顆按鈕仍可按下收起 */
+        z-index: 2610;
         padding: 8px;
         background: rgba(40, 40, 60, 0.7);
         backdrop-filter: blur(12px) saturate(150%);
@@ -1858,7 +1858,9 @@ select.input-field:hover {
     transform: translateX(-120%);
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1500;
+    /* 必須高於背景遮罩（.panel-backdrop 的 2550）。低於它時，遮罩會蓋在面板上面：
+       面板看起來糊糊的、而且所有點擊都被遮罩吃掉（點一下反而關閉面板） */
+    z-index: 2600;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     overflow-x: hidden;
@@ -1872,6 +1874,7 @@ select.input-field:hover {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--color-panel-border);
+    }
 }
 
 /* ========================================
@@ -2028,6 +2031,7 @@ select.input-field:hover {
   }
 }
 
+@media (max-width: 768px) {
     .control-panel.show-mobile {
     transform: translateX(0);
     opacity: 1;
