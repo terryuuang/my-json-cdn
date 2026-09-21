@@ -4822,6 +4822,14 @@ select.input-field:hover {
 
 .search-result-group { padding: 12px 14px 4px; color: #cbd5e1; font-size: 12px; font-weight: 600; }
 
+/* Leaflet 會在 .leaflet-popup-content 上寫死 inline width，這裡用 max-width 收尾：
+   即使寬度是在別的視窗尺寸下算出來的，內容也不會超出畫面（手機旋轉、視窗縮放） */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+    max-width: calc(100vw - 24px);
+    box-sizing: border-box;
+}
+
 /* ==========================================================
    Popup 衛星縮圖（markers_render.js buildSatelliteThumb）
    桌面版與內容並排、手機版改放在上方（RWD）
@@ -4869,20 +4877,6 @@ select.input-field:hover {
     width: 256px;
     height: 256px;
     max-width: none;
-}
-
-/* 中心十字：讓人一眼看出點位落在影像的哪裡 */
-.popup-satview-cross {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 22px;
-    height: 22px;
-    transform: translate(-50%, -50%);
-    border: 2px solid rgba(239, 68, 68, 0.95);
-    border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-    pointer-events: none;
 }
 
 .popup-satview-zoom {

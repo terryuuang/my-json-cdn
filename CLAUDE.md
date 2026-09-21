@@ -109,8 +109,8 @@ jq . joseph_w.geojson
 - **Guard**: every load verifies the source image is still 720×1040 and removes the overlay otherwise — if MND changes the template the pixel baseline no longer holds, and a silently misplaced chart is worse than no chart
 - `.mnd-overlay-image` in `osint_data.css` clips the title, table margins and legend away with `clip-path`, using the same measurements. **Change one and you must change the other.**
 
-**`static/js/mnd_areas.js`** (Reported Activity Areas — on by default)
-- Draws the red activity outlines from MND's daily chart as real polygons, read from the `areas` field of `data/mnd_activity.json`
+**`static/js/mnd_areas.js`** (Reported Activity Areas — off by default, toggled from 疊加範圍)
+- Draws the red activity outlines from MND's daily chart as real polygons, read from the `areas` field of `data/mnd_activity.json`; the dataset is only fetched when the layer is first switched on
 - The vectorisation happens in `scripts/mnd_chart_areas.py` during the data refresh, **not** in the browser: mnd.gov.tw sends no CORS header, so a canvas read of the chart is blocked
 - Shows the newest report that actually has areas (some days have none, some older reports have no chart at all) and always labels that date
 - Polygons carry `className: 'mnd-area-path'`, which must stay in the `:not()` list of the stroke rule in `main.css` — see CSS Gotchas

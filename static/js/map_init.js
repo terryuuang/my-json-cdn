@@ -131,8 +131,14 @@ if (currentBaseLayer === 'air') {
 
   // Popup 開啟時，將地圖容器暫時提升 z-index，避免被搜尋動態島／控制面板／
   // 手機版選單按鈕等固定定位的浮動 UI 遮住（見 main.css .popup-elevated 註解）
-  map.on('popupopen', function () {
+  map.on('popupopen', function (event) {
     map.getContainer().classList.add('popup-elevated');
+    // 寬度以「現在的視窗」為準再算一次：popup 是在標記渲染時綁定的，
+    // 之後使用者縮小視窗或旋轉裝置，舊的 minWidth 會讓 popup 撐破畫面
+    if (typeof window.popupSizeOptions === 'function' && event.popup?.options?.className === 'custom-popup') {
+      Object.assign(event.popup.options, window.popupSizeOptions());
+      event.popup.update();
+    }
   });
   map.on('popupclose', function () {
     map.getContainer().classList.remove('popup-elevated');

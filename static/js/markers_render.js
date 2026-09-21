@@ -331,21 +331,14 @@ function addMarkersForFeatures(features, targetCoords = null, selectedLayer = nu
           const satCoords = feature.geometry.coordinates;
           popupContent = `${headerHtml}<div class="popup-split">${buildSatelliteThumb(satCoords[1], satCoords[0])}<div class="popup-split-main">${popupContent}</div></div>`;
 
-          const popupOptions = { className: 'custom-popup' };
+          const popupOptions = { className: 'custom-popup', ...popupSizeOptions() };
           if (isMobileDevice()) {
-            popupOptions.maxWidth = Math.min(520, window.innerWidth - 24);
-            popupOptions.minWidth = Math.min(320, window.innerWidth - 32);
-            popupOptions.maxHeight = Math.min(500, window.innerHeight - 120);
             popupOptions.autoPan = true;
             popupOptions.autoPanPadding = [10, 10];
             popupOptions.closeButton = true;
             popupOptions.keepInView = true;
             popupOptions.autoClose = false;
             popupOptions.closeOnEscapeKey = true;
-          } else {
-            // 衛星縮圖佔掉左欄 240px，右欄要留得下說明文字
-            popupOptions.maxWidth = Math.min(640, window.innerWidth - 48);
-            popupOptions.minWidth = Math.min(420, window.innerWidth - 72);
           }
           layer.bindPopup(popupContent, popupOptions);
           if (equipmentText && window.equipmentParser) {
@@ -449,6 +442,25 @@ if (loading) loading.style.display = 'none';
 }
 
 // 更新 URL 座標搜尋參數並依選中圖層重新渲染地圖（供 searchLocation / selectSearchResult 共用）
+// popup 寬度依「開啟當下」的視窗決定，不是綁定當下。
+// 標記是在載入時一次綁好的，若當時是桌面寬度，minWidth 會被寫死成 420；使用者之後
+// 把視窗縮窄（或開 DevTools 的裝置模式）再點開，popup 就撐得比畫面還寬、右側內容被切掉。
+function popupSizeOptions() {
+  const mobile = isMobileDevice();
+  return mobile
+    ? {
+        maxWidth: Math.min(520, window.innerWidth - 24),
+        minWidth: Math.min(320, window.innerWidth - 32),
+        maxHeight: Math.min(500, window.innerHeight - 120)
+      }
+    : {
+        // 衛星縮圖佔掉左欄 240px，右欄要留得下說明文字
+        maxWidth: Math.min(640, window.innerWidth - 48),
+        minWidth: Math.min(420, window.innerWidth - 72)
+      };
+}
+window.popupSizeOptions = popupSizeOptions;
+
 // ==========================================================
 // Popup 衛星縮圖
 // 直接組 Google 圖磚（與底圖同一個端點，不需金鑰）。視窗小於 256px，所以每軸最多
@@ -480,7 +492,6 @@ function buildSatelliteThumb(lat, lng) {
   return `<div class="popup-satview">
     <div class="popup-satview-frame">
       ${tiles.join('')}
-      <span class="popup-satview-cross" aria-hidden="true"></span>
     </div>
     <button type="button" class="popup-satview-zoom" data-lat="${lat}" data-lng="${lng}"
       onclick="zoomToPopupFeature(this);return false;">放大到最高解析度</button>

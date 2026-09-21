@@ -1,5 +1,5 @@
 // ==========================================================
-// mnd_areas.js - 國防部每日通報的「活動範圍」向量圖層（預設開啟）
+// mnd_areas.js - 國防部每日通報的「活動範圍」向量圖層（預設關閉，控制面板可開）
 //
 // 範圍不是在前端從圖片抓的：mnd.gov.tw 沒有 CORS 標頭，canvas 讀不到像素。
 // 改由 scripts/mnd_chart_areas.py 在資料更新流程（GitHub Actions，每天三次）
@@ -24,7 +24,7 @@ window.MndAreas = (() => {
   let group = null;
   let button = null;
   let report = null;
-  let visible = true;
+  let visible = false;   // 預設關閉，由控制面板的開關打開
   let loading = null;
 
   const escape = text => String(text ?? '').replace(/[&<>"']/g, ch =>
@@ -119,8 +119,8 @@ window.MndAreas = (() => {
       });
     });
 
-    setVisible(true);
-    load();
+    // 預設不顯示，也不先抓資料：真的打開時才載入（日期標籤同時補上）
+    updateButton();
   }
 
   return { init, setVisible, isVisible: () => visible, getReport: () => report, reload: load };
