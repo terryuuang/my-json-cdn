@@ -359,6 +359,16 @@ CSS `stroke` **overrides the `stroke` presentation attribute Leaflet writes on t
 
 **Panel stacking order is `.panel-backdrop` (2550) < `.control-panel` (2600) < `.toggle-panel-mobile` (2610).** The mobile `.control-panel` rule carries its own `z-index`, so raising the desktop one is not enough. When the panel sits *below* the backdrop the symptom is not an invisible panel — it renders blurred and dimmed, and every tap lands on the backdrop, whose `onclick` closes the panel. It reads as "the panel is frozen".
 
+**The `.dropdown-menu` z-index must stay above `.control-panel`.** Opening either 資料圖層 dropdown
+reparents the menu to `<body>` on desktop — the panel's `backdrop-filter` makes it the containing
+block for `position: fixed`, so the menu cannot be positioned from inside it. Once out of the panel
+it also leaves the panel's stacking context and has to outrank it on its own (`2650` vs the panel's
+`2600`, under `.map-context-menu`'s `2700`). At the old `2000` the menu rendered *behind* the panel,
+and the symptom was not a misplaced menu but "clicking the dropdown does nothing".
+The same reparenting is why the outside-click handler must accept `.dropdown-menu` as well as
+`.unified-dropdown`: in `<body>` the menu has no `.unified-dropdown` ancestor, so every click on a
+checkbox inside it counts as a click outside and closes the menu, making multi-select impossible.
+
 **Do not add `scrollbar-width` / `scrollbar-color` to elements styled with `::-webkit-scrollbar`.** Chrome disables the `::-webkit-scrollbar` pseudo-elements entirely once a standard scrollbar property is present, reverting the element to the native scrollbar. Pick one system per element; the popups use the `::-webkit-scrollbar` route.
 
 **Mobile inputs must render at ≥16px.** iOS zooms the page when a focused input is below 16px. `pwa.css` sets `input { font-size: max(16px, 1rem) }` on mobile, but any class selector (e.g. `.search-island-input`) outranks it, so class-styled inputs need their own mobile 16px rule.

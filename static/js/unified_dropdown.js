@@ -22,24 +22,57 @@ let selectedLayers = new Set();
 
 // 設置下拉選單
 function setupDropdowns() {
-  // 點擊外部關閉所有下拉選單
+  // 點擊外部關閉所有下拉選單。
+  // 桌機版選單被搬到 <body>，此時它已不在 .unified-dropdown 底下，所以必須另外認
+  // .dropdown-menu——只看 .unified-dropdown 的話，點選單裡的 checkbox 會被判為「點外面」
+  // 而立刻收起，等於無法多選。
   document.addEventListener('click', function(e) {
-    const dropdowns = document.querySelectorAll('.dropdown-menu');
-    const isDropdownClick = e.target.closest('.unified-dropdown');
-
-    if (!isDropdownClick) {
-      dropdowns.forEach(menu => {
-        if (menu.style.display !== 'none') {
-          menu.style.display = 'none';
-          const toggle = menu.previousElementSibling;
-          if (toggle) toggle.classList.remove('active');
-        }
-      });
-    }
+    if (e.target.closest('.unified-dropdown') || e.target.closest('.dropdown-menu')) return;
+    closeAllDropdowns();
   });
 
   // 從 URL 載入圖層選擇狀態
   loadLayerSelectionFromUrl();
+}
+
+// 選單在桌機版會被搬到 <body>，之後 menu.previousElementSibling／menu.parentElement 都
+// 不再指向原本的按鈕與容器，所以在搬移前就把兩者記在元素上（用參考而非 id：舊版把 id
+// 寫進 container.id，第二次開啟時 container 已是 <body>，等於把 id 蓋到 body 上）。
+function rememberDropdownHome(menu) {
+  if (!menu._dropdownHome) {
+    menu._dropdownHome = menu.parentElement;
+    menu._dropdownToggle = menu.previousElementSibling;
+  }
+  return menu;
+}
+
+function openDropdown(menu, forceDownward = false) {
+  rememberDropdownHome(menu);
+  closeAllDropdowns();
+
+  // 桌面版：面板的 backdrop-filter 會成為 fixed 定位的 containing block，
+  // 因此把選單搬到 <body> 再依按鈕位置定位（配套的 z-index 見 main.css）
+  if (!isMobileDevice()) {
+    document.body.appendChild(menu);
+    positionDropdown(menu, menu._dropdownToggle, forceDownward);
+  }
+
+  menu.style.display = 'flex';
+  if (menu._dropdownToggle) menu._dropdownToggle.classList.add('active');
+}
+
+function closeDropdown(menu) {
+  menu.style.display = 'none';
+  if (menu._dropdownToggle) menu._dropdownToggle.classList.remove('active');
+
+  // 桌面版：將選單移回原位，否則手機/桌機切換或重新排版時會留在 body 底下
+  if (menu._dropdownHome && menu.parentElement !== menu._dropdownHome) {
+    menu._dropdownHome.appendChild(menu);
+  }
+}
+
+function isDropdownOpen(menu) {
+  return menu.style.display && menu.style.display !== 'none';
 }
 
 // 判斷是否為手機設備：實作統一定義於 map_state.js 的 isMobileDevice()，
@@ -51,39 +84,10 @@ function setupDropdowns() {
 // 切換圖層篩選下拉選單
 function toggleLayerDropdown() {
   const menu = document.getElementById('layerDropdownMenu');
-  const btn = menu.previousElementSibling;
-  const container = menu.parentElement;
+  if (!menu) return;
 
-  if (menu.style.display === 'none' || !menu.style.display) {
-    // 關閉其他下拉選單
-    closeAllDropdowns();
-
-    // 計算並設置位置 (桌面版)
-    if (!isMobileDevice()) {
-      // 儲存原始父元素
-      menu.dataset.originalParent = container.id || 'layerDropdownParent';
-      container.id = menu.dataset.originalParent;
-
-      // 移動到 body 以避免 backdrop-filter 的定位影響
-      document.body.appendChild(menu);
-
-      positionDropdown(menu, btn);
-    }
-
-    menu.style.display = 'flex';
-    btn.classList.add('active');
-  } else {
-    menu.style.display = 'none';
-    btn.classList.remove('active');
-
-    // 桌面版：將選單移回原位
-    if (!isMobileDevice() && menu.dataset.originalParent) {
-      const originalParent = document.getElementById(menu.dataset.originalParent);
-      if (originalParent) {
-        originalParent.appendChild(menu);
-      }
-    }
-  }
+  if (isDropdownOpen(menu)) closeDropdown(menu);
+  else openDropdown(menu);
 }
 
 // 智能定位下拉選單（向上或向下顯示）
@@ -276,22 +280,7 @@ function clearAllLayerSelections() {
 // 關閉所有下拉選單
 function closeAllDropdowns() {
   document.querySelectorAll('.dropdown-menu').forEach(menu => {
-    menu.style.display = 'none';
-
-    // 移除 active 狀態（需要找到對應的 toggle 按鈕）
-    const menuId = menu.id;
-    if (menuId) {
-      const toggle = document.querySelector(`[onclick*="${menuId}"]`)?.closest('.unified-dropdown')?.querySelector('.dropdown-toggle');
-      if (toggle) toggle.classList.remove('active');
-    }
-
-    // 桌面版：將選單移回原位
-    if (!isMobileDevice() && menu.dataset.originalParent) {
-      const originalParent = document.getElementById(menu.dataset.originalParent);
-      if (originalParent) {
-        originalParent.appendChild(menu);
-      }
-    }
+    if (isDropdownOpen(menu)) closeDropdown(menu);
   });
 }
 
@@ -327,40 +316,11 @@ function loadLayerSelectionFromUrl() {
 // 更新 OSM 下拉選單切換函數以使用統一樣式
 function toggleOSMDropdown() {
   const menu = document.getElementById('osmDropdownMenu');
-  const btn = menu.previousElementSibling;
-  const container = menu.parentElement;
+  if (!menu) return;
 
-  if (menu.style.display === 'none' || !menu.style.display) {
-    // 關閉其他下拉選單
-    closeAllDropdowns();
-
-    // 計算並設置位置 (桌面版)
-    if (!isMobileDevice()) {
-      // 儲存原始父元素
-      menu.dataset.originalParent = container.id || 'osmDropdownParent';
-      container.id = menu.dataset.originalParent;
-
-      // 移動到 body 以避免 backdrop-filter 的定位影響
-      document.body.appendChild(menu);
-
-      // 公共設施選單固定向下顯示
-      positionDropdown(menu, btn, true);
-    }
-
-    menu.style.display = 'flex';
-    btn.classList.add('active');
-  } else {
-    menu.style.display = 'none';
-    btn.classList.remove('active');
-
-    // 桌面版：將選單移回原位
-    if (!isMobileDevice() && menu.dataset.originalParent) {
-      const originalParent = document.getElementById(menu.dataset.originalParent);
-      if (originalParent) {
-        originalParent.appendChild(menu);
-      }
-    }
-  }
+  if (isDropdownOpen(menu)) closeDropdown(menu);
+  // 公共設施選單固定向下顯示
+  else openDropdown(menu, true);
 }
 
 // 初始化

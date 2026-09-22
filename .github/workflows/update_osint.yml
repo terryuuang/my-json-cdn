@@ -10,10 +10,13 @@ concurrency:
   cancel-in-progress: false
 jobs:
   refresh:
-    runs-on: ubuntu-latest
+    # 釘死版本而非用 ubuntu-latest：該標籤在 2026-10-19 起會滾動到 Ubuntu 26，
+    # 這個工作流程會 pip install pillow/numpy，映像換版就可能靜默改變輪子版本
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # v5 起執行於 Node 24；v4 的 Node 20 已被 runner 強制升級並發出棄用警告
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       # 只有把示意圖的紅色標註向量化需要這兩個套件；缺少時 extract_areas() 會回傳
       # None，數值通報照常發布，不會讓整個工作流程失敗
       - name: Install chart vectorisation dependencies

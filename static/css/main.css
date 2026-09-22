@@ -2471,7 +2471,11 @@ select.input-field:hover {
   border: 1px solid var(--color-panel-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 2000;
+  /* 必須高於 .control-panel（2600）。桌機版 toggleLayerDropdown()／toggleOSMDropdown()
+     會把選單搬到 <body>（面板的 backdrop-filter 會成為 fixed 定位的 containing block），
+     一離開面板的堆疊上下文就得自己贏過面板——原本的 2000 會被面板整片蓋住，
+     症狀不是「選單位置跑掉」而是「按了完全沒反應」。上限是地圖右鍵選單的 2700 */
+  z-index: 2650;
   max-height: 360px;
   min-width: 280px;
   overflow: hidden;

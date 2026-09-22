@@ -5,7 +5,7 @@
   let updateRequested = false;
   let dataOffline = false;
   let installedThisSession = false;
-  let version = '0.7.6';
+  let version = '0.7.7';
   let lastFocus;
   let toastTimer;
   const standalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
