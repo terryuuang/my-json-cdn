@@ -205,7 +205,7 @@
             <div id="app-changelog-body"></div>
           </details>
         </section>
-        <p id="app-version" class="app-version">版本 0.7.4</p>
+        <p id="app-version" class="app-version">版本 0.7.6</p>
         <div class="app-actions">
           <button id="app-share" type="button"><i class="bi bi-box-arrow-up" aria-hidden="true"></i> 分享目前地圖</button>
           <button id="app-check" type="button">檢查更新</button>
@@ -480,6 +480,8 @@
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" defer></script>
   <!-- OpenCC.js for Traditional/Simplified Chinese conversion -->
   <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js" defer></script>
+  <!-- URL 參數讀寫（? 與 # 等價）。必須早於其他 app script：shape_color.js 在 top-level 就會讀取 -->
+  <script src="static/js/url_params.js" defer></script>
   <script src="static/js/shape_utils.js" defer></script>
   <!-- 圖形顏色客製化（依賴 shape_utils.js） -->
   <script src="static/js/shape_color.js" defer></script>

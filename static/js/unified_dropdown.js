@@ -159,7 +159,7 @@ function updateLayerCount() {
 function applyLayerFilter() {
   // 優先從 URL 獲取座標，如果沒有則從輸入框獲取
   let urlCoords = window.parseUrlCoordinates ? window.parseUrlCoordinates() : null;
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   let radius = parseFloat(urlParams.get('radius')) || 50;
 
   // 如果 URL 沒有座標，從輸入框獲取（輸入框在初始化時已包含預設值）
@@ -188,8 +188,7 @@ function applyLayerFilter() {
     urlParams.delete('layers');
   }
 
-  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-  window.history.pushState({}, '', newUrl);
+  window.UrlParams.commit(urlParams, { mode: 'push' });
 
   // 重新渲染
   const layersArray = Array.from(selectedLayers);
@@ -302,7 +301,7 @@ function closeAllDropdowns() {
 
 // 從 URL 載入圖層選擇狀態
 function loadLayerSelectionFromUrl() {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   const layersParam = urlParams.get('layers');
 
   if (layersParam) {

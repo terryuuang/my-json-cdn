@@ -20,7 +20,7 @@ function updateInfoPanel(message) {
 // layers=/osm= 已由 unified_dropdown.js / osm_facilities.js 即時同步進 URL，這裡只需
 // 補上尚未即時同步的地圖中心點／縮放層級（base= 已由 map_init.js 的 switchBaseLayer 同步）
 function buildShareUrl() {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
 
   try {
     if (window.map && typeof window.map.getCenter === 'function' && typeof window.map.getZoom === 'function') {
@@ -33,7 +33,7 @@ function buildShareUrl() {
     // 地圖尚未初始化時，退回目前 URL 既有參數
   }
 
-  return `${window.location.origin}${window.location.pathname}?${urlParams.toString()}${window.location.hash}`;
+  return window.UrlParams.buildUrl(urlParams);
 }
 
 // 將文字複製到剪貼簿，並顯示成功/失敗提示（共用於各種「複製連結」按鈕）

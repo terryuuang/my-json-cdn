@@ -77,6 +77,19 @@ jq . joseph_w.geojson
 - Mobile-optimized: 3 items max on mobile, 5 on desktop; 8s/5s timeout
 - Fallback database for common equipment types
 
+**`static/js/url_params.js`** (URL Parameter Access — `window.UrlParams`)
+- The single way to read and write URL parameters. **Never call `new URLSearchParams(location.search)` directly again** — it silently ignores anything in the hash
+- `read()` returns the merged params (query as base, hash overriding per key); `query()` / `hash()` return one side; `sourceOf(key)` says which side a key came from
+- `commit(params, { mode })` / `buildUrl(params)` write back. **A key that arrived in the hash is written back to the hash** — writing it to the query string would be shadowed by the hash and silently do nothing, which is exactly what the colour picker's write-back would hit
+- `commit()` edits the hash at the **segment level**, keeping the original text of every segment it did not change. It never rebuilds the hash with `toString()`: the `#ais=` payload runs to tens of thousands of characters and re-encoding it would break existing links
+- A query value **shadowed** by the hash is left in place rather than deleted. It can never win a read, so keeping it is inert, while deleting it would throw away part of the author's original link every time the user nudged something unrelated (change a colour, lose `?radius=50`). Only removing a key outright clears both sides
+- A hash with no `=` is a plain anchor (`#top`, `#ais`), not parameters, and is passed through untouched
+- Must be the **first** app script in `index.html`: `shape_color.js` calls `read()` at module top level
+- `rawHashValue(key)` returns a hash value **still encoded**, and finds it at any position. `#ais=` needs this: its payload carries its own per-field encoding that the caller decodes itself, so decoding here would double-decode. The four `ais=` call sites used to require it to be the hash's first segment, which only held while the hash carried nothing else
+- `hashHas(key)` also covers the bare-anchor spelling (`#ais` with no `=`)
+- `commit(params, { newKeysTo: 'hash' })` puts **brand-new** keys in the hash instead of the query string. The colour picker passes it when `sourceOf('shape') === 'hash'`, so a hash-only shape link does not leak half of itself into the query string. Without it, new keys default to the query string, which keeps links that never used the hash byte-identical
+- Parse failures return empty params rather than throwing — a malformed hash from an external system must not break the map
+
 **`static/js/shape_utils.js`** (Geometry Utilities)
 - Pure functions for coordinate parsing and geodesic calculations (no Leaflet dependency)
 - Supports `point`, `circle`, `line`, `polygon`, `bbox`, `sector`, `multi` shapes
@@ -142,7 +155,19 @@ jq . joseph_w.geojson
 
 ### URL Parameter System
 
-The application uses URL parameters for deep linking and state persistence:
+The application uses URL parameters for deep linking and state persistence.
+
+**Every parameter below works identically after `?` and after `#`.** `#shape=circle&lat=25&lng=120&radius=50`
+is equivalent to the same string after `?`. When both carry parameters, the query string is the base and
+the hash overrides it **per key** (all of a key's query values are replaced by all of its hash values, so
+repeated params like `circle=` keep their `getAll()` semantics). Reasons to prefer the hash:
+- The browser never sends it, so coordinates stay out of access logs and `Referer` headers
+- It holds far more than a query string, which Cloudflare caps at roughly 8 KB of request line —
+  a polygon with many vertices or a long `text=` label only fits in the hash
+- Editing it re-renders the shapes in place without reloading the page (`hashchange`)
+
+All of this goes through `static/js/url_params.js`; see its module entry below before touching any
+`location.search` / `location.hash` code.
 
 **Basic Search**:
 - `lat`/`lng` or `coords=lat,lng`: Center coordinates
@@ -230,7 +255,7 @@ Equipment parsing is **asynchronous and lazy**:
 
 ### Service Worker
 - `APP_VERSION` in `sw.js` is the single source of truth; keep `manifest.json` `version`, the `version` fallback in `pwa.js`, and the `CHANGELOG` entry in `map_state.js` in sync when bumping
-- CORE_ASSETS: `notes.js`, `map_context_menu.js`, `mnd_overlay.js`, `mnd_areas.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
+- CORE_ASSETS: `url_params.js`, `notes.js`, `map_context_menu.js`, `mnd_overlay.js`, `mnd_areas.js`, `equipment_parser.js`, `search_utils.js`, `shape_utils.js`, `shape_color.js`, `osm_facilities.js`, `unified_dropdown.js`, `pwa.js`, etc. — **add any new `static/js/*.js` here and to `index.html`**
 - GeoJSON/JSON: `staleWhileRevalidate`（快取優先，背景更新）
 
 ## Deployment

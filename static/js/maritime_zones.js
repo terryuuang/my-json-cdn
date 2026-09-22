@@ -31,8 +31,10 @@ const MaritimeZones = (() => {
   let _btnEl = null;
 
   function hasAisHash() {
-    const hash = window.location.hash.replace(/^#/, '').trim().toLowerCase();
-    return hash === 'ais' || hash.startsWith('ais=');
+    if (window.AISSnapshot && typeof window.AISSnapshot.hasAisHash === 'function') {
+      return window.AISSnapshot.hasAisHash();
+    }
+    return window.UrlParams.hashHas('ais');
   }
 
   function addGeoJson(data, def) {

@@ -57,10 +57,11 @@ const PLA_THEATER = (() => {
   }
 
   function syncUrl() {
-    const url = new URL(location.href);
-    if (_visible) url.searchParams.set('theater', _selection || 'all');
-    else url.searchParams.delete('theater');
-    history.replaceState(history.state, '', url);
+    // 走 UrlParams：theater= 若原本來自 #，就得寫回 #，否則會被 # 覆蓋而無效
+    const params = window.UrlParams.read();
+    if (_visible) params.set('theater', _selection || 'all');
+    else params.delete('theater');
+    window.UrlParams.commit(params);
   }
 
   async function show(name = null, { fit = true } = {}) {
@@ -126,7 +127,7 @@ const PLA_THEATER = (() => {
       _btnEl.addEventListener('click', toggle);
       updateBtn();
     }
-    const initial = new URLSearchParams(location.search).get('theater');
+    const initial = window.UrlParams.read().get('theater');
     if (initial === 'all' || THEATER_STYLES[initial]) {
       show(initial === 'all' ? null : initial, { fit: false }).catch(() => {
         window.IslandActivity?.transient('戰區載入失敗，請再試一次', 'error');

@@ -37,7 +37,7 @@ const googleAir = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z
 });
 
 // 預設使用 Google 海域圖層（衛星混合），若 URL 帶 base= 參數則優先套用（供分享連結還原畫面）
-const initialBaseParam = new URLSearchParams(window.location.search).get('base');
+const initialBaseParam = window.UrlParams.read().get('base');
 let currentBaseLayer = initialBaseParam === 'air' ? 'air' : 'sea';
 (currentBaseLayer === 'air' ? googleAir : googleSea).addTo(map);
 
@@ -74,14 +74,13 @@ window.switchBaseLayer = function(layerName) {
   currentBaseLayer = layerName;
 
   // 同步寫回 URL，讓「分享目前畫面」連結能還原底圖模式
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   if (layerName === 'air') {
     urlParams.set('base', 'air');
   } else {
     urlParams.delete('base');
   }
-  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}${window.location.hash}`;
-  window.history.replaceState({}, '', newUrl);
+  window.UrlParams.commit(urlParams);
 };
 
 // 若初始化時就是空域（來自分享連結），確保按鈕狀態與控制項色調一致

@@ -77,10 +77,10 @@
     }
   }
 
+  // 位置無關：hash 現在也承載 shape= 等參數，ais= 不一定是第一個片段。
+  // 取原始未解碼值，因為下面會逐欄位 decodeValue()。
   function getRawAisParam() {
-    const hash = window.location.hash.replace(/^#/, '');
-    if (!hash.toLowerCase().startsWith('ais=')) return '';
-    return hash.slice(4).split('&')[0].slice(0, MAX_HASH_LENGTH);
+    return window.UrlParams.rawHashValue('ais').slice(0, MAX_HASH_LENGTH);
   }
 
   function hasAisHash() {
@@ -263,7 +263,8 @@
   }
 
   function shouldUseDefaultAisView() {
-    const params = new URLSearchParams(window.location.search);
+    // 讀合併後的參數：#shape=... 也該壓掉 AIS 的預設視野
+    const params = window.UrlParams.read();
     return !params.has('lat') &&
       !params.has('lng') &&
       !params.has('coords') &&

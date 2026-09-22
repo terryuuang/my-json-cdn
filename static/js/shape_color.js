@@ -13,7 +13,7 @@
   const DEFAULT_COLOR = '#ef4444';
 
   // 頁面初次載入時的 URL 參數快照，作為「重設顏色」要還原的基準
-  const initialParams = new URLSearchParams(window.location.search);
+  const initialParams = window.UrlParams.read();
 
   // uid -> { uid, color, apply, colorParam, colorIndex }
   const registry = new Map();
@@ -201,9 +201,10 @@
 
   function commitParams(params) {
     try {
-      const query = params.toString();
-      const next = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`;
-      window.history.replaceState(null, '', next);
+      // 交給 UrlParams：從 # 來的顏色參數要寫回 #，寫進 ? 會被 # 覆蓋而靜默無效。
+      // 圖形本身在 hash 時，全新的 *_color= 也留在 hash，別讓 # 連結漏一半到 ?。
+      const newKeysTo = window.UrlParams.sourceOf('shape') === 'hash' ? 'hash' : 'query';
+      window.UrlParams.commit(params, { newKeysTo });
     } catch (error) {
       console.warn('[ShapeColor] 無法更新網址列:', error);
     }
@@ -219,7 +220,7 @@
     const targets = all ? Array.from(registry.keys()) : [uid];
     if (!targets.length) return;
 
-    const params = new URLSearchParams(window.location.search);
+    const params = window.UrlParams.read();
 
     if (all) {
       // 全域色 + 清掉所有個別覆寫，語意最單純也讓網址最短
@@ -244,7 +245,7 @@
     const targets = all ? Array.from(registry.keys()) : [uid];
     if (!targets.length) return;
 
-    const params = new URLSearchParams(window.location.search);
+    const params = window.UrlParams.read();
 
     if (all) {
       restoreParamVariants(params, 'color');

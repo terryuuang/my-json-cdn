@@ -6,7 +6,7 @@
 
 // 解析URL參數 - 獲取經緯度
 function parseUrlCoordinates() {
-const urlParams = new URLSearchParams(window.location.search);
+const urlParams = window.UrlParams.read();
 
 // 支援多種參數格式
 // 格式1: ?lat=31.9424765&lng=120.2903877
@@ -785,7 +785,7 @@ function exportShapeAsKml(btn) {
     const title = decodeURIComponent(btn.dataset.title || '');
     const description = decodeURIComponent(btn.dataset.description || '');
     const geometry = JSON.parse(decodeURIComponent(btn.dataset.geometry || 'null'));
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = window.UrlParams.read();
     const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);
     const isMultiShapeExport = shapeSpec.shape === 'multi' && Array.isArray(shapeSpec.shapes) && shapeSpec.shapes.length > 1;
     // 顏色以「目前畫面上的顏色」為準：使用者調色後會寫回 URL，這裡重新解析即可拿到最新值
@@ -837,12 +837,12 @@ function exportShapeAsKml(btn) {
   }
 }
 
-function hasShapeModeInUrl(urlParams = new URLSearchParams(window.location.search)) {
+function hasShapeModeInUrl(urlParams = window.UrlParams.read()) {
   return !!(urlParams.get('shape') || '').trim();
 }
 
 function renderShapeOverlayFromUrl(selectedLayer = null) {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   if (!hasShapeModeInUrl(urlParams)) return;
 
   const shapeSpec = window.shapeUtils.parseShapeParams(urlParams);

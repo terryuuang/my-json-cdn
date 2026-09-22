@@ -30,7 +30,7 @@ try {
     
     // 解析URL參數（同步，不佔時間）
     const urlCoords = parseUrlCoordinates();
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = window.UrlParams.read();
     
     const radius = parseFloat(urlParams.get('radius')) || (urlCoords ? 50 : 100);
     const selectedLayer = urlParams.get('layer') || '';
@@ -61,7 +61,7 @@ try {
 
     const hasAisSnapshot = window.AISSnapshot && typeof window.AISSnapshot.hasAisHash === 'function'
       ? window.AISSnapshot.hasAisHash()
-      : window.location.hash.replace(/^#/, '').toLowerCase().startsWith('ais=');
+      : window.UrlParams.hashHas('ais');
     if (hasAisSnapshot) unitsVisible = false;
     
     // 支援 shape 模式（禁航區繪制 + 附近點位）
@@ -120,11 +120,57 @@ try {
 }
 }
 
+// hash 裡的圖形參數改變時就地重繪，不重新載入整頁。
+// history.replaceState/pushState 不會觸發 hashchange，所以自己寫回網址不會造成重繪迴圈；
+// 仍比對前後值，避免使用者只改 #ais= 之類無關參數時也重畫圖形。
+const SHAPE_HASH_KEYS = [
+  'shape', 'unit', 'lat', 'lng', 'coords', 'radius', 'start', 'end', 'text',
+  'line', 'poly', 'bbox', 'circle', 'sector',
+  'color', 'circle_color', 'line_color', 'poly_color', 'sector_color',
+  'circle_text', 'line_text', 'poly_text', 'sector_text',
+  'activity_type', 'ai_judgment'
+];
+
+function shapeParamsSignature() {
+  try {
+    const params = window.UrlParams.read();
+    return SHAPE_HASH_KEYS
+      .map(key => `${key}=${params.getAll(key).join('\u0001')}`)
+      .join('\u0002');
+  } catch (_) {
+    return '';
+  }
+}
+
+// 以載入時的網址為基準，這樣第一次 hashchange 就會生效
+let lastShapeSignature = shapeParamsSignature();
+
+function syncShapeHashState() {
+  const signature = shapeParamsSignature();
+  if (signature === lastShapeSignature) return;
+  lastShapeSignature = signature;
+
+  try {
+    if (typeof hasShapeModeInUrl === 'function' && hasShapeModeInUrl()) {
+      if (typeof renderShapeOverlayFromUrl === 'function') renderShapeOverlayFromUrl();
+    } else {
+      // shape 參數被移除：清掉圖形圖層，並把單位圖示放回來
+      // （進 shape 模式時是被強制隱藏的，不還原的話畫面會整片空白）
+      try { nfzLayerGroup.clearLayers(); } catch (_) {}
+      unitsVisible = true;
+      if (typeof applyUnitVisibility === 'function') applyUnitVisibility();
+    }
+  } catch (error) {
+    console.warn('[Map] 依 hash 重繪圖形失敗:', error);
+  }
+}
+
 // 當頁面載入完成時啟動應用程式
 document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('hashchange', syncAisHashState);
 window.addEventListener('pageshow', syncAisHashState);
 window.addEventListener('focus', syncAisHashState);
+window.addEventListener('hashchange', syncShapeHashState);
 
 // 在 init 函數中調用
 // 需要在 DOMContentLoaded 後執行

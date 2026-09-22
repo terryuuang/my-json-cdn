@@ -290,7 +290,7 @@ async function performOverpassRequest(query, cacheKey, useCache) {
 function getCurrentSearchContext(map) {
   let center = null;
   let radius = 50;
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   const urlRadius = parseFloat(urlParams.get('radius'));
 
   const shapeType = urlParams.get('shape');
@@ -657,14 +657,13 @@ function clearAll(map) {
 let selectedFacilities = new Set();
 
 function syncFacilitiesToUrl() {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
   if (selectedFacilities.size > 0) {
     urlParams.set('osm', Array.from(selectedFacilities).join(','));
   } else {
     urlParams.delete('osm');
   }
-  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-  window.history.pushState({}, '', newUrl + window.location.hash);
+  window.UrlParams.commit(urlParams, { mode: 'push' });
 }
 
 function setFacilityVisualState(type, state = 'idle', detail = '') {
@@ -810,7 +809,7 @@ function initOSM() {
       clearInterval(check);
       initLayers(window.map);
 
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = window.UrlParams.read();
       const initialFacilities = (urlParams.get('osm') || '')
         .split(',')
         .map(v => v.trim())

@@ -5,6 +5,7 @@
 - `static/js/map_state.js`, `map_init.js`, `markers_render.js`, `panel_ui.js`, and `bootstrap.js`: Shared state, map setup, data rendering, controls, and startup (formerly `main.js`).
 - Map tiles: Google 海域 (satellite hybrid, default) and Google 空域 (road map).
 - `static/js/equipment_parser.js`: Parses equipment text; fetches Wikipedia summaries.
+- `static/js/url_params.js`: `window.UrlParams` — merged `?`/`#` parameter reads and side-preserving write-back. Must load before every other app script.
 - `static/js/shape_utils.js`: Shared helpers for shape parsing, geodesic calculations, colour normalisation, and KML building.
 - `static/js/shape_color.js`: Runtime colour customisation for shape overlays (popup picker, URL sync). Depends on `shape_utils.js`.
 - `static/css/main.css`: UI styles for map, popups, controls, and mobile.
@@ -18,6 +19,7 @@
 - Validate layers: `python3 classify_layer.py` (edit the filename inside as needed).
 
 ## URL Parameter Reference
+- **`?` and `#` are equivalent.** Every parameter below behaves the same after the hash, e.g. `#shape=circle&lat=25&lng=120&radius=50`. With both present, the query string is the base and the hash overrides it per key. Prefer the hash when the data is sensitive (it is never sent to the server, so it stays out of access logs and `Referer`) or large (a query string is capped around 8 KB by the CDN; the hash is not). Editing the hash re-renders shapes without reloading the page. All access goes through `static/js/url_params.js` (`window.UrlParams`) — do not read `location.search` directly.
 - Basic search: `lat`/`lng` or `coords=lat,lng` center the map (path suffix `/lat,lng` still works). Omit radius to default 100 km (50 km when coordinates supplied).
 - Range & filters: `radius=` (numeric, km by default) and optional `layer=` to preselect a layer filter.
 - Shape mode: `shape=` accepts `point`, `circle`, `line`, `polygon`, `bbox`, `sector`, or `multi`. Supply shared options `unit=nm|km|m` (affects `radius`) and `text=` for popup labels.

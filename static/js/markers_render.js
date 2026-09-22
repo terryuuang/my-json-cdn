@@ -406,8 +406,7 @@ function hasAisHashSnapshot() {
   if (window.AISSnapshot && typeof window.AISSnapshot.hasAisHash === 'function') {
     return window.AISSnapshot.hasAisHash();
   }
-  const hash = window.location.hash.replace(/^#/, '').trim().toLowerCase();
-  return hash === 'ais' || hash.startsWith('ais=');
+  return window.UrlParams.hashHas('ais');
 }
 
 function syncAisHashState() {
@@ -513,7 +512,7 @@ window.zoomToPopupFeature = zoomToPopupFeature;
 
 function updateUrlAndRenderAtCoords(lat, lng, radius, selectedLayers) {
   // 更新 URL（保留既有 shape 參數，讓禁航區 overlay 能持續顯示）
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = window.UrlParams.read();
 
   // 設置座標搜尋參數
   urlParams.set('lat', lat);
@@ -527,8 +526,7 @@ function updateUrlAndRenderAtCoords(lat, lng, radius, selectedLayers) {
     urlParams.set('layers', selectedLayers.join(','));
   }
 
-  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-  window.history.pushState({}, '', newUrl);
+  window.UrlParams.commit(urlParams, { mode: 'push' });
 
   // 重新渲染地圖：若沒有選中任何圖層，直接調用 renderMap 顯示所有圖層
   if (selectedLayers.length === 0) {
