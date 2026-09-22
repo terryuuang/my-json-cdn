@@ -97,7 +97,11 @@ try {
       if (window.PLATheater) window.PLATheater.init(map);
       if (window.ADIZ) window.ADIZ.init(map);
       if (window.MaritimeZones) window.MaritimeZones.init(map, { visible: hasAisSnapshot });
-      if (window.SubmarineCable) window.SubmarineCable.init(map);
+      if (window.SubmarineCable) {
+        window.SubmarineCable.init(map);
+        // 網址帶 cable= 時自動開啟圖層（全部或指定電纜）
+        window.SubmarineCable.applyUrlSelection();
+      }
       if (typeof initOsintToolbar === 'function') initOsintToolbar(map);
       if (window.MapContextMenu) window.MapContextMenu.init(map);
       if (window.MndAreas) window.MndAreas.init(map);
@@ -165,12 +169,32 @@ function syncShapeHashState() {
   }
 }
 
+// cable= 改變時就地套用，不重載整頁。與 shape 參數分開比對，
+// 避免調個電纜就把圖形整組重畫。
+let lastCableSignature = cableParamsSignature();
+
+function cableParamsSignature() {
+  try {
+    return window.UrlParams.read().getAll('cable').join('\u0001');
+  } catch (_) {
+    return '';
+  }
+}
+
+function syncCableHashState() {
+  const signature = cableParamsSignature();
+  if (signature === lastCableSignature) return;
+  lastCableSignature = signature;
+  if (window.SubmarineCable) window.SubmarineCable.applyUrlSelection();
+}
+
 // 當頁面載入完成時啟動應用程式
 document.addEventListener('DOMContentLoaded', init);
 window.addEventListener('hashchange', syncAisHashState);
 window.addEventListener('pageshow', syncAisHashState);
 window.addEventListener('focus', syncAisHashState);
 window.addEventListener('hashchange', syncShapeHashState);
+window.addEventListener('hashchange', syncCableHashState);
 
 // 在 init 函數中調用
 // 需要在 DOMContentLoaded 後執行

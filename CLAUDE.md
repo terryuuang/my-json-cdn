@@ -128,6 +128,13 @@ jq . joseph_w.geojson
 - Shows the newest report that actually has areas (some days have none, some older reports have no chart at all) and always labels that date
 - Polygons carry `className: 'mnd-area-path'`, which must stay in the `:not()` list of the stroke rule in `main.css` — see CSS Gotchas
 
+**`static/js/submarine_cable.js`** (Submarine Cables)
+- 728 segments / 707 distinct cables from `geojson/submarinecablemap.json`, off by default, toggled from 公共設施
+- Features are grouped by their stable `id` slug, because a cable can be split across several segments (`echo` has 3) and they must show and hide together
+- `cable=` opens the layer from the URL (see URL Parameter System). Matching is deliberately loose — exact `id`, then normalised exact `id`/`name`, then normalised substring — so `cable=TPKM2` finds `taiwan-penghu-kinmen-matsu-no-2-tpkm2` without the user memorising the slug
+- **Never index cables by position (`cable=1~N`).** The ordinal is an array offset in the dataset; refreshing it shifts every cable after an addition or removal, so a shared link silently points at a different cable
+- Paths carry `className: 'submarine-cable-path'`, already in the `:not()` list of the stroke rule in `main.css` — see CSS Gotchas
+
 **`static/js/notes.js`** (Notes System)
 - IndexedDB-only storage (no cloud backup)
 - CRUD operations, map markers, export/import
@@ -191,6 +198,13 @@ All of this goes through `static/js/url_params.js`; see its module entry below b
 - Accepts `#rrggbb`, `#rgb`, bare hex, or names (`red`, `orange`, `teal`, …). Invalid values fall back to the default rather than throwing
 - Stroke is auto-darkened from the fill so every colour keeps the "deep border, light fill" look; very dark colours are lightened instead so the outline stays visible
 - Users can change colours live from the popup picker; the change is written back into the URL
+
+**Submarine Cables**:
+- `cable=all` or `cable=1`: show every cable (equivalent to ticking the 公共設施 checkbox)
+- `cable=<id-or-name>`: show only those cables, fit the map to them, and open the popup when exactly one matched
+- Repeat the param or comma-separate for several: `cable=tpkm2,tpkm3`
+- Unmatched tokens are warned about in the console; if nothing matched at all the layer falls back to showing every cable rather than disappearing
+- Removing the param again hides the layer only if it was the URL that opened it, so a manual tick is never undone by an unrelated hash edit
 
 **Shape Mode Behavior**:
 - Defaults to hiding unit markers (`unitsVisible = false`)
