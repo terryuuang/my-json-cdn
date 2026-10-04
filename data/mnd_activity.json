@@ -1,11 +1,22 @@
 {
   "source": "中華民國國防部",
   "sourceUrl": "https://www.mnd.gov.tw/news/plaactlist",
-  "checkedAt": "2026-10-03T14:20:06.181450+00:00",
+  "checkedAt": "2026-10-04T07:00:05.448191+00:00",
   "timezone": "Asia/Taipei",
   "periodNote": "各報告前一日 06:00 至當日 06:00（臺灣時間）；數字為通報架次／艘次，非獨立機艦數或即時位置。",
   "areaNote": "活動範圍由官方示意圖的紅色標註向量化而成（示意範圍，非航跡或即時位置）。",
   "reports": [
+    {
+      "date": "2026-10-04",
+      "periodStart": "2026-10-03",
+      "periodEnd": "2026-10-04",
+      "aircraft": 0,
+      "vessels": 7,
+      "officialShips": 8,
+      "reportedAreaAircraft": null,
+      "sourceUrl": "https://www.mnd.gov.tw/news/plaact/87904",
+      "imageUrl": null
+    },
     {
       "date": "2026-10-03",
       "periodStart": "2026-10-02",
