@@ -1,11 +1,22 @@
 {
   "source": "中華民國國防部",
   "sourceUrl": "https://www.mnd.gov.tw/news/plaactlist",
-  "checkedAt": "2026-11-13T17:15:19.061477+00:00",
+  "checkedAt": "2026-11-14T15:54:16.322439+00:00",
   "timezone": "Asia/Taipei",
   "periodNote": "各報告前一日 06:00 至當日 06:00（臺灣時間）；數字為通報架次／艘次，非獨立機艦數或即時位置。",
   "areaNote": "活動範圍由官方示意圖的紅色標註向量化而成（示意範圍，非航跡或即時位置）。",
   "reports": [
+    {
+      "date": "2026-11-14",
+      "periodStart": "2026-11-13",
+      "periodEnd": "2026-11-14",
+      "aircraft": 10,
+      "vessels": 8,
+      "officialShips": 3,
+      "reportedAreaAircraft": 4,
+      "sourceUrl": "https://www.mnd.gov.tw/news/plaact/88211",
+      "imageUrl": "https://www.mnd.gov.tw/NewUpload/202611/1151114_臺海周邊海、空域活動示意圖_080348.jpg"
+    },
     {
       "date": "2026-11-13",
       "periodStart": "2026-11-12",
@@ -3801,71 +3812,6 @@
       "sourceUrl": "https://www.mnd.gov.tw/news/plaact/87443",
       "imageUrl": "https://www.mnd.gov.tw/NewUpload/202608/1150817_臺海周邊海、空域活動示意圖_134843.jpg",
       "areas": [
-        [
-          [
-            122.2569,
-            26.7653
-          ],
-          [
-            122.7851,
-            26.7653
-          ],
-          [
-            122.7851,
-            26.2821
-          ],
-          [
-            122.2569,
-            26.2821
-          ],
-          [
-            122.2569,
-            26.7653
-          ]
-        ]
-      ]
-    },
-    {
-      "date": "2026-08-16",
-      "periodStart": "2026-08-15",
-      "periodEnd": "2026-08-16",
-      "aircraft": 11,
-      "vessels": 8,
-      "officialShips": 2,
-      "reportedAreaAircraft": 7,
-      "sourceUrl": "https://www.mnd.gov.tw/news/plaact/87441",
-      "imageUrl": "https://www.mnd.gov.tw/NewUpload/202608/1150816_臺海周邊海、空域活動示意圖_412731.jpg",
-      "areas": [
-        [
-          [
-            121.2252,
-            26.7982
-          ],
-          [
-            121.8762,
-            26.2491
-          ],
-          [
-            120.9918,
-            25.7526
-          ],
-          [
-            119.002,
-            23.9933
-          ],
-          [
-            118.9161,
-            23.9709
-          ],
-          [
-            118.7318,
-            24.1278
-          ],
-          [
-            121.2252,
-            26.7982
-          ]
-        ],
         [
           [
             122.2569,
