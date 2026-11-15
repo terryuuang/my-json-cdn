@@ -1,11 +1,22 @@
 {
   "source": "中華民國國防部",
   "sourceUrl": "https://www.mnd.gov.tw/news/plaactlist",
-  "checkedAt": "2026-11-14T15:54:16.322439+00:00",
+  "checkedAt": "2026-11-15T07:54:29.280759+00:00",
   "timezone": "Asia/Taipei",
   "periodNote": "各報告前一日 06:00 至當日 06:00（臺灣時間）；數字為通報架次／艘次，非獨立機艦數或即時位置。",
   "areaNote": "活動範圍由官方示意圖的紅色標註向量化而成（示意範圍，非航跡或即時位置）。",
   "reports": [
+    {
+      "date": "2026-11-15",
+      "periodStart": "2026-11-14",
+      "periodEnd": "2026-11-15",
+      "aircraft": 1,
+      "vessels": 8,
+      "officialShips": 3,
+      "reportedAreaAircraft": 1,
+      "sourceUrl": "https://www.mnd.gov.tw/news/plaact/88214",
+      "imageUrl": "https://www.mnd.gov.tw/NewUpload/202611/1151115_%e8%87%ba%e6%b5%b7%e5%91%a8%e9%82%8a%e6%b5%b7%e3%80%81%e7%a9%ba%e5%9f%9f%e6%b4%bb%e5%8b%95%e7%a4%ba%e6%84%8f%e5%9c%96_051003.jpg"
+    },
     {
       "date": "2026-11-14",
       "periodStart": "2026-11-13",
@@ -3797,41 +3808,6 @@
           [
             122.1218,
             22.7766
-          ]
-        ]
-      ]
-    },
-    {
-      "date": "2026-08-17",
-      "periodStart": "2026-08-16",
-      "periodEnd": "2026-08-17",
-      "aircraft": 1,
-      "vessels": 9,
-      "officialShips": 7,
-      "reportedAreaAircraft": 1,
-      "sourceUrl": "https://www.mnd.gov.tw/news/plaact/87443",
-      "imageUrl": "https://www.mnd.gov.tw/NewUpload/202608/1150817_臺海周邊海、空域活動示意圖_134843.jpg",
-      "areas": [
-        [
-          [
-            122.2569,
-            26.7653
-          ],
-          [
-            122.7851,
-            26.7653
-          ],
-          [
-            122.7851,
-            26.2821
-          ],
-          [
-            122.2569,
-            26.2821
-          ],
-          [
-            122.2569,
-            26.7653
           ]
         ]
       ]
